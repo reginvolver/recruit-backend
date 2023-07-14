@@ -7,6 +7,7 @@
     <modules>
         <module>recruit-web</module>
         <module>recruit-support</module>
+        <module>recruit-common</module>
     </modules>
 
     <parent>
