@@ -109,10 +109,18 @@
 
             <!--动态线程池引入-->
             <dependency>
-                <groupId>io.github.lyh200</groupId>
+                <groupId>org.dromara.dynamictp</groupId>
                 <artifactId>dynamic-tp-spring-boot-starter-apollo</artifactId>
-                <version>1.0.2</version>
+                <version>1.1.3</version>
             </dependency>
+
+            <!--接口文档引入-->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
