@@ -1,4 +1,4 @@
-package com.yundingshuyuan.recruit.dao;
+package com.yundingshuyuan.recruit.domain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class UserVo {
     private Long id;
 
     public Long getId() {

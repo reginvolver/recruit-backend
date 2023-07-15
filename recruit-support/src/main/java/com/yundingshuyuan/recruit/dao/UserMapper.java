@@ -1,9 +1,8 @@
 package com.yundingshuyuan.recruit.dao;
 
-public interface UserMapper {
-    int deleteByPrimaryKey(Long id);
+import com.yundingshuyuan.recruit.domain.User;
+import com.yundingshuyuan.recruit.domain.vo.UserVo;
 
-    int insert(User record);
+public interface UserMapper extends BaseMapperPlus<User, UserVo> {
 
-    int insertSelective(User record);
 }

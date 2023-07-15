@@ -1,7 +1,8 @@
 package com.yundingshuyuan.recruit.web.controller;
 
-import com.yundingshuyuan.recruit.dao.User;
-import com.yundingshuyuan.recruit.dao.UserMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yundingshuyuan.recruit.api.TestService;
+import com.yundingshuyuan.recruit.domain.User;
 import com.yundingshuyuan.recruit.utils.RedisUtils;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,7 @@ public class TestController {
     private RedisUtils redisUtils;
 
     @Autowired
-    private UserMapper userMapper;
+    private TestService testService;
 
     @Value("${test}")
     private String test;
@@ -37,9 +38,7 @@ public class TestController {
 
     @GetMapping("/test2")
     @Operation(summary = "测试接口2")
-    public int test2() {
-        User user = new User(1L);
-        return userMapper.insert(user);
+    public Page<User> test2() {
+        return testService.test();
     }
-
 }

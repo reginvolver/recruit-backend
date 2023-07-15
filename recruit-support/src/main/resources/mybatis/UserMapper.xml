@@ -1,29 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yundingshuyuan.recruit.dao.UserMapper">
-  <resultMap id="BaseResultMap" type="com.yundingshuyuan.recruit.dao.User">
-    <!--@mbg.generated-->
-    <!--@Table `user`-->
-    <id column="id" jdbcType="BIGINT" property="id" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id
-  </sql>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    <!--@mbg.generated-->
-    delete from `user`
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.yundingshuyuan.recruit.dao.User" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into `user` ()
-    values ()
-  </insert>
-  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.yundingshuyuan.recruit.dao.User" useGeneratedKeys="true">
-    <!--@mbg.generated-->
-    insert into `user`
-    <trim prefix="(" suffix=")" suffixOverrides="," />
-    <trim prefix="values (" suffix=")" suffixOverrides="," />
-  </insert>
 </mapper>
