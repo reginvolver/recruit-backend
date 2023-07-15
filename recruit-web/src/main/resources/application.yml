@@ -81,3 +81,23 @@ ok:
     max-idle-connections: 200
     read-timeout: 30
     write-timeout: 30
+# monitor
+management:
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  health:
+    rabbit:
+      enabled: false

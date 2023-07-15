@@ -1,0 +1,17 @@
+global:
+  scrape_interval:     1s
+  evaluation_interval: 1s
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+  - job_name: 'recruit'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:9091']
