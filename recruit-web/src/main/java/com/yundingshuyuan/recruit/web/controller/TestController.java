@@ -1,13 +1,11 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import com.yundingshuyuan.recruit.dao.User;
+import com.yundingshuyuan.recruit.dao.UserMapper;
 import com.yundingshuyuan.recruit.utils.RedisUtils;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +21,9 @@ public class TestController {
     @Autowired
     private RedisUtils redisUtils;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Value("${test}")
     private String test;
 
@@ -31,15 +32,14 @@ public class TestController {
     public User test() {
         boolean redisTest = redisUtils.set("test", test);
         log.info("redisTest:{}", redisTest);
-        return new User("张三", test);
+        return new User(Long.valueOf(test));
     }
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Builder
-    private static class User {
-        private String name;
-        private String age;
+    @GetMapping("/test2")
+    @Operation(summary = "测试接口2")
+    public int test2() {
+        User user = new User(1L);
+        return userMapper.insert(user);
     }
+
 }
