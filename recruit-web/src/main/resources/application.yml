@@ -4,6 +4,9 @@ mybatis-plus:
   mapper-locations: classpath*:mybatis/**/*.xml
 # spring
 spring:
+  banner:
+    charset: utf-8
+    location: classpath:banner.txt
   datasource:
     druid:
       statViewServlet:

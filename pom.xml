@@ -162,6 +162,7 @@
                     <include>**/*.properties</include>
                     <include>**/*.yml</include>
                     <include>**/*.xml</include>
+                    <include>**/*.txt</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
@@ -171,6 +172,7 @@
                     <include>**/*.properties</include>
                     <include>**/*.yml</include>
                     <include>**/*.xml</include>
+                    <include>**/*.txt</include>
                 </includes>
                 <filtering>true</filtering>
             </resource>
