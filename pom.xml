@@ -10,7 +10,7 @@
         <module>recruit-common</module>
         <module>recruit-service</module>
     </modules>
- 
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -36,6 +36,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <!--wxjava-小程序-->
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-miniapp</artifactId>
+                <version>4.5.0</version>
+            </dependency>
             <!--mysql驱动包-->
             <dependency>
                 <groupId>mysql</groupId>
