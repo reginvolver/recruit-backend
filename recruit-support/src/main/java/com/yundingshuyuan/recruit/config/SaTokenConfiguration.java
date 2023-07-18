@@ -6,6 +6,7 @@ import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @Date 2023/7/17 18:47
  * 注入jwt实现
  */
+@Slf4j
 @Configuration
 @RestControllerAdvice   //异常拦截器
 public class SaTokenConfiguration implements WebMvcConfigurer {
@@ -46,21 +48,21 @@ public class SaTokenConfiguration implements WebMvcConfigurer {
     // 拦截：缺少权限异常
     @ExceptionHandler(NotPermissionException.class)
     public SaResult handlerException(NotPermissionException e) {
-        e.printStackTrace();
+        log.error("未登录异常",e);
         return SaResult.error("缺少权限：" + e.getPermission());
     }
 
     // 拦截：缺少角色异常
     @ExceptionHandler(NotRoleException.class)
     public SaResult handlerException(NotRoleException e) {
-        e.printStackTrace();
+        log.error("缺少角色异常",e);
         return SaResult.error("缺少角色：" + e.getRole());
     }
 
     // 拦截：二级认证校验失败异常
     @ExceptionHandler(NotSafeException.class)
     public SaResult handlerException(NotSafeException e) {
-        e.printStackTrace();
+        log.error("二级认证校验失败异常",e);
         return SaResult.error("二级认证校验失败：" + e.getService());
     }
 
@@ -68,14 +70,14 @@ public class SaTokenConfiguration implements WebMvcConfigurer {
     // 拦截：Http Basic 校验失败异常
     @ExceptionHandler(NotBasicAuthException.class)
     public SaResult handlerException(NotBasicAuthException e) {
-        e.printStackTrace();
+        log.error("Http Basic 校验失败异常",e);
         return SaResult.error(e.getMessage());
     }
 
     // 拦截：其它所有异常
     @ExceptionHandler(Exception.class)
     public SaResult handlerException(Exception e) {
-        e.printStackTrace();
+        log.error("发生异常",e);
         return SaResult.error(e.getMessage());
     }
 
@@ -89,7 +91,9 @@ public class SaTokenConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册 Sa-Token 拦截器，打开注解式鉴权功能
-        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**")
+                //开放 knife4j 接口文档路径
+                .excludePathPatterns("/doc.html", "/webjars/**", "/swagger-resources/**", "/v2/**");
 
     //@SaCheckLogin: 登录校验 —— 只有登录之后才能进入该方法。
     //@SaCheckRole("admin"): 角色校验 —— 必须具有指定角色标识才能进入该方法。
