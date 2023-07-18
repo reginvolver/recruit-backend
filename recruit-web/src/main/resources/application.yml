@@ -2,6 +2,8 @@ server:
   port: 9091
 mybatis-plus:
   mapper-locations: classpath*:mybatis/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 # spring
 spring:
   banner:
