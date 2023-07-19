@@ -24,7 +24,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@TableName("log_table")
+@TableName("execution_log")
 public class LogRecordPO {
 
     public static LogRecordPO toPo(LogRecord logRecord) {
@@ -43,7 +43,7 @@ public class LogRecordPO {
     }
 
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
     /**
      * 租户
      */

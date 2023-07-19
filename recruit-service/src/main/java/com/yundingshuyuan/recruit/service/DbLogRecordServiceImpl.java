@@ -25,7 +25,7 @@ public class DbLogRecordServiceImpl implements ILogRecordService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void record(LogRecord logRecord) {
-        log.info("【logRecord】log={}", logRecord);
+        log.info(String.valueOf(logRecord));
         LogRecordPO logRecordPO = LogRecordPO.toPo(logRecord);
         logRecordMapper.insert(logRecordPO);
     }
