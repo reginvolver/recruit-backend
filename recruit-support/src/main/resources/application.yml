@@ -1,16 +1,3 @@
-logging:
-  level:
-    org.springframework.web: info
-    com.github.binarywang.demo.wx.miniapp: debug
-    cn.binarywang.wx.miniapp: debug
-wx:
-  miniapp:
-    configs:
-      - appid: #微信小程序的appid
-        secret: #微信小程序的Secret
-        token: #微信小程序消息服务器配置的token
-        aesKey: #微信小程序消息服务器配置的EncodingAESKey
-        msgDataFormat: JSON
 
 #sa-token
 sa-token:
@@ -28,5 +15,6 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
+
   #jwt密钥(官方文档说让随便输入几个字符，我瞎按的
   jwt-secret-key: abshegdyugbskabjsdjbdhaluyew

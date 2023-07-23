@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.web.exception;
 
 
+import cn.dev33.satoken.util.SaResult;
 import com.yundingshuyuan.enums.RespStatusEnum;
 import com.yundingshuyuan.vo.BasicResultVO;
 import org.assertj.core.util.Throwables;
