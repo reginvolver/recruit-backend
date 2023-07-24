@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -26,7 +27,7 @@ public class LoginServiceImpl implements LoginService {
     private Long userId;
 
     @Value("${user.username}")
-    private String username;
+    private String user_name;
     @Value("${user.password}")
     private String userPassword;
 
@@ -46,7 +47,7 @@ public class LoginServiceImpl implements LoginService {
             StpUtil.getSession().set("roleList",roleList);
             log.info("管理员登录成功");
         }
-        if(username.equals(username)&&password.equals(userPassword)){
+        if(username.equals(user_name)&&password.equals(userPassword)){
             stpUtil.login(userId);
             List<String> permissionList = StpUtil.getPermissionList(superId);
             List<String>  roleList= StpUtil.getRoleList(superId);

@@ -5,12 +5,16 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.yundingshuyuan.recruit.api.LoginService;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.vo.BasicResultVO;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 @RestController
@@ -25,13 +29,14 @@ public class LoginController {
 
     @GetMapping("/login")
     @SaCheckLogin
-    public Object login(String username,String password){
+    @Operation(summary = "登录接口")
+    public BasicResultVO login(String username, String password){
         log.info("username:{},password:{}",username,password);
         loginService.login(username, password);
         log.info("用户身份：{}", StpUtil.getRoleList());
         log.info("用户权限：{}",StpUtil.getPermissionList());
         if(loginService.isLogin()){
-            return BasicResultVO.success("登录成功");
+            return BasicResultVO .success(StpUtil.getRoleList());
         }
         return BasicResultVO.fail("登录失败");
     }

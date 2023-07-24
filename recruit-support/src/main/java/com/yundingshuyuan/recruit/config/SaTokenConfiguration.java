@@ -1,11 +1,8 @@
 package com.yundingshuyuan.recruit.config;
 import cn.dev33.satoken.exception.*;
 import cn.dev33.satoken.interceptor.SaInterceptor;
-import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
-import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.util.SaResult;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
