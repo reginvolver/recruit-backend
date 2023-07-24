@@ -1,25 +1,15 @@
 package com.yundingshuyuan.recruit.config;
-import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
-import cn.dev33.satoken.stp.StpInterface;
-import cn.dev33.satoken.stp.StpLogic;
-import com.yundingshuyuan.recruit.service.SaPermissionImpl;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.context.annotation.Bean;
+import cn.dev33.satoken.interceptor.SaInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@AutoConfiguration
-public class SaTokenConfiguration {
-
-    @Bean
-    public StpLogic getStpLogicJwt() {
-        return new StpLogicJwtForSimple();
+@Configuration
+public class SaTokenConfiguration implements WebMvcConfigurer {
+    // 注册 Sa-Token 拦截器，打开注解式鉴权功能
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册 Sa-Token 拦截器，打开注解式鉴权功能
+        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**").excludePathPatterns("/login");
     }
-
-    /**
-     * 权限接口实现(使用bean注入方便用户替换)
-     */
-    @Bean
-    public StpInterface stpInterface() {
-        return new SaPermissionImpl();
-    }
-
 }
