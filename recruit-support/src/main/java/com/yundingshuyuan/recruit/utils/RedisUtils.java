@@ -570,6 +570,7 @@ public class RedisUtils {
         }
     }
 
+
     /**
      * 移除N个值为value
      *
@@ -627,4 +628,126 @@ public class RedisUtils {
             log.error("RedisUtils#removeAll fail! e:{}", Throwables.getStackTraceAsString(e));
         }
     }
+
+    /**
+     * 添加一个元素到 Zset 中
+     * @param key   Redis 的键
+     * @param value Redis 的值
+     * @param score Redis 的分值
+     * @return 添加是否成功
+     */
+    public boolean zsAdd(String key, Object value, double score) {
+        try {
+            return redisTemplate.opsForZSet().add(key, value, score);
+        } catch (Exception e) {
+            log.error("RedisUtils#sSet fail! e:{}", Throwables.getStackTraceAsString(e));
+            return false;
+        }
+    }
+
+    /**
+     * 将数据放入 zSet 缓存
+     * @param key   Redis 的键
+     * @param values 数据
+     * @return 成功个数
+     */
+    public long zsSet(String key,Set<ZSetOperations.TypedTuple> values) {
+        try {
+            return redisTemplate.opsForZSet().add(key, values);
+        } catch (Exception e) {
+            log.error("RedisUtils#sSet fail! e:{}", Throwables.getStackTraceAsString(e));
+            return 0;
+        }
+    }
+
+
+
+    /**
+     * 将数据放入 zSet 缓存
+     * @param key   Redis 的键
+     * @param time 过期时间
+     * @param values 数据
+     * @return 成功个数
+     */
+    public long zsSetAndTime(String key, long time, Set<ZSetOperations.TypedTuple> values) {
+        try {
+            Long count = redisTemplate.opsForZSet().add(key, values);
+            if (time > 0) {
+                expire(key, time);
+            }
+            return count;
+        } catch (Exception e) {
+            log.error("RedisUtils#sSetAndTime fail! e:{}", Throwables.getStackTraceAsString(e));
+            return 0;
+        }
+    }
+
+
+    /**
+     * 获取指定范围内的元素列表，按照分值从小到大排序
+     *
+     * @param key   Redis 的键
+     * @param start 开始位置（包含）
+     * @param end   结束位置（包含）
+     * @return 元素列表
+     */
+    public Set<Object> zsGetRange(String key, long start, long end) {
+        try {
+            return redisTemplate.opsForZSet().range(key, start, end);
+        } catch (Exception e) {
+            log.error("RedisUtils#sSet fail! e:{}", Throwables.getStackTraceAsString(e));
+            return null;
+        }
+    }
+
+    /**
+     * 获取元素在 Zset 中的排名，按照分值从小到大排序
+     *
+     * @param key   Redis 的键
+     * @param value Redis 的值
+     * @return 排名（从 0 开始），如果元素不存在，则返回 null
+     */
+    public Long zsGetRank(String key, Object value) {
+        try {
+            return redisTemplate.opsForZSet().rank(key, value);
+        } catch (Exception e) {
+            log.error("RedisUtils#sSet fail! e:{}", Throwables.getStackTraceAsString(e));
+            return null;
+        }
+    }
+
+
+    /**
+     * 获取指定元素的分值
+     *
+     * @param key   Redis 的键
+     * @param value Redis 的值
+     * @return 分值，如果元素不存在，则返回 null
+     */
+    public Double zsGetScore(String key, Object value) {
+        try {
+            return redisTemplate.opsForZSet().score(key, value);
+        } catch (Exception e) {
+            log.error("RedisUtils#sSet fail! e:{}", Throwables.getStackTraceAsString(e));
+            return null;
+        }
+    }
+
+    /**
+     * 删除指定元素
+     *
+     * @param key   Redis 的键
+     * @param value Redis 的值
+     * @return 删除的元素个数
+     */
+    public Long zsRemove(String key, Object value) {
+
+        try {
+            return redisTemplate.opsForZSet().remove(key, value);
+        } catch (Exception e) {
+            log.error("RedisUtils#sSet fail! e:{}", Throwables.getStackTraceAsString(e));
+            return null;
+        }
+    }
+
 }
