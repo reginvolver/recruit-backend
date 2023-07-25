@@ -5,6 +5,7 @@ import cn.hutool.core.lang.UUID;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.io.InputStream;
  * 文件上传工具类
  */
 @Slf4j
-public class FileUploadUtils {
+public class FileUploadUtils implements DisposableBean {
     @Value("${aliyunOSS.endPoint}")
     private String endPoint;
     @Value("${aliyunOSS.accessKeyId}")
@@ -23,14 +24,13 @@ public class FileUploadUtils {
     private String accessKeySecret;
     @Value("${aliyunOSS.bucketName}")
     private String bucketName;
-
     /**
-     * 获得初始化 OSS
-     * @return OSS
+     * 上传核心
      */
-    private OSS getInitOss() {
-        OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
-        return ossClient;
+    private OSS ossClient;
+
+    public FileUploadUtils() {
+        ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
     }
 
     /**
@@ -39,7 +39,6 @@ public class FileUploadUtils {
      * @return 返回图片URL
      */
     public String fileUpload(MultipartFile file) {
-        OSS ossClient = getInitOss();
         String filename = normalizeFilename(file);
         try {
             InputStream inputStream = file.getInputStream();
@@ -55,12 +54,22 @@ public class FileUploadUtils {
     }
 
 
+    /**
+     * 统一上传的文件名
+     * yyyy.MM.dd-uuid-filename
+     * @param file
+     * @return 统一后文件名
+     */
     private String normalizeFilename(MultipartFile file) {
         String filename = file.getOriginalFilename();
         UUID uuid = UUID.randomUUID();
         String preifxTime = DateTime.now().toString("yyyy/MM/dd");
         //拼接成完整的文件名。
-        return preifxTime + uuid + filename;
+        return preifxTime + "-" + uuid +  "-" + filename;
     }
 
+    @Override
+    public void destroy() throws Exception {
+        ossClient.shutdown();
+    }
 }
