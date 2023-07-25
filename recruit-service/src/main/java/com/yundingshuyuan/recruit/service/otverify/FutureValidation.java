@@ -1,6 +1,5 @@
-package com.yundingshuyuan.recruit.service.opentime.validations;
+package com.yundingshuyuan.recruit.service.otverify;
 
-import com.yundingshuyuan.recruit.api.OpenTimeValidation;
 import lombok.AllArgsConstructor;
 
 import java.security.InvalidParameterException;

@@ -1,6 +1,5 @@
-package com.yundingshuyuan.recruit.service.opentime;
+package com.yundingshuyuan.recruit.service.otverify;
 
-import com.yundingshuyuan.recruit.api.OpenTimeValidation;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -9,7 +8,6 @@ public class OpenTimeValidationBuilder {
         private OpenTimeValidation currentTask;
 
         public OpenTimeValidationBuilder add(OpenTimeValidation validationTask) {
-            System.out.println("task: " + validationTask);
             if (firstTask == null) {
                 firstTask = validationTask;
                 currentTask = validationTask;

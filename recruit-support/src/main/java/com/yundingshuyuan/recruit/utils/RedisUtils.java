@@ -647,11 +647,12 @@ public class RedisUtils {
 
     /**
      * 将数据放入 zSet 缓存
-     * @param key   Redis 的键
+     *
+     * @param key    Redis 的键
      * @param values 数据
      * @return 成功个数
      */
-    public long zsSet(String key,Set<ZSetOperations.TypedTuple> values) {
+    public long zsSet(String key, Set<ZSetOperations.TypedTuple> values) {
         try {
             return redisTemplate.opsForZSet().add(key, values);
         } catch (Exception e) {
@@ -681,7 +682,6 @@ public class RedisUtils {
             return 0;
         }
     }
-
 
     /**
      * 获取指定范围内的元素列表，按照分值从小到大排序

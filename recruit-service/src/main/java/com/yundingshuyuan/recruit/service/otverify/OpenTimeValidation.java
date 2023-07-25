@@ -1,6 +1,4 @@
-package com.yundingshuyuan.recruit.api;
-
-import java.security.InvalidParameterException;
+package com.yundingshuyuan.recruit.service.otverify;
 
 /**
  * 预约面试时间参数校验
