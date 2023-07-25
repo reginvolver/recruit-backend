@@ -103,3 +103,7 @@ management:
   health:
     rabbit:
       enabled: false
+logging:
+  level:
+    root: info
+
