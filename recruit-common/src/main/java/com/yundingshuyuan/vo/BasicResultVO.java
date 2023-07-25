@@ -75,6 +75,10 @@ public final class BasicResultVO<T> {
         return new BasicResultVO<>(RespStatusEnum.SUCCESS, data);
     }
 
+    public static <T> BasicResultVO<T> success(String msg, T data) {
+        return new BasicResultVO<>(RespStatusEnum.SUCCESS, msg, data);
+    }
+
     /**
      * @return 默认失败响应
      */
