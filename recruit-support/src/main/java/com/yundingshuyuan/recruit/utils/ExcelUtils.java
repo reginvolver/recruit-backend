@@ -87,13 +87,12 @@ public class ExcelUtils {
      * @param <T>
      */
     private static class InnerReadListener<T> implements ReadListener<T> {
-        //存放解析后的数据
+        // 存放解析后的数据
         private List<T> list = new ArrayList<>();
 
         @Override
         public void invoke(T item, AnalysisContext analysisContext) {
             list.add(item);
-            log.info("解析到一条数据:{}", JSON.toJSONString(item));
         }
 
         @Override
@@ -105,36 +104,6 @@ public class ExcelUtils {
             return list;
         }
     }
-
-    /*Run To Test
-
-    public static void main(String[] args) throws IOException {
-        ArrayList<User> users = new ArrayList() {{
-            add(new User(1L));
-            add(new User(2L));
-            add(new User(3L));
-            add(new User(123L));
-            add(new User(234L));
-            add(new User(345L));
-        }};
-        FileOutputStream fos = new FileOutputStream("user1.xlsx");
-        ExcelUtils.writeOneSheet(users, "user1", fos);
-        FileInputStream fis = new FileInputStream("user1.xlsx");
-        List<User> userList = ExcelUtils.readOneExcel(new User(), fis);
-        for (User user : userList) {
-            System.out.println(user);
-        }
-        new File("user1.xlsx").delete();
-
-        *//*Run Result:
-        *   - User(id=1)
-            - User(id=2)
-            - User(id=3)
-            - User(id=123)
-            - User(id=234)
-            - User(id=345)
-        * *//*
-    }*/
 
 }
 

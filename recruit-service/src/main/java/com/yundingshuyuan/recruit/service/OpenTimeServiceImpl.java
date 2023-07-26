@@ -51,7 +51,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
     /**
      * 设置多个开放预约时间
      *
-     * @param info
+     * @param infos
      * @return
      */
     @Override
@@ -172,7 +172,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
                 .add(new FutureValidation(info.getEndTime()))
                 .add(new LegalTimePeriodValidation(info))
                 .add(new ExceedCapacityValidation(info))
-                .add(new NoTimeConfilctValidation(info, this))
+                .add(new NoTimeConflictValidation(info, this))
                 .build().validate();
     }
 

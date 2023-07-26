@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class NoTimeConfilctValidation extends OpenTimeValidation {
+public class NoTimeConflictValidation extends OpenTimeValidation {
     private OpenTimeInfoVo info;
 
     private OpenTimeService otService;

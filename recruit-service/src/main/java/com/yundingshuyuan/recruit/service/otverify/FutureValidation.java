@@ -15,9 +15,11 @@ public class FutureValidation extends OpenTimeValidation {
     private LocalDateTime time;
 
     @Override
-    public boolean validate() throws InvalidParameterException{
+    public boolean validate() throws InvalidParameterException {
         LocalDateTime serveTime = LocalDateTime.now();
-        if (time.isBefore(serveTime)){throw new InvalidParameterException("预约面试时间不能为过去的时间");}
+        if (time.isBefore(serveTime)) {
+            throw new InvalidParameterException("预约面试时间不能为过去的时间");
+        }
         if (nextTask != null) {
             return nextTask.validate();
         }
