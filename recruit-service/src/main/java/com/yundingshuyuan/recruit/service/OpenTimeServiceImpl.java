@@ -7,6 +7,7 @@ import com.yundingshuyuan.recruit.dao.OpenTimeInfoMapper;
 import com.yundingshuyuan.recruit.domain.OpenTimeInfo;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import com.yundingshuyuan.recruit.service.otverify.*;
+import io.github.linpeilie.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,15 @@ import java.util.stream.Collectors;
 /**
  * 预约面试开放时间管理
  */
-@Service
 @Slf4j
+@Service
 public class OpenTimeServiceImpl implements OpenTimeService {
 
     @Autowired
-    private OpenTimeInfoMapper ipsMapper;
+    private OpenTimeInfoMapper otiMapper;
+
+    @Autowired
+    private Converter converter;
 
     /**
      * 设置一个开放预约时间
@@ -39,11 +43,8 @@ public class OpenTimeServiceImpl implements OpenTimeService {
         // 参数校验
         commonValidation(info);
         // 转换
-        OpenTimeInfo insertInfo = OpenTimeInfo.builder()
-                .startTime(info.getStartTime()).endTime(info.getEndTime())
-                .reserved(info.getReserved()).capacity(info.getCapacity())
-                .version(1).build();
-        ipsMapper.insert(insertInfo);
+        OpenTimeInfo insertInfo = converter.convert(info, OpenTimeInfo.class);
+        otiMapper.insert(insertInfo);
         return true;
     }
 
@@ -61,11 +62,9 @@ public class OpenTimeServiceImpl implements OpenTimeService {
             commonValidation(i);
         }
         // 转换
-        List<OpenTimeInfo> infoDos = Arrays.stream(infos).map(info -> OpenTimeInfo.builder().id(info.getId())
-                .startTime(info.getStartTime()).endTime(info.getEndTime())
-                .capacity(info.getCapacity()).reserved(info.getReserved())
-                .version(1).build()).collect(Collectors.toList());
-        return ipsMapper.insertBatch(infoDos);
+        List<OpenTimeInfo> infoDos = Arrays.stream(infos).map(info -> converter.convert(info, OpenTimeInfo.class))
+                .collect(Collectors.toList());
+        return otiMapper.insertBatch(infoDos);
     }
 
     /**
@@ -76,7 +75,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
      */
     @Override
     public int deleteOneOpenTime(long id) {
-        return ipsMapper.deleteById(OpenTimeInfo.builder().id(id).build());
+        return otiMapper.deleteById(OpenTimeInfo.builder().id(id).build());
     }
 
     /**
@@ -87,7 +86,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
      */
     @Override
     public int deleteMutipleTime(long... ids) {
-        return ipsMapper.deleteBatchIds(Arrays.asList(ids));
+        return otiMapper.deleteBatchIds(Arrays.asList(ids));
     }
 
     /**
@@ -101,11 +100,9 @@ public class OpenTimeServiceImpl implements OpenTimeService {
         // 参数校验
         commonValidation(info);
         // 修改
-        OpenTimeInfo infoDo = OpenTimeInfo.builder().id(info.getId())
-                .startTime(info.getStartTime()).endTime(info.getEndTime())
-                .capacity(info.getCapacity()).reserved(info.getReserved())
-                .build();
-        return ipsMapper.updateById(infoDo);
+        OpenTimeInfo infoDo = converter.convert(info, OpenTimeInfo.class);
+        ;
+        return otiMapper.updateById(infoDo);
     }
 
     /**
@@ -121,12 +118,10 @@ public class OpenTimeServiceImpl implements OpenTimeService {
             commonValidation(info);
         }
         // 转换
-        List<OpenTimeInfo> infoDos = Arrays.stream(infos).map(info -> OpenTimeInfo.builder().id(info.getId())
-                .startTime(info.getStartTime()).endTime(info.getEndTime())
-                .capacity(info.getCapacity()).reserved(info.getReserved())
-                .build()).collect(Collectors.toList());
+        List<OpenTimeInfo> infoDos = Arrays.stream(infos).map(info -> converter.convert(info, OpenTimeInfo.class))
+                .collect(Collectors.toList());
 
-        return ipsMapper.updateBatchById(infoDos);
+        return otiMapper.updateBatchById(infoDos);
     }
 
     /**
@@ -140,8 +135,8 @@ public class OpenTimeServiceImpl implements OpenTimeService {
         // 参数校验 null
         LocalDateTime dateStart = date.atStartOfDay();
         LocalDateTime dateEnd = date.plusDays(1).atStartOfDay();
-        return ipsMapper.selectVoList(new QueryWrapper<OpenTimeInfo>()
-                .between("start_time", dateStart, dateEnd));
+        return otiMapper.selectVoList(new QueryWrapper<OpenTimeInfo>()
+                .between("end_time", dateStart, dateEnd));
     }
 
     /**
@@ -151,7 +146,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
      */
     @Override
     public List<OpenTimeInfoVo> getAllOpenTimeInfo() {
-        return ipsMapper.selectVoList();
+        return otiMapper.selectVoList();
     }
 
     /**
@@ -163,7 +158,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
      */
     @Override
     public Object getPageOpenTimeInfo(long current, long size) {
-        return ipsMapper.selectVoPage(new Page<>(current, size), new QueryWrapper<>());
+        return otiMapper.selectVoPage(new Page<>(current, size), new QueryWrapper<>());
     }
 
     /**
@@ -177,7 +172,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
                 .add(new FutureValidation(info.getEndTime()))
                 .add(new LegalTimePeriodValidation(info))
                 .add(new ExceedCapacityValidation(info))
-                .add(new NoTimeConfilctValidation(info))
+                .add(new NoTimeConfilctValidation(info, this))
                 .build().validate();
     }
 

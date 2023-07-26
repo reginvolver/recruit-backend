@@ -34,8 +34,12 @@ public class OpenTimeInfoVo {
      */
     @JsonFormat(pattern = CommonConstant.DATE_TIME_FORMAT_YMDHM)
     private LocalDateTime endTime;
-
+    /**
+     * 可容纳人数
+     */
     private Integer capacity;
-
+    /**
+     * 预定人数
+     */
     private Integer reserved;
 }

@@ -52,7 +52,7 @@ public class OpenTimeInfo {
      * 乐观锁
      */
     @Version
-    private Integer version;
+    private Integer version = 1;
     /**
      * 逻辑删除
      */

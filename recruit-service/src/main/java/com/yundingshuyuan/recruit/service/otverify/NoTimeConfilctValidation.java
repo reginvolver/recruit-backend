@@ -3,7 +3,6 @@ package com.yundingshuyuan.recruit.service.otverify;
 import com.yundingshuyuan.recruit.api.OpenTimeService;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.security.InvalidParameterException;
 import java.time.LocalDate;
@@ -14,12 +13,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class NoTimeConfilctValidation extends OpenTimeValidation {
     private OpenTimeInfoVo info;
-    @Autowired
-    private OpenTimeService otService;
 
-    public NoTimeConfilctValidation(OpenTimeInfoVo info) {
-        this.info = info;
-    }
+    private OpenTimeService otService;
 
     @Override
     public boolean validate() {
