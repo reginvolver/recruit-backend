@@ -1,19 +1,23 @@
 package com.yundingshuyuan.recruit.service.otverify;
 
+import cn.hutool.json.JSONUtil;
 import com.yundingshuyuan.recruit.api.OpenTimeService;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.security.InvalidParameterException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 没有时间冲突校验
+ */
 @AllArgsConstructor
-public class NoTimeConflictValidation extends OpenTimeValidation {
+@Slf4j
+public class NoTimeConflictValidation extends AbstractOpenTimeValidation {
     private OpenTimeInfoVo info;
-
     private OpenTimeService otService;
 
     @Override
@@ -22,24 +26,15 @@ public class NoTimeConflictValidation extends OpenTimeValidation {
         LocalDate localDate = info.getStartTime().toLocalDate();
         List<OpenTimeInfoVo> data = otService.getOpenTimeInfoByDate(localDate);
         // 加入比较
-        data.add(info);
-        Object[] startTimes = data.stream()
-                .map(o -> o.getStartTime().toString())
-                .collect(Collectors.toList()).toArray();
-        Object[] endTimes = data.stream()
-                .map(o -> o.getEndTime().toString())
-                .collect(Collectors.toList()).toArray();
-        // 内部交集判断算法
-        Arrays.sort(startTimes);
-        Arrays.sort(endTimes);
-        for (int i = 1; i < startTimes.length; i++) {
-            if (((String) startTimes[i]).compareTo((String) endTimes[i - 1]) < 0) {
-                throw new InvalidParameterException(
-                        String.format("面试时间冲突:\n%s - %s confilct %s - %s",
-                                startTimes[i - 1], endTimes[i - 1],
-                                startTimes[i], endTimes[i])
-                );
+        List<OpenTimeInfoVo> conflict = data.stream().filter(item -> {
+            if (item.getStartTime().isBefore(info.getStartTime()) && item.getEndTime().isBefore(info.getStartTime())) {
+                return false;
             }
+            return !item.getStartTime().isAfter(info.getEndTime()) || !item.getEndTime().isAfter(info.getEndTime());
+        }).collect(Collectors.toList());
+        // 结果抛出
+        if (!conflict.isEmpty()) {
+            throw new InvalidParameterException("冲突时间:" + JSONUtil.toJsonStr(conflict));
         }
         // 继续
         if (nextTask != null) {

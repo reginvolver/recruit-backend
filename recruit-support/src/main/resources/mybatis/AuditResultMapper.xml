@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.AuditResultMapper">
+
+    <resultMap id="AuditResultPo" type="com.yundingshuyuan.recruit.domain.po.AuditResultPo">
+        <id column="id" property="id"/>
+        <result column="user_name" property="interviewee"/>
+        <result column="student_number" property="studentId"/>
+        <result column="score" property="score"/>
+        <result column="group_id" property="groupId"/>
+        <result column="is_passed" property="passed"/>
+        <result column="deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="getAllResult" resultMap="AuditResultPo">
+        SELECT t1.*, t2.is_passed, t2.student_number
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id AND (t1.deleted != 1 AND t2.deleted != 1)
+    </select>
+
+    <select id="getResultByKeyword" resultMap="AuditResultPo">
+        SELECT t1.*, t2.is_passed, t2.student_number
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id
+        WHERE ${keyword} LIKE CONCAT('%', #{search}, '%')
+          AND (t1.deleted != 1 AND t2.deleted != 1);
+    </select>
+
+    <select id="getPassedResultByPassState" resultMap="AuditResultPo">
+        SELECT t1.*, t2.is_passed, t2.student_number
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id
+        WHERE t2.is_passed = #{isPassed}
+          AND (t1.deleted != 1 AND t2.deleted != 1)
+    </select>
+
+    <select id="getNotPassedResult" resultMap="AuditResultPo">
+        SELECT t1.*, t2.is_passed, t2.student_number
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id
+        WHERE t2.is_passed = false
+          AND (t1.deleted != 1 AND t2.deleted != 1)
+    </select>
+
+    <select id="getResultAmount" resultType="long">
+        SELECT Count(t2.is_passed)
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id AND (t1.deleted != 1 AND t2.deleted != 1)
+    </select>
+
+    <select id="getPassedResultAmount" resultType="long">
+        SELECT Count(t2.is_passed)
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id AND (t1.deleted != 1 AND t2.deleted != 1)
+        WHERE t2.is_passed = true
+    </select>
+
+    <select id="getNotPassedResultAmount" resultType="long">
+        SELECT Count(t2.is_passed)
+        FROM interview_record t1
+                 JOIN user_info t2 ON t1.user_id = t2.id AND (t1.deleted != 1 AND t2.deleted != 1)
+        WHERE t2.is_passed = false
+    </select>
+
+    <update id="changePassedResultBySid">
+        UPDATE user_info t2
+        SET t2.is_passed =
+                CASE
+                    WHEN t2.is_passed = '1' THEN '0'
+                    ELSE '1'
+                    END
+        WHERE t2.student_number = #{studentId}
+          AND t2.deleted != 1;
+    </update>
+
+    <update id="changePassedResultByUid">
+        UPDATE user_info t2
+        SET t2.is_passed =
+                CASE
+                    WHEN t2.is_passed = '1' THEN '0'
+                    ELSE '1'
+                    END
+        WHERE t2.id = #{userId}
+          AND t2.deleted != 1;
+    </update>
+
+    <update id="changeAllPassed">
+        UPDATE user_info
+        SET is_passed = 1
+        WHERE id IN (SELECT user_id FROM interviewer_advice WHERE deleted = 0);
+    </update>
+
+
+</mapper>

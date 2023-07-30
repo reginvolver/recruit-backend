@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * <p>1.startTime < endTime</p>
  */
 @AllArgsConstructor
-public class LegalTimePeriodValidation extends OpenTimeValidation {
+public class LegalTimePeriodValidation extends AbstractOpenTimeValidation {
 
     private OpenTimeInfoVo openTimeInfo;
 
@@ -19,7 +19,6 @@ public class LegalTimePeriodValidation extends OpenTimeValidation {
     public boolean validate() {
         LocalDateTime startTime = openTimeInfo.getStartTime();
         LocalDateTime endTime = openTimeInfo.getEndTime();
-        ;
         if (startTime.isAfter(endTime)) {
             throw new InvalidParameterException("面试开始时间不能晚于结束时间");
         }

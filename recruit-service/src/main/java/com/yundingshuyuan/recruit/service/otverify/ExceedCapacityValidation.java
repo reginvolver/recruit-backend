@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import java.security.InvalidParameterException;
 
 @AllArgsConstructor
-public class ExceedCapacityValidation extends OpenTimeValidation {
+public class ExceedCapacityValidation extends AbstractOpenTimeValidation {
     private OpenTimeInfoVo info;
 
     @Override

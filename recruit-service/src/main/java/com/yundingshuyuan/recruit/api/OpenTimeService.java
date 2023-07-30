@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.api;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 
 import java.time.LocalDate;
@@ -8,12 +9,15 @@ import java.util.List;
 
 /**
  * 预约面试开放时间管理
+ *
+ * @author wys
  */
 public interface OpenTimeService {
 
     /**
      * 设置一个开放预约时间
      *
+     * @param info 开放预约面试时间对象
      * @return
      */
     boolean setOneOpenTime(OpenTimeInfoVo info);
@@ -21,13 +25,15 @@ public interface OpenTimeService {
     /**
      * 设置一个开放预约时间
      *
+     * @param infos 多个开放预约面试时间对象
      * @return
      */
-    boolean setMultipleTime(OpenTimeInfoVo... info);
+    boolean batchSetOpenTime(OpenTimeInfoVo... infos);
 
     /**
      * 删除一个开放预约面试时间
      *
+     * @param id 开放预约面试时间对应 id
      * @return 成功删除个数
      */
     int deleteOneOpenTime(long id);
@@ -35,15 +41,16 @@ public interface OpenTimeService {
     /**
      * 删除多个开放预约面试时间
      *
+     * @param id 多个开放预约面试时间对应id
      * @return 成功删除个数
      */
-    int deleteMutipleTime(long... id);
+    int batchDeleteOpenTime(long... id);
 
     /**
      * 修改一个开放预约面试时间
      *
      * @param info
-     * @return
+     * @return 修改成功个数
      */
     int changeOneOpenTime(OpenTimeInfoVo info);
 
@@ -51,13 +58,13 @@ public interface OpenTimeService {
      * 修改多个开放预约面试时间
      *
      * @param info
-     * @return
+     * @return 是否修改成功
      */
-    boolean changeMutipleTime(OpenTimeInfoVo... info);
+    boolean batchChangeOpenTime(OpenTimeInfoVo... info);
 
     /**
      * 根据日期获取当天的开放时间信息
-     *
+     * @param date 日期
      * @return 信息对象
      */
     List<OpenTimeInfoVo> getOpenTimeInfoByDate(LocalDate date);
@@ -76,5 +83,5 @@ public interface OpenTimeService {
      * @param size
      * @return
      */
-    Object getPageOpenTimeInfo(long current, long size);
+    IPage<OpenTimeInfoVo> getPageOpenTimeInfo(long current, long size);
 }
