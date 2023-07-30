@@ -1,7 +1,6 @@
 package com.yundingshuyuan.recruit.web.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yundingshuyuan.recruit.api.TestService;
 import com.yundingshuyuan.recruit.domain.User;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @Tag(name = "测试接口")
@@ -39,7 +36,7 @@ public class TestController {
 
         boolean redisTest = redisUtils.set("test", test);
         log.info("redisTest:{}", redisTest);
-        return new User(Long.valueOf(test));
+        return new User(Integer.valueOf(test), "fuck");
     }
 
     @GetMapping("/test2")
