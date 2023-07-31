@@ -47,7 +47,7 @@ public interface AuditService {
      * @param response
      * @throws IOException
      */
-    void getAllResultExportToExcel(HttpServletResponse response) throws IOException;
+    void getAllResultExportToExcel(HttpServletResponse response, String fileName) throws IOException;
 
 
     /**

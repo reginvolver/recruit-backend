@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * TODO: 权限验证
+ */
 @Tag(name = "超级管理员-审批审核接口")
 @Slf4j
 @RecruitResult
@@ -55,9 +58,10 @@ public class AuditController {
 
     @GetMapping("/excel")
     @Operation(summary = "导出结果EXCEL表")
-    public void getAllResultExportToExcel(@Autowired HttpServletResponse response) throws IOException {
-        auditService.getAllResultExportToExcel(response);
+    public void getAllResultExportToExcel(@Autowired HttpServletResponse response, @RequestParam("filename") String fileName) throws IOException {
+        auditService.getAllResultExportToExcel(response, fileName);
     }
+
 
     @PostMapping("/sid/{studentId}")
     @Operation(summary = "通过学号更改通过结果")
@@ -65,6 +69,12 @@ public class AuditController {
         return auditService.changePassedResultBySid(studentId);
     }
 
+    /**
+     * 与 sid 二选一
+     *
+     * @param userId
+     * @return
+     */
     @PostMapping("/uid/{userId}")
     @Operation(summary = "通过uid号更改通过结果")
     public int changePassedResultByUid(@PathVariable long userId) {

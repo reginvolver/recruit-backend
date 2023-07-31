@@ -1,6 +1,8 @@
 package com.yundingshuyuan.recruit.service;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.ContentType;
+import cn.hutool.http.Header;
 import com.yundingshuyuan.recruit.api.AuditService;
 import com.yundingshuyuan.recruit.dao.AuditResultMapper;
 import com.yundingshuyuan.recruit.domain.po.AuditResultPo;
@@ -69,10 +71,10 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public void getAllResultExportToExcel(HttpServletResponse response) throws IOException {
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
-        response.setHeader("Content-disposition",
-                StrUtil.format("attachment;filename={}", "recruit_result.xlsx"));
+    public void getAllResultExportToExcel(HttpServletResponse response, String fileName) throws IOException {
+        response.setContentType(ContentType.MULTIPART.getValue());
+        response.setHeader(Header.CONTENT_DISPOSITION.getValue(),
+                StrUtil.format("attachment;filename={}.xlsx", fileName));
         ExcelUtils.writeOneSheet(getAllResult(), "recruit_result", response.getOutputStream());
     }
 

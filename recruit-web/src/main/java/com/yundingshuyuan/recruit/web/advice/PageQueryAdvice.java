@@ -35,9 +35,7 @@ public class PageQueryAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object data, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         Map<String, Long> parameMap = getparameters(returnType);
-        if (parameMap.isEmpty()) {
-            return data;
-        } else if (Objects.nonNull(data) && Objects.nonNull(data.getClass()) && data instanceof Collection) {
+        if (!parameMap.isEmpty() && Objects.nonNull(data) && Objects.nonNull(data.getClass()) && data instanceof Collection) {
             return pageBySubList(parameMap.get("current"), parameMap.get("size"), new ArrayList<>(((Collection<?>) data)));
         }
         return data;
@@ -67,7 +65,6 @@ public class PageQueryAdvice implements ResponseBodyAdvice<Object> {
     /**
      * 利用subList方法进行分页
      * <a href="https://blog.csdn.net/qq_37128049/article/details/105045717">链接</a>
-     *
      * @param list 分页数据
      */
     private <T> List<T> pageBySubList(long current, long size, List<T> list) {
