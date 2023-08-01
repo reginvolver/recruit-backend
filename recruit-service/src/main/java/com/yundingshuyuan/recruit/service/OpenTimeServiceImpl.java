@@ -7,7 +7,7 @@ import com.yundingshuyuan.recruit.api.OpenTimeService;
 import com.yundingshuyuan.recruit.dao.OpenTimeInfoMapper;
 import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
-import com.yundingshuyuan.recruit.service.otverify.*;
+import com.yundingshuyuan.recruit.service.verify.*;
 import io.github.linpeilie.Converter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.yundingshuyuan.recruit.service.otverify;
+package com.yundingshuyuan.recruit.service.verify;
 
 /**
  * 预约面试时间参数校验

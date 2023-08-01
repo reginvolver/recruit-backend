@@ -188,6 +188,13 @@
                 <artifactId>easyexcel</artifactId>
                 <version>3.2.0</version>
             </dependency>
+
+            <!--google qrcode-->
+            <dependency>
+                <groupId>com.google.zxing</groupId>
+                <artifactId>core</artifactId>
+                <version>3.3.3</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

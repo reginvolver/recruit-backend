@@ -1,4 +1,4 @@
-package com.yundingshuyuan.recruit.service.otverify;
+package com.yundingshuyuan.recruit.service.verify;
 
 import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;

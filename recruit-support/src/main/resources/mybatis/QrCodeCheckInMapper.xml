@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper">
+
+    <resultMap id="LectureCheckInPo" type="com.yundingshuyuan.recruit.domain.po.LectureCheckInPo">
+        <id column="user_id" property="userId"/>
+        <result column="lecture_Id" property="lectureId"/>
+    </resultMap>
+
+    <select id="selectTicket" resultMap="LectureCheckInPo">
+        SELECT ci.user_id, lt.lecture_id
+        FROM cloud_id ci
+                 JOIN lecture_ticket lt ON ci.user_id = lt.user_id
+        WHERE ci.cloud_id = #{openId};
+    </select>
+
+    <update id="checkInLectureByUserId">
+        UPDATE user_info ui
+        SET ui.is_lectured = 1
+        WHERE ui.id = #{userId}
+          AND ui.id IN (SELECT lt.user_id
+                        FROM lecture_ticket lt
+                        WHERE lt.user_id = #{userId});
+    </update>
+
+    <update id="checkInLectureByOpenId">
+        UPDATE user_info ui
+        SET ui.is_lectured = 1
+        WHERE ui.id IN (SELECT lt.user_id
+                        FROM cloud_id ci
+                                 JOIN lecture_ticket lt ON ci.user_id = lt.user_id
+                        WHERE ci.cloud_id = #{openId});
+    </update>
+
+</mapper>

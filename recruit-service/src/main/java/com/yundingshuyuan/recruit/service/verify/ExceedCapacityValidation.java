@@ -1,4 +1,4 @@
-package com.yundingshuyuan.recruit.service.otverify;
+package com.yundingshuyuan.recruit.service.verify;
 
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import lombok.AllArgsConstructor;
