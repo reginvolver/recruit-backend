@@ -1,3 +1,4 @@
+
 package com.yundingshuyuan.recruit.domain;
 
 import lombok.AllArgsConstructor;
@@ -5,9 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 /**
     * 用户表
     */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

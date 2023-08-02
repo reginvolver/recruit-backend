@@ -64,6 +64,7 @@ spring:
   redis:
     host: ${redis.ip:127.0.0.1}
     password: ${redis.password:recruit}
+
 # apollo
 apollo:
   bootstrap:
@@ -101,4 +102,7 @@ management:
   health:
     rabbit:
       enabled: false
+
+
+
 
