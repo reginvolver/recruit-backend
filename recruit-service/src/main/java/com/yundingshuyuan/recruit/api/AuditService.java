@@ -45,6 +45,7 @@ public interface AuditService {
      * 获取所有结果导出到 Excel表格
      *
      * @param response
+     * @param fileName 文件名
      * @throws IOException
      */
     void getAllResultExportToExcel(HttpServletResponse response, String fileName) throws IOException;

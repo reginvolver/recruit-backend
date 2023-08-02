@@ -7,29 +7,44 @@
         <result column="lecture_Id" property="lectureId"/>
     </resultMap>
 
-    <select id="selectTicket" resultMap="LectureCheckInPo">
-        SELECT ci.user_id, lt.lecture_id
-        FROM cloud_id ci
-                 JOIN lecture_ticket lt ON ci.user_id = lt.user_id
-        WHERE ci.cloud_id = #{openId};
+    <select id="selectTicketByOpenId" resultMap="LectureCheckInPo">
+        SELECT ui.id AS user_id, lt.lecture_id
+        FROM user_info ui
+                 JOIN lecture_ticket lt ON ui.id = lt.user_id
+        WHERE ui.cloud_id = #{openId};
     </select>
 
-    <update id="checkInLectureByUserId">
-        UPDATE user_info ui
-        SET ui.is_lectured = 1
-        WHERE ui.id = #{userId}
-          AND ui.id IN (SELECT lt.user_id
-                        FROM lecture_ticket lt
-                        WHERE lt.user_id = #{userId});
+    <select id="selectTicketByUserAndLectureId" resultType="long">
+        SELECT COUNT(*) AS count
+        FROM lecture_ticket
+        WHERE user_id = #{userId}
+          AND lecture_id = #{lectureId}
+          AND deleted = 0;
+    </select>
+
+    <select id="selectIfLecturedByUserId" resultType="boolean">
+        SELECT is_lectured
+        FROM user_info
+        WHERE id = #{userId}
+          AND deleted = 0;
+    </select>
+
+    <update id="updateIsLectureByUserId">
+        UPDATE user_info
+        SET is_lectured = 1,
+            update_time = CURRENT_TIMESTAMP(0)
+        WHERE id = #{userId}
+          AND deleted = 0
+          AND is_lectured = 0;
     </update>
 
-    <update id="checkInLectureByOpenId">
-        UPDATE user_info ui
-        SET ui.is_lectured = 1
-        WHERE ui.id IN (SELECT lt.user_id
-                        FROM cloud_id ci
-                                 JOIN lecture_ticket lt ON ci.user_id = lt.user_id
-                        WHERE ci.cloud_id = #{openId});
-    </update>
+    <delete id="deleteTicketByUserAndLectureId">
+        UPDATE lecture_ticket
+        SET deleted     = 1,
+            update_time = CURRENT_TIMESTAMP(0)
+        WHERE user_id = #{userId}
+          AND lecture_id = #{lectureId}
+          AND deleted = 0;
+    </delete>
 
 </mapper>

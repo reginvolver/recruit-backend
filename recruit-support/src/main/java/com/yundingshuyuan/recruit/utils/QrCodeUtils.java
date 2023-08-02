@@ -25,6 +25,14 @@ public class QrCodeUtils {
      * 云顶书院 logo 主题色
      */
     static final Color LOGO_THEME_COLOR = Color.getHSBColor(0.5972f, 0.6522f, 0.7216f);
+    /**
+     * 最大信息承载
+     */
+    static final int MAX_VERSION = 40;
+
+    private QrCodeUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
      * 生成默认的带书院 LOGO 的二维码
@@ -103,12 +111,12 @@ public class QrCodeUtils {
     private static int calculateBestVersion(QrConfig config, String content) {
         // 计算最佳二维码版本
         int version = 1;
-        while (version <= 40) {
+        while (version <= MAX_VERSION) {
             config.setQrVersion(version);
             try {
                 QrCodeUtil.generateAsBase64(content, config, ImgUtil.IMAGE_TYPE_PNG);
                 return version;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             version++;
         }

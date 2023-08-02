@@ -67,10 +67,11 @@
     <update id="changePassedResultBySid">
         UPDATE user_info t2
         SET t2.is_passed =
-                CASE
-                    WHEN t2.is_passed = '1' THEN '0'
-                    ELSE '1'
-                    END
+            CASE
+                WHEN t2.is_passed = '1' THEN '0'
+                ELSE '1'
+                END
+          , update_time  = CURRENT_TIMESTAMP(0)
         WHERE t2.student_number = #{studentId}
           AND t2.deleted != 1;
     </update>
@@ -78,17 +79,19 @@
     <update id="changePassedResultByUid">
         UPDATE user_info t2
         SET t2.is_passed =
-                CASE
-                    WHEN t2.is_passed = '1' THEN '0'
-                    ELSE '1'
-                    END
+            CASE
+                WHEN t2.is_passed = '1' THEN '0'
+                ELSE '1'
+                END
+          , update_time  = CURRENT_TIMESTAMP(0)
         WHERE t2.id = #{userId}
           AND t2.deleted != 1;
     </update>
 
     <update id="changeAllPassed">
         UPDATE user_info
-        SET is_passed = 1
+        SET is_passed   = 1,
+            update_time = CURRENT_TIMESTAMP(0)
         WHERE id IN (SELECT user_id FROM interviewer_advice WHERE deleted = 0);
     </update>
 

@@ -1,4 +1,4 @@
-package com.yundingshuyuan.recruit.domain;
+package com.yundingshuyuan.recruit.domain.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CheckInEventWrapper {
+public class CheckInEventVo {
     /**
      * 事件代号
      */
@@ -15,5 +15,5 @@ public class CheckInEventWrapper {
     /**
      * 加密事件
      */
-    String encryptedEvent;
+    String encryptedData;
 }

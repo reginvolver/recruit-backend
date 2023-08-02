@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 
 /**
  * 基础签到事件
+ * <br>用于向二维码中封装信息
+ * <br>用于 执行签到操作时 获取信息
  *
  * @author wys
  */
@@ -39,6 +41,14 @@ public class CheckInEvent<T> {
      * 签到地点 (不存)
      */
     private String location;
+    /**
+     * 签到码创建时间戳
+     */
+    private long createTimestamp;
+    /**
+     * 签到码过期时间戳
+     */
+    private long expireTimestamp;
     /**
      * 其他信息参数
      */
