@@ -1,4 +1,4 @@
-package com.yundingshuyuan.recruit.service.otverify;
+package com.yundingshuyuan.recruit.service.verify;
 
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import java.security.InvalidParameterException;
 
 @AllArgsConstructor
-public class ExceedCapacityValidation extends OpenTimeValidation {
+public class ExceedCapacityValidation extends AbstractOpenTimeValidation {
     private OpenTimeInfoVo info;
 
     @Override

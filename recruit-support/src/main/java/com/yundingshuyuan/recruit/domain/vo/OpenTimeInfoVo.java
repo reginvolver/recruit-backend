@@ -2,7 +2,7 @@ package com.yundingshuyuan.recruit.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yundingshuyuan.constant.CommonConstant;
-import com.yundingshuyuan.recruit.domain.OpenTimeInfo;
+import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@AutoMapper(target = OpenTimeInfo.class)
+@AutoMapper(target = OpenTimeInfoPo.class)
 public class OpenTimeInfoVo {
     /**
      * id

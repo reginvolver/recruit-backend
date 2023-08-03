@@ -1,53 +1,54 @@
-package com.yundingshuyuan.recruit.domain;
+package com.yundingshuyuan.recruit.domain.po;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
+import com.yundingshuyuan.recruit.domain.vo.AuditResultVo;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * 开放预约面试时间信息
- */
+
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@TableName("interview_opentime")
-@AutoMapper(target = OpenTimeInfoVo.class)
-public class OpenTimeInfo {
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName("interview_record")
+@AutoMapper(target = AuditResultVo.class)
+public class AuditResultPo {
     /**
      * id
      */
     @TableId(type = IdType.AUTO)
-    private long id;
+    long id;
     /**
-     * 开放起始时间
+     * 面试者
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    @TableField("start_time")
-    private LocalDateTime startTime;
+    @TableField("user_name")
+    String interviewee;
     /**
-     * 开放结束时间
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    @TableField("end_time")
-    private LocalDateTime endTime;
-    /**
-     * 容量（计划面试者数量）
+     * 分数
      */
     @TableField
-    private Integer capacity;
+    BigDecimal score;
     /**
-     * 已预约面试者数量
+     * 学号
+     */
+    @TableField("student_number")
+    long studentId;
+    /**
+     * 面试官组别
      */
     @TableField
-    private Integer reserved;
+    long groupId;
+    /**
+     * 是否通过
+     */
+    @TableField
+    boolean passed;
     /**
      * 乐观锁
      */
