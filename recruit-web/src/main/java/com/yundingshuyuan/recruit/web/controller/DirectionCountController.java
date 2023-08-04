@@ -5,6 +5,8 @@ import com.yundingshuyuan.recruit.dao.ApplicationPhotoMapper;
 import com.yundingshuyuan.recruit.dao.RegisterInfoMapper;
 import com.yundingshuyuan.recruit.domain.DirectionCountVO;
 import com.yundingshuyuan.vo.BasicResultVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/direction")
+@Tag(name = "统计各方向人数")
 public class DirectionCountController {
     @Autowired
     private RegisterInfoMapper registerInfoMapper;
@@ -27,6 +30,7 @@ public class DirectionCountController {
      * @return
      */
     @GetMapping("/count")
+    @Operation(summary = "统计各方向人数")
     public BasicResultVO<List<DirectionCountVO>> getDirectionCounts() {
         List<DirectionCountVO> list = registerInfoMapper.countByDirection();
         return new BasicResultVO<>(RespStatusEnum.SUCCESS, list);
@@ -37,6 +41,7 @@ public class DirectionCountController {
      * @return
      */
     @GetMapping("/total")
+    @Operation(summary = "统计总人数")
     public BasicResultVO<Map<String, Object>> getTotalCounts() {
         int registerInfoCount = registerInfoMapper.countRegisterInfo();
         int applicationPhotoCount = applicationPhotoMapper.countApplicationPhoto();

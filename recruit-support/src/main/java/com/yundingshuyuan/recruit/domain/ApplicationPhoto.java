@@ -1,21 +1,38 @@
 package com.yundingshuyuan.recruit.domain;
 
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-/**
- * 申请书报名表
- */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@TableName("application_photo")
 public class ApplicationPhoto {
+    @TableId(type = IdType.AUTO)
     private Integer id;
-    private String url;
+    @TableField("user_id")
     private Integer userId;
+    private String url;
+    @Version
     private Integer version;
-    private Boolean deleted;
-    private Date createTime;
-    private Date updateTime;
 
-    // getter 和 setter 方法省略
+    @TableLogic
+    private boolean deleted;
+
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
+
+    public ApplicationPhoto(Integer userId, String url) {
+        this.userId = userId;
+        this.url = url;
+    }
 }

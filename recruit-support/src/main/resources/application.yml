@@ -30,3 +30,4 @@ sa-token:
   is-log: true
   #jwt密钥(官方文档说让随便输入几个字符，我瞎按的
   jwt-secret-key: abshegdyugbskabjsdjbdhaluyew
+
