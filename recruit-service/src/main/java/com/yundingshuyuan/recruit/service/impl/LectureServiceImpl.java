@@ -23,7 +23,7 @@ public class LectureServiceImpl extends ServiceImpl<LectureMapper, Lecture> impl
      * @param lecture
      * @return
      */
-    public BasicResultVO release(Lecture lecture) {
+    public BasicResultVO<Lecture> release(Lecture lecture) {
         if (isBlank(lecture)) {
             return BasicResultVO.fail("参数不能为空");
         } else if (isExist(lecture)) {
@@ -34,9 +34,7 @@ public class LectureServiceImpl extends ServiceImpl<LectureMapper, Lecture> impl
 
         saveOrUpdate(lecture);
 
-        BasicResultVO basicResultVO = showAll();
-
-        return basicResultVO;
+        return showAll();
     }
 
     /**

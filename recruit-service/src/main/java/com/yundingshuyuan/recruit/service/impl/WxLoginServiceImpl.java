@@ -3,13 +3,16 @@ package com.yundingshuyuan.recruit.service.impl;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yundingshuyuan.recruit.dao.UserInfoMapper;
-import com.yundingshuyuan.recruit.domain.UserInfo;
 import com.yundingshuyuan.recruit.service.IWxLoginService;
+import com.yundingshuyuan.vo.BasicResultVO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class WxLoginServiceImpl implements IWxLoginService {
@@ -24,31 +27,33 @@ public class WxLoginServiceImpl implements IWxLoginService {
     private String secret;
 
     /**
-     * 用户登录时根据code返回openid
+     * 用户登录时，根据前端传来的code，
+     * 生成openid和session_key
+     * 然后返回map集合
      *
      * @param code
      * @return
      */
     @Override
-    public String getOpenId(String code) {
+    public BasicResultVO getWxMes(String code) {
         String authUrl = "https://api.weixin.qq.com/sns/jscode2session?&grant_type=authorization_code";
-        authUrl = authUrl + "&appid=" + appid + "&secret=" + secret + "&js_code" + code;
+        authUrl = authUrl + "&appid=" + appid + "&secret=" + secret + "&js_code=" + code;
         String result = HttpUtil.get(authUrl);
         JSONObject jsonObject = JSONUtil.parseObj(result);
+
+        if (StringUtils.contains(result, "errcode")) {
+            return BasicResultVO.fail();
+        }
+
         String openid = jsonObject.getStr("openid");
+        String sessionKey = jsonObject.getStr("session_key");
 
-        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("cloud_id", openid);
-        UserInfo userInfo = userInfoMapper.selectOne(queryWrapper);
-        if (userInfo != null) {
-            return "";
-        }
+        Map<String, String> map = new HashMap<>();
+        map.put("openid", openid);
+        map.put("session_key", sessionKey);
 
-        if (openid == null) {
-            return "";
-        }
+        return BasicResultVO.success(map);
 
-        return openid;
     }
 
 }

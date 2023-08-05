@@ -24,7 +24,7 @@ public class UserInfoFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         String[] urls = new String[]{
-                "/v3/**", "/doc.html", "/login", "/actuator/**", "/display/**"
+                "/v3/**", "/doc.html", "/login", "/actuator/**", "/display/**", "/wxlogin/getWxMes"
         };
 
         if (check(urls, requestURI)) {
