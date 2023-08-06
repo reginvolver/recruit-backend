@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.yundingshuyuan.recruit.dao.ReservationMapper">
+
+    <resultMap id="resulyMap" type="com.yundingshuyuan.recruit.domain.po.Reservation">
+        <result column="user_id" property="userId"/>
+        <result column="interview_time" property="interviewTime"/>
+        <result column="interview_id" property="interviewId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectUnassignedByInterviewTime" parameterType="java.time.LocalDateTime" resultMap="resulyMap">
+        select *
+        from reservation
+        where interview_time = #{interviewTime} and interview_id is null;
+    </select>
+</mapper>

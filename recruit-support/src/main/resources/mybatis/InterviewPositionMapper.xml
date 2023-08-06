@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.InterviewPositionMapper">
+
+    <resultMap id="ResultMap" type="com.yundingshuyuan.recruit.domain.po.InterviewPosition">
+        <result column="group_id" property="groupId"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="isExisted" parameterType="com.yundingshuyuan.recruit.domain.po.InterviewPosition" resultType="integer">
+        SELECT COUNT(*)
+        FROM interview_position
+        WHERE location = #{location}
+          AND start_Time = #{startTime}
+          AND end_time = #{endTime}
+    </select>
+
+    <select id="selectOpenedTimeListNotFull" resultType="java.time.LocalDateTime">
+        select start_time
+        from interview_position
+        where contained &lt; capacity
+        group by start_time;
+    </select>
+
+    <select id="searchListNotFullByStartTime" resultMap="ResultMap" parameterType = "java.time.LocalDateTime">
+        select *
+        from interview_position
+        where start_time = #{startTime} and contained &lt; capacity;
+    </select>
+</mapper>
