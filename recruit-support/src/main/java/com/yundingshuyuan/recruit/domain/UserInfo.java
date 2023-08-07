@@ -1,44 +1,79 @@
 package com.yundingshuyuan.recruit.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
  * <p>
- * 申请书表
+ * 用户信息表
  * </p>
  *
  * @author cr
- * @since 2023-07-27
+ * @since 2023-07-26
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("application_photo")
-public class ApplicationPhoto implements Serializable {
+@TableName("user_info")
+public class UserInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请书id
+     * 用户id
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 申请书保存地址
+     * 是否参加过宣讲会
      */
-    private String url;
+    private Boolean isLectured;
 
     /**
-     * 与报名信息表id相关联
+     * 姓名
      */
-    private Integer userId;
+    private String name;
+
+    /**
+     * 专业
+     */
+    private String major;
+
+    /**
+     * 书院
+     */
+    private String academy;
+
+    /**
+     * 学号
+     */
+    private String studentNumber;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * QQ号
+     */
+    private String qq;
+
+    /**
+     * 二维码
+     */
+    private String qrCode;
 
     /**
      * 乐观锁

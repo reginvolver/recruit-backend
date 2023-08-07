@@ -14,6 +14,7 @@ import com.yundingshuyuan.recruit.service.handler.CheckInHandlerManager;
 import com.yundingshuyuan.recruit.utils.QrCodeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -32,6 +33,9 @@ public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
 
     private final CheckInHandlerManager ciHandlerManager;
 
+    @Autowired
+    QrCodeUtils qrCodeUtils;
+
     @Override
     public String createQrCode(String openId, String eventName, int expireTime) {
         // 创建 事件所需信息
@@ -47,7 +51,7 @@ public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
         // 加密
         try {
             String content = checkinHandler.encipher(data, createTimestamp, expireTimestamp);
-            return QrCodeUtils.getQrCodeBase64(content);
+            return qrCodeUtils.getQrCodeBase64(content);
         } catch (Exception e) {
             throw new RuntimeException("解密失败");
         }

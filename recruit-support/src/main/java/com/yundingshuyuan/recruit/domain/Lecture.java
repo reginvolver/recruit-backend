@@ -1,44 +1,64 @@
 package com.yundingshuyuan.recruit.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
  * <p>
- * 申请书表
+ * 宣讲会表
  * </p>
  *
  * @author cr
- * @since 2023-07-27
+ * @since 2023-08-03
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("application_photo")
-public class ApplicationPhoto implements Serializable {
+@TableName("lecture")
+public class Lecture implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请书id
+     * 宣讲会id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    @TableId(value = "lecture_id", type = IdType.AUTO)
+    private Integer lectureId;
 
     /**
-     * 申请书保存地址
+     * 宣讲人
      */
-    private String url;
+    private String speaker;
 
     /**
-     * 与报名信息表id相关联
+     * 宣讲主题
      */
-    private Integer userId;
+    private String lectureTheme;
+
+    /**
+     * 宣讲时间
+     */
+    private LocalDateTime lectureTime;
+
+    /**
+     * 参会人数
+     */
+    private Integer ticketNumber;
+
+    /**
+     * 剩余票数
+     */
+    private Integer ticketRemain;
+
+    /**
+     * 宣讲会排序
+     */
+    private Integer lectureOrder;
 
     /**
      * 乐观锁
@@ -48,7 +68,6 @@ public class ApplicationPhoto implements Serializable {
     /**
      * 逻辑删除
      */
-    @TableLogic
     private Boolean deleted;
 
     /**

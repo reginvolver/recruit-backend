@@ -1,44 +1,61 @@
 package com.yundingshuyuan.recruit.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
  * <p>
- * 申请书表
+ * 面试地点表
  * </p>
  *
  * @author cr
- * @since 2023-07-27
+ * @since 2023-07-26
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("application_photo")
-public class ApplicationPhoto implements Serializable {
+@TableName("interview_position")
+public class InterviewPosition implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请书id
+     * 面试地点id
+
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 申请书保存地址
+     * 面试地点
      */
-    private String url;
+    private String location;
 
     /**
-     * 与报名信息表id相关联
+     * 开始时间
      */
-    private Integer userId;
+    private LocalDateTime startTime;
+
+    /**
+     * 结束时间
+     */
+    private LocalDateTime endTime;
+
+    /**
+     * 该地点一小时内可容纳人数
+     */
+    private Integer capacity;
+
+    /**
+     * 分配的面试官组别
+     */
+    private Integer groupId;
+
 
     /**
      * 乐观锁

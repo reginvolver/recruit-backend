@@ -1,16 +1,17 @@
 package com.yundingshuyuan.recruit.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
  * <p>
- * 申请书表
+ * 面试记录表
  * </p>
  *
  * @author cr
@@ -19,30 +20,47 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("application_photo")
-public class ApplicationPhoto implements Serializable {
+@TableName("interview_record")
+public class InterviewRecord implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 申请书id
+     * 面试id
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
-     * 申请书保存地址
-     */
-    private String url;
-
-    /**
-     * 与报名信息表id相关联
+     * 参加面试的用户id
      */
     private Integer userId;
 
     /**
+     * 参加面试的用户name
+     */
+    private String userName;
+
+    /**
+     * 面试情况反馈
+     */
+    private String faceback;
+
+    /**
+     * 面试得分
+     */
+    private BigDecimal score;
+
+    /**
+     * 面试官
+     */
+    private Integer group_id;
+
+
+    /**
      * 乐观锁
      */
+    @Version
     private Integer version;
 
     /**

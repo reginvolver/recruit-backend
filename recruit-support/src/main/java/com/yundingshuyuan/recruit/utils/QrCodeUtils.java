@@ -7,6 +7,7 @@ import cn.hutool.extra.qrcode.QrConfig;
 import cn.hutool.http.HttpUtil;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.OutputStream;
@@ -19,6 +20,7 @@ import java.io.OutputStream;
  * @author wys
  */
 @Slf4j
+@Component
 public class QrCodeUtils {
     /**
      * 云顶书院logo base64
@@ -41,8 +43,8 @@ public class QrCodeUtils {
         LOGO_BASE64 = HttpUtil.get(LOGO_BASE64_URL);
     }
 
-    private QrCodeUtils() {
-        throw new IllegalStateException("Utility class");
+    public QrCodeUtils() {
+//        throw new IllegalStateException("Utility class");
     }
 
     /**
@@ -51,7 +53,7 @@ public class QrCodeUtils {
      * @param content 二维码中内容
      * @return 二维码转 base64 编码
      */
-    public static String getQrCodeBase64(String content) {
+    public String getQrCodeBase64(String content) {
         QrConfig config = new QrConfig(648, 648);
         config.setErrorCorrection(ErrorCorrectionLevel.H)
                 .setMargin(1)
@@ -61,6 +63,7 @@ public class QrCodeUtils {
         // 生成二维码base64
         return QrCodeUtil.generateAsBase64(content, config, ImgUtil.IMAGE_TYPE_PNG, LOGO_BASE64);
     }
+
 
     /**
      * 生成带书院 LOGO 的二维码

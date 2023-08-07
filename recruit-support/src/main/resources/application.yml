@@ -3,7 +3,7 @@ logging:
     org.springframework.web: info
     com.github.binarywang.demo.wx.miniapp: debug
     cn.binarywang.wx.miniapp: debug
-wx:
+#wx:
   miniapp:
     configs:
       - appid: #微信小程序的appid
