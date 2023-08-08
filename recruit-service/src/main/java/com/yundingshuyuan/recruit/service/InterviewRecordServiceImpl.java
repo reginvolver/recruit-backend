@@ -30,12 +30,8 @@ public class InterviewRecordServiceImpl implements InterviewRecordService {
         if (interviewRecord == null) {
             throw new RuntimeException("Interview not found");
         }
-        //检查面试结果
-        if (interviewRecord.getIsPassed()) {
-            return true;
-        } else {
-            return false;
-        }
+        //返回面试结果
+        return interviewRecord.getIsPassed();
     }
 
 }
