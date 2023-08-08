@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- InterviewRecordMapper.xml -->
+<mapper namespace="com.yundingshuyuan.recruit.dao.InterviewRecordMapper">
+    <resultMap id="BaseResultMap" type="com.yundingshuyuan.recruit.domain.po.InterviewRecordPo">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="feedback" property="feedback" />
+        <result column="score" property="score" />
+        <result column="interviewer" property="interviewer" />
+        <result column="is_passed" property="isPassed" />
+        <!-- 其他字段映射省略 -->
+    </resultMap>
+
+    <select id="getByUserId" resultMap="BaseResultMap">
+        SELECT * FROM interview_record WHERE user_id = #{userId}
+    </select>
+
+    <select id="getUserIdByCloudId" resultType="java.lang.Integer">
+        SELECT user_id FROM cloud_id WHERE cloud_id = #{cloudId}
+    </select>
+</mapper>

@@ -15,9 +15,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@SaCheckRole("admin")
+
 @RecruitResult
 @RestController
+@SaCheckRole("admin")
 @Tag(name = "报名情况统计接口")
 @RequestMapping("/direction")
 public class DirectionCountController {
