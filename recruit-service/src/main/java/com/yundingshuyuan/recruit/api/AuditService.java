@@ -1,11 +1,11 @@
 package com.yundingshuyuan.recruit.api;
 
 import com.yundingshuyuan.recruit.domain.vo.AuditResultVo;
+import com.yundingshuyuan.recruit.domain.vo.OutComeAmount;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 
 public interface AuditService {
@@ -39,7 +39,7 @@ public interface AuditService {
      *
      * @return
      */
-    Map<String, Long> getOutcomeAmount();
+    OutComeAmount getOutcomeAmount();
 
     /**
      * 获取所有结果导出到 Excel表格

@@ -7,6 +7,7 @@ import com.yundingshuyuan.recruit.api.AuditService;
 import com.yundingshuyuan.recruit.dao.AuditResultMapper;
 import com.yundingshuyuan.recruit.domain.po.AuditResultPo;
 import com.yundingshuyuan.recruit.domain.vo.AuditResultVo;
+import com.yundingshuyuan.recruit.domain.vo.OutComeAmount;
 import com.yundingshuyuan.recruit.utils.ExcelUtils;
 import io.github.linpeilie.Converter;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.InvalidParameterException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,9 +25,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuditServiceImpl implements AuditService {
 
-    private final String KEYWORD_INTERVIEWEE = "user_name";
-    private final String KEYWORD_GROUP_ID = "group_id";
-    private final String KEYWORD_STUDENT_ID = "student_number";
+    private static final String KEYWORD_INTERVIEWEE = "user_name";
+    private static final String KEYWORD_GROUP_ID = "group_id";
+    private static final String KEYWORD_STUDENT_ID = "student_number";
 
     private final AuditResultMapper arMapper;
     private final Converter converter;
@@ -62,12 +61,11 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public Map<String, Long> getOutcomeAmount() {
-        HashMap<String, Long> map = new HashMap<>(3);
-        map.put("all", arMapper.getResultAmount());
-        map.put("pass", arMapper.getPassedResultAmount());
-        map.put("notPass", arMapper.getNotPassedResultAmount());
-        return map;
+    public OutComeAmount getOutcomeAmount() {
+        Long resultAmount = arMapper.getResultAmount();
+        Long passedResultAmount = arMapper.getPassedResultAmount();
+        Long notPassedResultAmount = arMapper.getNotPassedResultAmount();
+        return new OutComeAmount(resultAmount, passedResultAmount, notPassedResultAmount);
     }
 
     @Override
