@@ -1,24 +1,21 @@
 package com.yundingshuyuan.recruit.domain;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
-/**
- * 用户表
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 @Builder
-public class User {
-    @ExcelProperty("用户id")
+public class Academy {
     private Integer id;
+    private String school;
+    private String academy;
 
-    @ExcelProperty("姓名")
-    private String name;
-
+    private String detail;
 
 }

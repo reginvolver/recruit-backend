@@ -32,6 +32,7 @@ public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
 
     private final CheckInHandlerManager ciHandlerManager;
 
+    private QrCodeUtils qrCodeUtils;
     @Override
     public String createQrCode(String openId, String eventName, int expireTime) {
         // 创建 事件所需信息
@@ -47,7 +48,7 @@ public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
         // 加密
         try {
             String content = checkinHandler.encipher(data, createTimestamp, expireTimestamp);
-            return QrCodeUtils.getQrCodeBase64(content);
+            return qrCodeUtils.getQrCodeBase64(content);
         } catch (Exception e) {
             throw new RuntimeException("解密失败");
         }
