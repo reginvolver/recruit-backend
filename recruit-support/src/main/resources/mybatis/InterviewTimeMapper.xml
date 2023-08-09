@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yundingshuyuan.recruit.dao.InterviewTimeMapper">
+
+    <!-- 根据开始时间查询面试时间信息 -->
+    <select id="getInterviewTimeByStartTime" resultType="com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo">
+        SELECT *
+        FROM interview_opentime
+        WHERE start_time = #{startTime}
+    </select>
+
+    <!-- 其他查询、插入、删除等SQL语句定义 -->
+    <!-- ... -->
+    <update id="updateByInterviewTime">
+        UPDATE interview_opentime
+        SET start_time = #{startTime},
+            end_time = #{endTime},
+            capacity = #{capacity},
+            reserved = #{reserved},
+            version = #{version},
+            deleted = #{deleted},
+            create_time = #{createTime},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+</mapper>
