@@ -17,14 +17,14 @@ import java.io.InputStream;
  */
 @Slf4j
 public class FileUploadUtils implements DisposableBean {
-    @Value("${aliyunOSS.endPoint}")
-    private String endPoint;
-    @Value("${aliyunOSS.accessKeyId}")
-    private String accessKeyId;
-    @Value("${aliyunOSS.accessKeySecret}")
-    private String accessKeySecret;
-    @Value("${aliyunOSS.bucketName}")
-    private String bucketName;
+    @Value("${endPoint}")
+    private String endPoint = "oss-cn-beijing.aliyuncs.com";
+    @Value("${accessKey}")
+    private String accessKeyId = "LTAI5tRDqoiFz2resai4MiAV";
+    @Value("${accessKeySecret}")
+    private String accessKeySecret = "pqkjGG1gPvx4mzrMcRk8qRy5DEtSn4";
+    @Value("${bucketName}")
+    private String bucketName = "whalefa1l";
     /**
      * 上传核心
      */
