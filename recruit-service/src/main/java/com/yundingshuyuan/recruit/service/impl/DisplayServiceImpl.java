@@ -5,7 +5,6 @@ import com.yundingshuyuan.recruit.dao.AcademyMapper;
 import com.yundingshuyuan.recruit.dao.NewsMapper;
 import com.yundingshuyuan.recruit.domain.Academy;
 import com.yundingshuyuan.recruit.domain.News;
-import com.yundingshuyuan.recruit.domain.vo.AcademyVo;
 import com.yundingshuyuan.recruit.domain.vo.NewsVo;
 import com.yundingshuyuan.recruit.service.IDisplayService;
 import com.yundingshuyuan.vo.BasicResultVO;
@@ -27,7 +26,7 @@ public class DisplayServiceImpl implements IDisplayService {
     /**
      * 展示新闻
      *
-     * @return
+     * @return newsVos
      */
     @Override
     public BasicResultVO showNews() {
@@ -38,7 +37,7 @@ public class DisplayServiceImpl implements IDisplayService {
             BeanUtil.copyProperties(news, newsVo, true);
             newsVos.add(newsVo);
         }
-        if (newsVos.size() == 0) {
+        if (newsVos.isEmpty()) {
             return BasicResultVO.fail("暂无新闻");
         }
         return BasicResultVO.success(newsVos);
@@ -51,16 +50,12 @@ public class DisplayServiceImpl implements IDisplayService {
      */
     @Override
     public BasicResultVO showAcademy() {
-        List<Academy> list = academyMapper.selectList();
-        ArrayList<AcademyVo> academyVos = new ArrayList<>();
-        for (Academy academy : list) {
-            AcademyVo academyVo = new AcademyVo();
-            BeanUtil.copyProperties(academy, academyVo, true);
-            academyVos.add(academyVo);
-        }
-        if (academyVos.size() == 0) {
+        List<Academy> academies = academyMapper.selectList(null);
+        if (academies.isEmpty()) {
             return BasicResultVO.fail("暂无书院信息");
         }
-        return BasicResultVO.success(academyVos);
+        return BasicResultVO.success(academies);
     }
+
+
 }

@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
  * (Academy)表实体类
  *
@@ -30,12 +28,5 @@ public class Academy {
     private String academy;
     //书院简介
     private String detail;
-    //逻辑删除
-    private Integer deleted;
-    //创建时间
-    private Date createTime;
-    //修改时间
-    private Date updateTime;
-
 }
 
