@@ -1,7 +1,11 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.yundingshuyuan.recruit.api.AuditService;
 import com.yundingshuyuan.recruit.domain.vo.AuditResultVo;
+import com.yundingshuyuan.recruit.domain.vo.OutComeAmount;
 import com.yundingshuyuan.recruit.web.annotation.PageQuery;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,16 +18,19 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * TODO: 权限验证
  */
-@Tag(name = "超级管理员-审批审核接口")
+
 @Slf4j
+@SaCheckLogin
 @RecruitResult
 @RestController
 @RequiredArgsConstructor
+@SaCheckRole("super-admin")
+@SaCheckPermission("super-admin:audit")
+@Tag(name = "超级管理员-审批审核接口")
 @RequestMapping("/audit")
 public class AuditController {
 
@@ -52,7 +59,7 @@ public class AuditController {
 
     @GetMapping("/amount")
     @Operation(summary = "获取各状态人数统计")
-    public Map<String, Long> getOutcomeAmount() {
+    public OutComeAmount getOutComeAmount() {
         return auditService.getOutcomeAmount();
     }
 

@@ -1,7 +1,7 @@
 package com.yundingshuyuan.recruit.domain;
 
 import cn.hutool.core.lang.TypeReference;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,12 +61,12 @@ public class CheckInEvent<T> {
      * @return 基础签到事件对象
      */
     public static <T> CheckInEvent<T> parseString(String str) {
-        return JSONUtil.toBean(str, new TypeReference<CheckInEvent<T>>() {
-        }, true);
+        return JSON.parseObject(str, new TypeReference<CheckInEvent<T>>() {
+        });
     }
 
     public String toString() {
-        return JSONUtil.toJsonStr(this);
+        return JSON.toJSONString(this);
     }
 
 }
