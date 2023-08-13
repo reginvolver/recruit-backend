@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.config;
 
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  * OkHttp配置类
  */
 @Configuration
+@Slf4j
 public class OkHttpConfiguration {
 
     @Value("${ok.http.connect-timeout}")
@@ -81,7 +83,7 @@ public class OkHttpConfiguration {
             sslContext.init(null, new TrustManager[]{x509TrustManager()}, new SecureRandom());
             return sslContext.getSocketFactory();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            e.printStackTrace();
+            log.error("sslSocketFactory error", e);
         }
         return null;
     }

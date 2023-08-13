@@ -1,9 +1,7 @@
 package com.yundingshuyuan.recruit.dao;
 
 import com.yundingshuyuan.recruit.domain.UserInfo;
-import com.yundingshuyuan.recruit.domain.vo.UserInfoVo;
-import org.apache.ibatis.annotations.Mapper;
+import com.yundingshuyuan.recruit.domain.vo.UserInfoVO;
 
-@Mapper
-public interface UserInfoMapper extends BaseMapperPlus<UserInfo, UserInfoVo> {
+public interface UserInfoMapper extends BaseMapperPlus<UserInfo, UserInfoVO> {
 }

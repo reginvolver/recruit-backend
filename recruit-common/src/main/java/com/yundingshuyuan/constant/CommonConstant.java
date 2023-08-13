@@ -76,5 +76,11 @@ public class CommonConstant {
     public final static String ENV_DEV = "dev";
     public final static String ENV_TEST = "test";
 
-
+    /**
+     * SimpleDateFormat 格式化字符串
+     */
+    public final static String DATE_TIME_FORMAT_YMD = "yyyy-MM-dd";
+    public final static String DATE_TIME_FORMAT_YMDHM = "yyyy-MM-dd HH:mm";
+    public final static String DATE_TIME_FORMAT_YMDHMS = "yyyy-MM-dd HH:mm:ss";
+    public final static String DATE_TIME_FORMAT_YMDHMSS = "yyyy-MM-dd HH:mm:ss.SSS";
 }

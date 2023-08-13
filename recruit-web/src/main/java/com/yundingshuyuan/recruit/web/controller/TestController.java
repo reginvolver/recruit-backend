@@ -1,6 +1,8 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mzt.logapi.starter.annotation.LogRecord;
 import com.yundingshuyuan.recruit.api.TestService;
 import com.yundingshuyuan.recruit.domain.User;
 import com.yundingshuyuan.recruit.utils.RedisUtils;
@@ -29,12 +31,18 @@ public class TestController {
     private String test;
 
     @GetMapping("/test")
+    @SaCheckPermission("user.get")
     @Operation(summary = "测试接口")
+    @LogRecord(
+            success = "张三成功完成",
+            type = "User", bizNo = "1")
     public User test() {
+
         boolean redisTest = redisUtils.set("test", test);
         log.info("redisTest:{}", redisTest);
-        return new User(Long.valueOf(test));
+        return new User(Integer.valueOf(test), "fuck");
     }
+
 
     @GetMapping("/test2")
     @Operation(summary = "测试接口2")

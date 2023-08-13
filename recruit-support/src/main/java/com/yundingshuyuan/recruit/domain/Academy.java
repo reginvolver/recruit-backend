@@ -1,32 +1,23 @@
 package com.yundingshuyuan.recruit.domain;
 
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
-/**
- * (Academy)表实体类
- *
- * @author makejava
- * @since 2023-08-01 10:12:09
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("academy")
+@Component
+@Builder
 public class Academy {
-    //学校id
-    @TableId
     private Integer id;
-
-    //学校名称
     private String school;
-    //书院名称
     private String academy;
-    //书院简介
+
     private String detail;
+
 }
 

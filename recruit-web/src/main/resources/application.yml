@@ -2,6 +2,8 @@ server:
   port: 9091
 mybatis-plus:
   mapper-locations: classpath*:mybatis/**/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 # spring
 spring:
   banner:
@@ -64,7 +66,6 @@ spring:
   redis:
     host: ${redis.ip:127.0.0.1}
     password: ${redis.password:recruit}
-
 # apollo
 apollo:
   bootstrap:
@@ -102,7 +103,6 @@ management:
   health:
     rabbit:
       enabled: false
-
-
-
-
+logging:
+  level:
+    root: info
