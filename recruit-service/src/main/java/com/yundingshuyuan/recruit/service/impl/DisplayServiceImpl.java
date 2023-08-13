@@ -29,7 +29,7 @@ public class DisplayServiceImpl implements IDisplayService {
      * @return newsVos
      */
     @Override
-    public BasicResultVO showNews() {
+    public BasicResultVO<ArrayList<NewsVo>> showNews() {
         List<News> list = newsMapper.selectList();
         ArrayList<NewsVo> newsVos = new ArrayList<>();
         for (News news : list) {
@@ -49,7 +49,7 @@ public class DisplayServiceImpl implements IDisplayService {
      * @return
      */
     @Override
-    public BasicResultVO showAcademy() {
+    public BasicResultVO<List<Academy>> showAcademy() {
         List<Academy> academies = academyMapper.selectList(null);
         if (academies.isEmpty()) {
             return BasicResultVO.fail("暂无书院信息");

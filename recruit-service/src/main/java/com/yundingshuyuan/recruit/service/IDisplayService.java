@@ -1,6 +1,11 @@
 package com.yundingshuyuan.recruit.service;
 
+import com.yundingshuyuan.recruit.domain.Academy;
+import com.yundingshuyuan.recruit.domain.vo.NewsVo;
 import com.yundingshuyuan.vo.BasicResultVO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public interface IDisplayService {
 
@@ -9,12 +14,12 @@ public interface IDisplayService {
      *
      * @return
      */
-    public BasicResultVO showNews();
+    public BasicResultVO<ArrayList<NewsVo>> showNews();
 
     /**
      * 书院内容展示
      *
      * @return
      */
-    public BasicResultVO showAcademy();
+    public BasicResultVO<List<Academy>> showAcademy();
 }
