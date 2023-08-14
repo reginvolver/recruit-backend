@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.yundingshuyuan.recruit.dao.ReservationMapper">
+
+    <!-- 根据云ID查询用户ID -->
+    <select id="getUserIdByCloudId" resultType="java.lang.Integer">
+        SELECT user_id
+        FROM cloud_id
+        WHERE cloud_id = #{cloudId}
+    </select>
+
+    <!-- 插入预约记录 -->
+    <insert id="insert" parameterType="com.yundingshuyuan.recruit.domain.po.ReservationPo">
+        INSERT INTO reservation (user_id, interview_time)
+        VALUES (#{userId}, #{interviewTime})
+    </insert>
+
+    <select id="hasReservation" resultType="boolean" parameterType="java.lang.Integer">
+        SELECT COUNT(*) > 0
+        FROM reservation
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 其他查询、更新、删除等SQL语句定义 -->
+    <!-- ... -->
+
+</mapper>

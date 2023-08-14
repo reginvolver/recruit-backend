@@ -1,4 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yundingshuyuan.recruit.dao.RegisterInfoMapper">
+    <!-- 添加方法的 SQL 映射 -->
+    <select id="countByDirection" resultType="com.yundingshuyuan.recruit.domain.vo.DirectionCountVo">
+        SELECT register_info.direction,
+               COUNT(*) AS total,
+               SUM(CASE WHEN DATE(register_info.create_time) = CURDATE() THEN 1 ELSE 0 END) AS today,
+               SUM(CASE WHEN user_info.gender = 1 THEN 1 ELSE 0 END) AS maleCount,
+               SUM(CASE WHEN user_info.gender = 0 THEN 1 ELSE 0 END) AS femaleCount
+        FROM register_info
+                 JOIN user_info ON register_info.user_id = user_info.id
+        GROUP BY register_info.direction
+    </select>
+
+    <select id="countByDate" resultType="java.util.Map">
+        SELECT DATE(create_time) AS date, COUNT(*) AS count
+        FROM register_info
+        GROUP BY date
+    </select>
+
+    <select id="countRegisterInfo" resultType="int">
+        SELECT COUNT(*) FROM register_info
+    </select>
 </mapper>
