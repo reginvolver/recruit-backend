@@ -17,4 +17,6 @@ public interface RegisterInfoMapper extends BaseMapperPlus<RegisterInfoPo, Regis
     @MapKey("date")
     List<Map<LocalDate, Integer>> countByDate();
 
+    int countRegisterInfo();
+
 }

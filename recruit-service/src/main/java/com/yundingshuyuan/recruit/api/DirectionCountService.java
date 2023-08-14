@@ -21,6 +21,12 @@ public interface DirectionCountService {
      *统计总的每一天的报名人数
      * @return
      */
+    @SaCheckPermission("admin:getDateCounts")
+    List<Map<LocalDate, Integer>> getDateCounts();
+    /**
+     *统计总的报名人数,提交申请书的人数
+     * @return
+     */
     @SaCheckPermission("admin:getTotalCounts")
-    List<Map<LocalDate, Integer>> getTotalCounts();
+    Map<String, Object> getTotalCounts();
 }

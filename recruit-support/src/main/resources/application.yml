@@ -13,7 +13,7 @@ wx:
         msgDataFormat: JSON
 # MyBatis-Plus 配置
 mybatis-plus:
-  mapper-locations: classpath:mybatis/RegisterInfoMapper.xml,classpath:mybatis/ReservationMapper.xml,classpath:mybatis/InterviewRecordMapper.xml,classpath:mybatis/InterviewTimeMapper.xml
+  mapper-locations: classpath*:mybatis/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true

@@ -18,4 +18,8 @@
         FROM register_info
         GROUP BY date
     </select>
+
+    <select id="countRegisterInfo" resultType="int">
+        SELECT COUNT(*) FROM register_info
+    </select>
 </mapper>
