@@ -2,10 +2,7 @@ package com.yundingshuyuan.recruit.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yundingshuyuan.recruit.domain.Lecture;
-import com.yundingshuyuan.recruit.domain.vo.LectureVo;
 import com.yundingshuyuan.vo.BasicResultVO;
-
-import java.util.ArrayList;
 
 public interface ILectureService extends IService<Lecture> {
 
@@ -15,13 +12,13 @@ public interface ILectureService extends IService<Lecture> {
      * @param lecture
      * @return
      */
-    public BasicResultVO<ArrayList<LectureVo>> release(Lecture lecture);
+    public BasicResultVO release(Lecture lecture);
 
     /**
      * 返回所有宣讲会的信息
      *
      * @return
      */
-    public BasicResultVO<ArrayList<LectureVo>> showAll();
+    public BasicResultVO showAll();
 
 }
