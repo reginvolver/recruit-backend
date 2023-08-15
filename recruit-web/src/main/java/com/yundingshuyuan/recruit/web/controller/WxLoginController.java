@@ -1,31 +1,30 @@
 package com.yundingshuyuan.recruit.web.controller;
 
-import com.yundingshuyuan.recruit.service.IWxLoginService;
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import com.yundingshuyuan.vo.BasicResultVO;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.error.WxErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
 @RequestMapping("/wxlogin")
 public class WxLoginController {
-
     @Autowired
-    public IWxLoginService wxLoginService;
+    private WxMaService wxMaService;
 
-    /**
-     * 若登录成功，封装的结果集有map对象
-     * map里包括openid和session_key
-     *
-     * @param code
-     * @return
-     */
-    @RequestMapping("/getWxMes")
-    @ResponseBody
-    public BasicResultVO getWxMes(String code) {
-        return wxLoginService.getWxMes(code);
+    @GetMapping("/getOpenId")
+    public BasicResultVO<String> login(String code) {
+        try {
+            WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
+            String openid = session.getOpenid();
+            return BasicResultVO.success(openid);
+        } catch (WxErrorException e) {
+            return BasicResultVO.fail(e.getError().getErrorMsg());
+        }
     }
 }
