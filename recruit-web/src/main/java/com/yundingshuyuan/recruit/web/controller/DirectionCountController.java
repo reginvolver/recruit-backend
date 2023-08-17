@@ -38,8 +38,16 @@ public class DirectionCountController {
      *统计总的每一天的报名人数
      * @return
      */
+    @GetMapping("/date")
+    public List<Map<LocalDate, Integer>> getDateCounts() {
+        return directionCountService.getDateCounts();
+    }
+    /**
+     *统计总的报名人数,提交申请书的人数
+     * @return
+     */
     @GetMapping("/total")
-    public List<Map<LocalDate, Integer>> getTotalCounts() {
+    public Map<String, Object> getTotalCounts() {
         return directionCountService.getTotalCounts();
     }
 }

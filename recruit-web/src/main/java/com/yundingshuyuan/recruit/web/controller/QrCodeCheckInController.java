@@ -1,5 +1,7 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.yundingshuyuan.enums.RespStatusEnum;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
@@ -18,9 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RecruitResult
 @RestController
-@RequestMapping("/checkin")
-@Tag(name = "二维码签到接口")
+/* @SaCheckLogin 写上可能有 bug*/
 @RequiredArgsConstructor
+@Tag(name = "二维码签到接口")
+@RequestMapping("/checkin")
 public class QrCodeCheckInController {
 
     private final QrCodeCheckInService qrCodeCheckInService;
@@ -35,6 +38,8 @@ public class QrCodeCheckInController {
      * @return
      */
     @GetMapping("/qrcode")
+    @SaCheckRole("user")
+    @SaCheckPermission("user:getQrCode")
     @Operation(summary = "获取二维码")
     public BasicResultVO<String> getQrCode(@RequestParam String openId, @RequestParam String eventName, @RequestParam int expireTime) {
         return new BasicResultVO<>(RespStatusEnum.SUCCESS, qrCodeCheckInService.createQrCode(openId, eventName, expireTime));
@@ -48,8 +53,9 @@ public class QrCodeCheckInController {
      * @return
      */
     @PostMapping("/parse")
+    @SaCheckPermission(value = "admin:checkUserIn", orRole = "super-admin")
     @Operation(summary = "解析扫描二维码后的内容")
-    public boolean signUserIn(@RequestBody String scanInfo) {
+    public boolean checkUserIn(@RequestBody String scanInfo) {
         qrCodeCheckInService.parseQrCodeInfo(scanInfo);
         return true;
     }

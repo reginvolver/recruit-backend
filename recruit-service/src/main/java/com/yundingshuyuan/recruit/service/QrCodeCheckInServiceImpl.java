@@ -3,7 +3,7 @@ package com.yundingshuyuan.recruit.service;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.yundingshuyuan.constant.CommonConstant;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
@@ -21,16 +21,18 @@ import java.util.Date;
 /**
  * 二维码签到相关 Service
  *
- * @author Stayw33
+ * @author wys
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
+public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
 
     private final QrCodeCheckInMapper qrCheckMapper;
 
     private final CheckInHandlerManager ciHandlerManager;
+
+    private final QrCodeUtils qrCodeUtils;
 
     @Override
     public String createQrCode(String openId, String eventName, int expireTime) {
@@ -47,7 +49,7 @@ public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
         // 加密
         try {
             String content = checkinHandler.encipher(data, createTimestamp, expireTimestamp);
-            return QrCodeUtils.getQrCodeBase64(content);
+            return qrCodeUtils.getQrCodeBase64(content);
         } catch (Exception e) {
             throw new RuntimeException("解密失败");
         }
@@ -55,7 +57,7 @@ public class QrCodeCheckInCheckInServiceImpl implements QrCodeCheckInService {
 
     @Override
     public void parseQrCodeInfo(String scanInfo) {
-        CheckInEventVo wrapper = JSONUtil.toBean(scanInfo, CheckInEventVo.class);
+        CheckInEventVo wrapper = JSON.parseObject(scanInfo, CheckInEventVo.class);
         // 根据事件名调用
         CheckInHandler<?> checkinHandler = ciHandlerManager.getCheckInHandler(wrapper.getEventName());
         // 解密被加密事件信息

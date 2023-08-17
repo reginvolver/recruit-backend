@@ -1,45 +1,27 @@
 package com.yundingshuyuan.recruit.config;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-/**
- * @author <a href="https://github.com/binarywang">Binary Wang</a>
- */
 @Data
+@Component
 @ConfigurationProperties(prefix = "wx.miniapp")
 public class WxMaProperties {
 
-    private List<Config> configs;
+    @Value("${appid}")
+    private String appid;
 
-    @Data
-    public static class Config {
-        /**
-         * 设置微信小程序的appid
-         */
-        private String appid;
+    @Value("${secret}")
+    private String secret;
 
-        /**
-         * 设置微信小程序的Secret
-         */
-        private String secret;
+    private String token;
 
-        /**
-         * 设置微信小程序消息服务器配置的token
-         */
-        private String token;
+    private String aesKey;
 
-        /**
-         * 设置微信小程序消息服务器配置的EncodingAESKey
-         */
-        private String aesKey;
+    //@Value("${msgDataFormat}")
+    private long msgDataFormat;
 
-        /**
-         * 消息格式，XML或者JSON
-         */
-        private String msgDataFormat;
-    }
 
 }

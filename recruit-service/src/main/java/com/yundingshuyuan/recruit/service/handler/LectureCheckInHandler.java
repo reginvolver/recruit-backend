@@ -5,8 +5,7 @@ import cn.hutool.crypto.Mode;
 import cn.hutool.crypto.Padding;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
@@ -31,7 +30,7 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
 
     @Override
     public void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
-        LectureCheckInPo data = JSONUtil.toBean((JSONObject) event.getData(), LectureCheckInPo.class);
+        LectureCheckInPo data = (LectureCheckInPo) event.getData();
         Long userId = data.getUserId();
         Long lectureId = data.getLectureId();
         // TODO: 具体逻辑还得根据情况改
@@ -75,7 +74,7 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
                 .expireTimestamp(expireTimestamp).build();
         String encryptedEvent = aes.encryptHex(event.toString());
         String saltAndEncryptedData = Base64.encode(salt) + Base64.encode(encryptedEvent, StandardCharsets.UTF_8);
-        return JSONUtil.toJsonStr(new CheckInEventVo(getBindingName(), saltAndEncryptedData));
+        return JSON.toJSONString(new CheckInEventVo(getBindingName(), saltAndEncryptedData));
     }
 
     @Override
@@ -85,7 +84,7 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
         String encryptedDataFromStr = Base64.decodeStr(saltAndEncryptedData.substring(24));
         // 使用盐值和密码生成密钥
         AES aes = new AES(Mode.CTS, Padding.PKCS5Padding, PASSWORD.getBytes(), saltFromStr);
-        return JSONUtil.toBean(aes.decryptStr(encryptedDataFromStr), CheckInEvent.class);
+        return JSON.parseObject(aes.decryptStr(encryptedDataFromStr), CheckInEvent.class);
     }
 
     @Override

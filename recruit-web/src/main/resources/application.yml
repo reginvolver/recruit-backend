@@ -2,7 +2,7 @@ server:
   port: 9091
 # MyBatis-Plus 配置
 mybatis-plus:
-  mapper-locations: classpath:mybatis/RegisterInfoMapper.xml
+  mapper-locations: classpath*:mybatis/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
@@ -64,7 +64,7 @@ spring:
         master:
           url: jdbc:mysql://localhost:13306/recruit?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
           username: root
-          #          password: recruit+-
+#          password: recruit+-
           driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: recruit

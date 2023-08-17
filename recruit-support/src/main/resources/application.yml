@@ -13,7 +13,7 @@ wx:
         msgDataFormat: JSON
 # MyBatis-Plus 配置
 mybatis-plus:
-  mapper-locations: classpath:mybatis/RegisterInfoMapper.xml,classpath:mybatis/ReservationMapper.xml,classpath:mybatis/InterviewRecordMapper.xml,classpath:mybatis/InterviewTimeMapper.xml
+  mapper-locations: classpath*:mybatis/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
@@ -37,5 +37,7 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
+
   #jwt密钥(官方文档说让随便输入几个字符，我瞎按的
   jwt-secret-key: abshegdyugbskabjsdjbdhaluyew
+
