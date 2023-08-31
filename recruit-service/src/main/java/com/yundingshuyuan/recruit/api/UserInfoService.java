@@ -34,4 +34,5 @@ public interface UserInfoService {
      */
     public boolean saveUserInfo(UserInfoVO userInfoVO);
 
+    public boolean checkUserInfo(UserInfoVO userInfoVO);
 }

@@ -27,7 +27,7 @@ public class UserInfo {
 
     private String name;
     private String gender;
-
+    private String direction;
     private String phone;
     private String email;
     @TableField("student_number")

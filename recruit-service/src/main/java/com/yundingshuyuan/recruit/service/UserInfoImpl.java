@@ -3,16 +3,17 @@ package com.yundingshuyuan.recruit.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.yundingshuyuan.recruit.api.AcademyService;
+import com.yundingshuyuan.recruit.api.RegisterInfoService;
 import com.yundingshuyuan.recruit.api.UserInfoService;
 import com.yundingshuyuan.recruit.dao.UserInfoMapper;
 import com.yundingshuyuan.recruit.domain.Academy;
 import com.yundingshuyuan.recruit.domain.UserInfo;
+import com.yundingshuyuan.recruit.domain.vo.RegisterInfoVO;
 import com.yundingshuyuan.recruit.domain.vo.UserInfoVO;
 import com.yundingshuyuan.recruit.service.verify.AbstractUserInfoValidation;
 import com.yundingshuyuan.recruit.service.verify.EmailValidation;
 import com.yundingshuyuan.recruit.service.verify.PhoneValidation;
 import com.yundingshuyuan.recruit.service.verify.StudentNumberValidation;
-import com.yundingshuyuan.recruit.utils.QrCodeUtils;
 import io.github.linpeilie.Converter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class UserInfoImpl implements UserInfoService {
 
     @Autowired
     private AcademyService academyService;
+
+    @Autowired
+    private RegisterInfoService registerInfoService;
 
     @Override
     @Transactional
@@ -58,7 +62,7 @@ public class UserInfoImpl implements UserInfoService {
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
         LambdaUpdateChainWrapper<UserInfo> updateWrapper = new LambdaUpdateChainWrapper<>(userMapper);
-        boolean update = updateWrapper.eq(UserInfo::getId, userInfo.getId())
+        boolean update = updateWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId())
                 .set(userInfo.getAcademyId() != null, UserInfo::getAcademyId, userInfo.getAcademyId())
                 .set(!userInfo.getEmail().isEmpty(), UserInfo::getEmail, userInfo.getEmail())
                 .set(!userInfo.getGender().isEmpty(), UserInfo::getGender, userInfo.getGender())
@@ -72,22 +76,26 @@ public class UserInfoImpl implements UserInfoService {
     }
 
     @Override
+    @Transactional
     public boolean saveUserInfo(UserInfoVO userInfoVO) {
         UserInfo userInfo = converter.convert(userInfoVO, UserInfo.class);
         commonValidation(userInfo);
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
-        if (check(userInfo)) {
-            String qrCodeBase64 = QrCodeUtils.getQrCodeBase64(userInfo.getCloudId().toString());
-            userInfo.setQrCode(qrCodeBase64);
+        if (checkUserInfo(userInfoVO)) {
             userMapper.insert(userInfo);
+            registerInfoService.saveRegisterInfo(new RegisterInfoVO(userInfo.getCloudId(), userInfo.getDirection()));
             return true;
         }
-        return false;
+        updateUserInfo(userInfoVO);
+        return true;
     }
 
-    public boolean check(UserInfo userInfo) {
-        UserInfo userInfo1 = userMapper.selectById(userInfo.getId());
+    public boolean checkUserInfo(UserInfoVO userInfoVO) {
+        UserInfo userInfo = converter.convert(userInfoVO, UserInfo.class);
+        LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId());
+        UserInfo userInfo1 = userMapper.selectOne(queryWrapper);
         if (userInfo1 == null) {
             return true;
         }

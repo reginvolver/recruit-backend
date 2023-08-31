@@ -21,7 +21,7 @@ public class UserInfoVO {
     private Integer cloudId;
     private String name;
     private String gender;
-
+    private String direction;
     private String phone;
     private String email;
     private String studentNumber;

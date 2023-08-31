@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.domain;
 
+
 import lombok.Data;
 
 import java.time.LocalDateTime;

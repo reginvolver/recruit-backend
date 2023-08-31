@@ -30,7 +30,8 @@ public class RegisterInfoImpl implements RegisterInfoService {
 
     @Override
     public boolean saveRegisterInfo(RegisterInfoVO registerInfoVO) {
-        if (isExist(registerInfoVO.getUserId())) {
+        if (isExist(registerInfoVO)) {
+            updateRegisterInfo(registerInfoVO);
             return false;
         }
         RegisterInfo registerInfo = converter.convert(registerInfoVO, RegisterInfo.class);
@@ -66,9 +67,9 @@ public class RegisterInfoImpl implements RegisterInfoService {
         return null;
     }
 
-    public boolean isExist(Integer id) {
+    public boolean isExist(RegisterInfoVO registerInfoVO) {
         LambdaQueryWrapper<RegisterInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(RegisterInfo::getUserId, id);
+        queryWrapper.eq(RegisterInfo::getUserId, registerInfoVO.getUserId());
         RegisterInfo registerInfo = registerInfoMapper.selectOne(queryWrapper);
         if (registerInfo != null) {
             return true;
