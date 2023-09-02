@@ -42,6 +42,11 @@ public class UserInfo {
     @TableField("is_passed")
 
     private Boolean isPassed;
+
+    @TableField("is_admin")
+
+    private Integer isAdmin;
+
     @TableField("qr_code")
 
     private String qrCode;
