@@ -7,11 +7,17 @@
         <result column="lecture_Id" property="lectureId"/>
     </resultMap>
 
+    <resultMap id="InterviewCheckInPo" type="com.yundingshuyuan.recruit.domain.po.InterviewCheckInPo">
+        <id column="user_id" property="userId"/>
+    </resultMap>
+
+    <!-- Lecture - START  -->
     <select id="selectTicketByOpenId" resultMap="LectureCheckInPo">
         SELECT ui.id AS user_id, lt.lecture_id
         FROM user_info ui
                  JOIN lecture_ticket lt ON ui.id = lt.user_id
-        WHERE ui.cloud_id = #{openId};
+        WHERE ui.cloud_id = #{openId}
+          AND ui.deleted = 0;
     </select>
 
     <select id="selectTicketByUserAndLectureId" resultType="long">
@@ -46,5 +52,24 @@
           AND lecture_id = #{lectureId}
           AND deleted = 0;
     </delete>
+    <!-- Lecture - END  -->
+
+
+    <!-- Interview - START  -->
+    <update id="updateStatusByUserId">
+        UPDATE user_info
+        SET status      = status + 1,
+            update_time = CURRENT_TIMESTAMP(0)
+        WHERE id = #{userId}
+          AND deleted = 0
+    </update>
+
+    <select id="selectInterviewInfoByOpenId" resultMap="InterviewCheckInPo">
+        SELECT ui.id AS user_id
+        FROM user_info ui
+        WHERE ui.cloud_id = #{openId}
+          AND deleted = 0;
+    </select>
+    <!-- Interview - END  -->
 
 </mapper>
