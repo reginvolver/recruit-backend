@@ -1,7 +1,5 @@
 package com.yundingshuyuan.recruit.web.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaCheckRole;
 import com.alibaba.fastjson.JSONObject;
 import com.yundingshuyuan.enums.RespStatusEnum;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 /* @SaCheckLogin 写上可能有 bug*/
 @RequiredArgsConstructor
 @Tag(name = "二维码签到接口")
-@RequestMapping("/checkin")
+@RequestMapping("/miniapp/checkin")
 public class QrCodeCheckInController {
 
     private final QrCodeCheckInService qrCodeCheckInService;
@@ -40,8 +38,6 @@ public class QrCodeCheckInController {
      * @return
      */
     @GetMapping("/qrcode")
-    @SaCheckRole("user")
-    @SaCheckPermission("user:getQrCode")
     @Operation(summary = "获取二维码")
     public BasicResultVO<String> getQrCode(@RequestParam String openId, @Parameter(description = "宣讲会 | 面试") @RequestParam String eventName, @RequestParam int expireTime) {
         return new BasicResultVO<>(RespStatusEnum.SUCCESS, qrCodeCheckInService.createQrCode(openId, eventName, expireTime));
@@ -55,7 +51,6 @@ public class QrCodeCheckInController {
      * @return
      */
     @PostMapping("/parse")
-    @SaCheckPermission(value = "admin:checkUserIn", orRole = "super-admin")
     @Operation(summary = "解析扫描二维码后的内容")
     public boolean checkUserIn(@RequestBody @Parameter(description = "将扫描二维码后的内容原封不动传回") JSONObject scanInfo) {
         String info = scanInfo.getString("scanInfo");
