@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AutoMapper(target = UserInfo.class)
 @Builder
-public class UserInfoVO {
+public class UserInfoVo {
 
     private Integer id;
     private Integer cloudId;

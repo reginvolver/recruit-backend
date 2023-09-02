@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.service;
 
+
 import cn.dev33.satoken.stp.StpUtil;
 import com.yundingshuyuan.recruit.api.LoginService;
 import com.yundingshuyuan.recruit.dao.InterviewerMapper;
@@ -18,12 +19,12 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private InterviewerMapper interMapper;
     private StpUtil stpUtil;
-    @Value("${manager.id}")
+    @Value("0")
     private Long superId;
 
-    @Value("${manager.username}")
+    @Value("super-admin")
     private String superUsername;
-    @Value("${manager.password}")
+    @Value("super-admin")
     private String superPassword;
 
 

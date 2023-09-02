@@ -1,7 +1,7 @@
 package com.yundingshuyuan.recruit.web.controller;
 
 import com.yundingshuyuan.recruit.api.RegisterInfoService;
-import com.yundingshuyuan.recruit.domain.vo.RegisterInfoVO;
+import com.yundingshuyuan.recruit.domain.vo.RegisterInfoVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.vo.BasicResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +24,7 @@ public class RegisterController {
 
     @PostMapping("/save")
     @Operation(summary = "保存报名信息")
-    public BasicResultVO save(@RequestBody RegisterInfoVO registerInfoVO) {
+    public BasicResultVO save(@RequestBody RegisterInfoVo registerInfoVO) {
         if (registerInfoService.saveRegisterInfo(registerInfoVO)) {
             return BasicResultVO.success("保存成功");
         }
@@ -33,7 +33,7 @@ public class RegisterController {
 
     @PostMapping("/update")
     @Operation(summary = "修改报名信息")
-    private BasicResultVO update(@RequestBody RegisterInfoVO registerInfoVO) {
+    private BasicResultVO update(@RequestBody RegisterInfoVo registerInfoVO) {
         if (registerInfoService.updateRegisterInfo(registerInfoVO)) {
             return BasicResultVO.success("修改成功");
         }

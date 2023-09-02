@@ -1,17 +1,17 @@
 package com.yundingshuyuan.recruit.api;
 
-import com.yundingshuyuan.recruit.domain.vo.UserInfoVO;
+import com.yundingshuyuan.recruit.domain.vo.UserInfoVo;
 
 public interface UserInfoService {
     /**
      * Description 显示用户信息
      *
      * @param id id
-     * @return {@link UserInfoVO }
+     * @return {@link UserInfoVo }
      * @author 李朋逊
      * @date 2023/08/01
      */
-    public UserInfoVO showUserInfo(Integer id);
+    public UserInfoVo showUserInfo(Integer id);
 
 
     /**
@@ -22,7 +22,7 @@ public interface UserInfoService {
      * @author 李朋逊
      * @date 2023/08/02
      */
-    public boolean updateUserInfo(UserInfoVO userInfoVO);
+    public boolean updateUserInfo(UserInfoVo userInfoVO);
 
     /**
      * Description 保存用户信息
@@ -32,6 +32,6 @@ public interface UserInfoService {
      * @author 李朋逊
      * @date 2023/08/02
      */
-    public boolean saveUserInfo(UserInfoVO userInfoVO);
+    public boolean saveUserInfo(UserInfoVo userInfoVO);
 
 }

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AutoMapper(target = InterviewerInfo.class)
-public class InterviewerInfoVO {
+public class InterviewerInfoVo {
 
     private Integer groupId;
 

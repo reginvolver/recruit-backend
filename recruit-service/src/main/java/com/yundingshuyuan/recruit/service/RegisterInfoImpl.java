@@ -1,12 +1,13 @@
 package com.yundingshuyuan.recruit.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.yundingshuyuan.recruit.api.ApplicationPhotoService;
 import com.yundingshuyuan.recruit.api.RegisterInfoService;
 import com.yundingshuyuan.recruit.dao.RegisterInfoMapper;
-import com.yundingshuyuan.recruit.domain.ApplicationPhoto;
-import com.yundingshuyuan.recruit.domain.RegisterInfo;
-import com.yundingshuyuan.recruit.domain.vo.RegisterInfoVO;
+import com.yundingshuyuan.recruit.domain.po.ApplicationPhotoPo;
+import com.yundingshuyuan.recruit.domain.po.RegisterInfoPo;
+import com.yundingshuyuan.recruit.domain.vo.RegisterInfoVo;
 import com.yundingshuyuan.recruit.utils.FileUploadUtils;
 import io.github.linpeilie.Converter;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,11 @@ public class RegisterInfoImpl implements RegisterInfoService {
     private ApplicationPhotoService applicationPhotoService;
 
     @Override
-    public boolean saveRegisterInfo(RegisterInfoVO registerInfoVO) {
+    public boolean saveRegisterInfo(RegisterInfoVo registerInfoVO) {
         if (isExist(registerInfoVO.getUserId())) {
             return false;
         }
-        RegisterInfo registerInfo = converter.convert(registerInfoVO, RegisterInfo.class);
+        RegisterInfoPo registerInfo = converter.convert(registerInfoVO, RegisterInfoPo.class);
         int insert = registerInfoMapper.insert(registerInfo);
         if (insert > 0) {
             return true;
@@ -42,11 +43,11 @@ public class RegisterInfoImpl implements RegisterInfoService {
     }
 
     @Override
-    public boolean updateRegisterInfo(RegisterInfoVO registerInfoVO) {
-        RegisterInfo registerInfo = converter.convert(registerInfoVO, RegisterInfo.class);
-        LambdaQueryWrapper<RegisterInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(RegisterInfo::getUserId, registerInfo.getUserId());
-        int update = registerInfoMapper.update(registerInfo, queryWrapper);
+    public boolean updateRegisterInfo(RegisterInfoVo registerInfoVO) {
+        RegisterInfoPo registerInfo = converter.convert(registerInfoVO, RegisterInfoPo.class);
+        LambdaUpdateWrapper<RegisterInfoPo> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(RegisterInfoPo::getUserId, registerInfo.getUserId());
+        int update = registerInfoMapper.update(registerInfo, updateWrapper);
         if (update > 0) {
             return true;
         }
@@ -59,7 +60,7 @@ public class RegisterInfoImpl implements RegisterInfoService {
         FileUploadUtils fileUploadUtils = new FileUploadUtils();
         String str = fileUploadUtils.fileUpload(file);
         if (str != null) {
-            ApplicationPhoto applicationPhoto = new ApplicationPhoto(id, str);
+            ApplicationPhotoPo applicationPhoto = new ApplicationPhotoPo(id, str);
             applicationPhotoService.save(applicationPhoto);
             return str;
         }
@@ -67,9 +68,9 @@ public class RegisterInfoImpl implements RegisterInfoService {
     }
 
     public boolean isExist(Integer id) {
-        LambdaQueryWrapper<RegisterInfo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(RegisterInfo::getUserId, id);
-        RegisterInfo registerInfo = registerInfoMapper.selectOne(queryWrapper);
+        LambdaQueryWrapper<RegisterInfoPo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(RegisterInfoPo::getUserId, id);
+        RegisterInfoPo registerInfo = registerInfoMapper.selectOne(queryWrapper);
         if (registerInfo != null) {
             return true;
         }

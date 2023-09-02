@@ -1,7 +1,7 @@
 package com.yundingshuyuan.recruit.web.controller;
 
 import com.yundingshuyuan.recruit.api.UserInfoService;
-import com.yundingshuyuan.recruit.domain.vo.UserInfoVO;
+import com.yundingshuyuan.recruit.domain.vo.UserInfoVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.vo.BasicResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ public class UserInfoController {
 
     @PostMapping("/updateUserInfo")
     @Operation(summary = "修改用户信息")
-    public BasicResultVO updateUser(@RequestBody UserInfoVO userInfoVO) {
+    public BasicResultVO updateUser(@RequestBody UserInfoVo userInfoVO) {
         if (userInfoService.updateUserInfo(userInfoVO)) {
             return BasicResultVO.success("修改成功");
         }
@@ -30,13 +30,13 @@ public class UserInfoController {
 
     @GetMapping("/show")
     @Operation(summary = "展示用户信息")
-    public UserInfoVO show(Integer cloudId) {
+    public UserInfoVo show(Integer cloudId) {
         return userInfoService.showUserInfo(cloudId);
     }
 
     @PostMapping("/save")
     @Operation(summary = "保存用户信息")
-    public BasicResultVO save(@RequestBody UserInfoVO userInfoVO) {
+    public BasicResultVO save(@RequestBody UserInfoVo userInfoVO) {
         if (userInfoService.saveUserInfo(userInfoVO)) {
             return BasicResultVO.success("保存成功");
         }

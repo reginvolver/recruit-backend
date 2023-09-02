@@ -22,7 +22,7 @@ public class InterviewTimeServiceImpl implements InterviewTimeService {
 
     // 添加RedisTemplate依赖
     @Autowired
-    private RedisTemplate<String, Integer> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Autowired
     public InterviewTimeServiceImpl(InterviewTimeMapper interviewTimeMapper, ReservationMapper reservationMapper) {

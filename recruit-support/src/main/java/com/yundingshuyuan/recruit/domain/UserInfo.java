@@ -1,7 +1,7 @@
 package com.yundingshuyuan.recruit.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.yundingshuyuan.recruit.domain.vo.UserInfoVO;
+import com.yundingshuyuan.recruit.domain.vo.UserInfoVo;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@AutoMapper(target = UserInfoVO.class)
+@AutoMapper(target = UserInfoVo.class)
 public class UserInfo {
 
     @TableId

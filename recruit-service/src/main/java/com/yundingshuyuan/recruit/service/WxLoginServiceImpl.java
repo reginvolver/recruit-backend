@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Slf4j
 public class WxLoginServiceImpl implements IWxLoginService {
 
-    @Value("${appid}")
+    @Value("wx0df8511230c13054")
     private String appid;
 
-    @Value("${secret}")
+    @Value("64e882d75203e6c45678c02a37a84ada")
     private String secret;
 
 

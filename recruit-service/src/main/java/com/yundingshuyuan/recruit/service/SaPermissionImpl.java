@@ -7,7 +7,6 @@ import com.yundingshuyuan.recruit.domain.InterviewerInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
 public class SaPermissionImpl implements StpInterface {
     @Autowired
     private InterviewerMapper interMapper;
-    @Value("${manager.id}")
+    @Value("0")
     private Integer superId;
 
     @Override

@@ -45,4 +45,8 @@ public class ApplicationPhotoPo {
      * 申请书照片最后更新的日期和时间。
      */
     private LocalDateTime updateTime;
+    public ApplicationPhotoPo (Integer uierId,String url){
+        this.userId = id;
+        this.photoUrl = url;
+    }
 }
