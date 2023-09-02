@@ -28,7 +28,17 @@ public class InterviewResultServiceImpl implements InterviewResultService {
      */
     @Override
     public List<InterviewRecordVo> showAllRecord() {
-        List<InterviewRecordVo> interviewRecordVos = interviewRecordMapper.selectVoList();
-        return interviewRecordVos;
+        return interviewRecordMapper.selectVoList();
+    }
+
+    /**
+     * 传入groupId，查找到它的该面试官对应的记录
+     *
+     * @param groupId
+     * @return
+     */
+    @Override
+    public List<InterviewRecordVo> showAdminRecord(Integer groupId) {
+        return interviewRecordMapper.adminRecord(groupId);
     }
 }

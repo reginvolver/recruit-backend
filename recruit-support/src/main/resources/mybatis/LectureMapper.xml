@@ -8,4 +8,16 @@
         ORDER BY lecture_id DESC
         LIMIT 1
     </select>
+
+    <select id="lectureById" resultType="com.yundingshuyuan.recruit.domain.vo.LectureVo">
+        SELECT *
+        FROM lecture
+        WHERE lecture_id = #{lectureId}
+    </select>
+
+    <select id="allLecture" resultType="com.yundingshuyuan.recruit.domain.vo.LectureVo">
+        SELECT *
+        FROM lecture
+    </select>
+
 </mapper>

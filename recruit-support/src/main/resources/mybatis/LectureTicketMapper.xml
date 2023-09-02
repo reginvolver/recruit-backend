@@ -16,4 +16,10 @@
           AND lecture_id = #{param2}
     </select>
 
+    <select id="allTicketsByUserId" resultType="java.lang.Integer">
+        SELECT lecture_id
+        FROM lecture_ticket
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>

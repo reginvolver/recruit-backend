@@ -17,4 +17,10 @@
         WHERE user_id = #{userId}
     </update>
 
+    <select id="adminRecord" parameterType="java.lang.Integer" resultType="com.yundingshuyuan.recruit.domain.vo.InterviewRecordVo">
+        SELECT *
+        FROM interview_record
+        WHERE group_id = #{group_id}
+    </select>
+
 </mapper>

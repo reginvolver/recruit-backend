@@ -1,7 +1,5 @@
 package com.yundingshuyuan.recruit.service;
 
-import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson.JSONObject;
 import com.yundingshuyuan.recruit.api.TicketGrabService;
 import com.yundingshuyuan.recruit.dao.LectureMapper;
 import com.yundingshuyuan.recruit.dao.LectureTicketMapper;
@@ -14,6 +12,7 @@ import com.yundingshuyuan.recruit.utils.RedisUtils;
 import io.github.linpeilie.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,7 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author cr
@@ -41,12 +40,41 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     LectureTicketMapper lectureTicketMapper;
     @Autowired
     RedisUtils redisUtils;
-    @Autowired
+    @Resource
     QrCodeUtils qrCodeUtils;
     @Autowired
     Converter converter;
     @Resource
-    private ThreadPoolExecutor dtpExecutor1;
+    StringRedisTemplate stringRedisTemplate;
+
+
+    /**
+     * 根据lectureId查找对应的宣讲会信息
+     *
+     * @param lectureId
+     * @return
+     */
+    @Override
+    public LectureVo detailLecture(Integer lectureId) {
+        return lectureMapper.lectureById(lectureId);
+    }
+
+    /**
+     * 用户所有已经抢到的票
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<LectureVo> allTicketByUser(Integer userId) {
+        List<Integer> lectureIds = lectureTicketMapper.allTicketsByUserId(userId);
+        List<LectureVo> lectureVos = new ArrayList<>();
+        for (Integer e : lectureIds) {
+            lectureVos.add(lectureMapper.lectureById(e));
+        }
+        return lectureVos;
+    }
+
 
 
     /**
@@ -76,60 +104,36 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      */
     @Override
     @Transactional
-    public LectureTicketVo ticketGrab(Integer ticketId, Integer userId) {
+    public boolean ticketGrab(Integer ticketId, Integer userId) {
 
         LectureTicketVo  lectureTicketVo = new LectureTicketVo();
         validateExist(ticketId,userId);
         String key = "ticket:count" + ticketId;
-        Integer remainCount = (Integer) redisUtils.get(key);
+        Integer remainCount = Integer.valueOf(stringRedisTemplate.opsForValue().get(key));
+        if (remainCount == null){
+            throw new RuntimeException();
+        }
         if (remainCount < 1){
-           return null;
+            log.info("userId为：     " + userId + "的用户没抢到     "+ ticketId + "场宣讲会的票，剩余票数"+ remainCount);
+           return false;
         }
-        long remain  = redisUtils.decr(key,1);
+        long remain  = stringRedisTemplate.opsForValue().increment(key,-1);
         if (remain < 0){
-            redisUtils.incr(key,1);
-            return null;
+            stringRedisTemplate.opsForValue().increment(key,1);
+            log.info("userId为：     " + userId + "的用户没抢到     "+ ticketId + "场宣讲会的票，剩余票数"+ remainCount);
+            return false;
         }
 
-        String s = generateCode(ticketId, userId);
-
-        lectureTicketVo.setCode(s);
         lectureTicketVo.setLectureId(ticketId);
         lectureTicketVo.setUserId(userId);
-        redisUtils.set("grab:"+userId+":"+ticketId,lectureTicketVo);
-        return lectureTicketVo;
+        stringRedisTemplate.opsForValue().set("grab:"+userId+":"+ticketId,"ok",120, TimeUnit.SECONDS);
+        log.info("userId为     ：" + userId + "的用户抢到了第     "+ ticketId + "场宣讲会的票，剩余票数"+ (remainCount-1));
+        return true;
     }
 
-    /**
-     * 生成二维码
-     */
-    @Override
-    public String generateCode(Integer ticketId, Integer userId) {
-        //content
-        JSONObject data = new JSONObject();
-        data.put("userId",userId);
-        data.put("ticketId",ticketId);
-        String content = data.toJSONString();
-        return qrCodeUtils.getQrCodeBase64(content);
-    }
 
-    /**
-     * 返回用户的宣讲会二维码
-     *
-     * @param userId
-     * @return
-     */
-    @Override
-    public String userQRCode(Integer userId) {
-        LectureTicketVo lectureTicketVo = lectureTicketMapper.selectByUserId(userId, showLeastLecture().getLectureId());
-        if (ObjectUtil.isEmpty(lectureTicketVo)) {
-            String key = "grab:" + userId;
-            Object o = redisUtils.get(key);
-            LectureTicketVo convert = converter.convert(o, LectureTicketVo.class);
-            return convert.getCode();
-        }
-        return lectureTicketVo.getCode();
-    }
+
+
 
 
     /**
@@ -146,26 +150,39 @@ public class TicketGrabServiceImpl implements TicketGrabService {
 
 
     /**
-     * 将redis中的数据持久化到mysql中
+     * 将redis中的数据持久化到mysql中,并删除已经持久化过的数据
      */
     @Override
-    @Scheduled(fixedDelay = 600000)    //1分钟
+    @Scheduled(fixedDelay = 60000)    //1分钟
     public void redisToMysql() {
         //System.currentTimeMillis() - Long.parseLong(requestTime)
         long start = System.currentTimeMillis();
         log.info("定时任务开始执行");
-        List<LectureTicket> list = new ArrayList<>();
-        String prefix = "grab:";
-        Set<String> keys = redisUtils.keys(prefix);
+        String prefix = "*grab:";
+        Set<String> keys = stringRedisTemplate.keys(prefix+"*");
         for (String key : keys
              ) {
-            Object object = redisUtils.get(key);
-            LectureTicket convert = converter.convert(object, LectureTicket.class);
-            list.add(convert);
+            LectureTicket lectureTicketVo = new LectureTicket();
+            String[] split = key.split(":");
+            String userId = split[1];
+            String lectureId = split[2];
+            lectureTicketVo.setLectureId(Integer.valueOf(lectureId));
+            lectureTicketVo.setUserId(Integer.valueOf(userId));
+            lectureTicketMapper.insert(lectureTicketVo);
+            stringRedisTemplate.delete("grab:" + userId + ":" + lectureId);
         }
-        lectureTicketMapper.insertBatch(list);
         long end = System.currentTimeMillis();
         log.info("定时任务执行完毕，用时：" + (end-start) + "毫秒");
+    }
+
+    /**
+     * 获取所有宣讲会信息
+     *
+     * @return
+     */
+    @Override
+    public List<LectureVo> allLecture() {
+        return lectureMapper.allLecture();
     }
 
     public void validateScan(LectureTicketVo lectureTicketVo) {
@@ -180,6 +197,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     public void validateExist(Integer ticketId,Integer userId){
         Integer isExist = lectureTicketMapper.checkCount(userId, ticketId);
         if (isExist > 0){
+            stringRedisTemplate.opsForValue().increment("ticket:count" + ticketId,1);
             throw new InvalidParameterException("一位用户不可重复抢票");
         }
     }

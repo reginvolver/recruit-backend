@@ -28,12 +28,6 @@ import java.util.List;
 @Slf4j
 public class WorkScheduleServiceImpl implements WorkScheduleService {
 
-    public final String EXIST_TOMORROW = this.TOMORROW() + "的面试信息已经存在了，如果想要重新分配请先删除原有数据";
-    public final String EXIST_TODAY = this.TODAY() + "的面试信息已经存在了，如果想要重新分配请先删除原有数据";
-    public final String ASSIGN_SUCCESS_TODAY = this.TODAY() + "面试排班成功";
-    public final String ASSIGN_SUCCESS_TOMORROW = this.TOMORROW() + "面试排班成功";
-    public final String CHANGE_SUCCESS = "交换成功";
-
     @Autowired
     InterviewPositionMapper interviewPositionMapper;
     @Autowired
@@ -76,8 +70,7 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      */
     @Override
     public List<WorkingScheduleVo> showCertainDayAssign(LocalDate date) {
-        List<WorkingScheduleVo> workingScheduleVos = workingScheduleMapper.selectCertainDayAssign(date);
-        return workingScheduleVos;
+        return workingScheduleMapper.selectCertainDayAssign(date);
     }
 
     /**
@@ -85,13 +78,9 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      * @param date
      * @return
      */
-    @Override
-    public Boolean checkIsExistAssign(LocalDate date) {
+    private boolean checkIsExistAssign(LocalDate date) {
         Integer count = workingScheduleMapper.countCertainDayAssign(date);
-        if (count > 0){
-            return true;
-        }
-        return false;
+        return count>0;
     }
 
     /**
@@ -100,11 +89,10 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      * @param date
      */
     @Override
-    public void assignCertainDay(LocalDate date) {
+    public boolean assignCertainDay(LocalDate date) {
         List<InterviewPositionVo> interviewPositionVos = interviewPositionMapper.certainDayPositions(date);
         int size = interviewPositionVos.size() / 2;
         for (int i = 0; i < size; i++) {
-            InterviewPositionVo interviewPositionVo = interviewPositionVos.get(i);
             int groupId = interviewerInfoMapper.minCount();     //排班次数最少的group_id
             interviewerInfoMapper.incrCount(groupId);           //更新排班表
             interviewPositionMapper.assign(groupId);    //更新interviewPosition表的group_id字段
@@ -120,36 +108,8 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
             workingSchedule.setInterviewPosition(e.getLocation());
             workingSchedules.add(workingSchedule);
         }
-        boolean b = workingScheduleMapper.insertBatch(workingSchedules,workingSchedules.size());
-        logBoolean(b);
-    }
+        return workingScheduleMapper.insertBatch(workingSchedules, workingSchedules.size());
 
-    /**
-     * Boolean类型日志输出
-     *
-     * @param b
-     */
-    @Override
-    public void logBoolean(boolean b) {
-        if (b){
-            log.info("批量插入成功");
-        }else {
-            log.error("批量插入失败，请自行排查错因");
-        }
-    }
-
-    /**
-     * Integer类型日志输出
-     *
-     * @param i
-     */
-    @Override
-    public void logInteger(int i) {
-        if(i > 0){
-            log.info("更改成功，影响" + i +"行数据");
-        }else {
-            log.error("更改失败，请自行排查错因");
-        }
     }
 
 
@@ -159,14 +119,10 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      * @return
      */
     @Override
-    public String assignToday() {
-        if (checkIsExistAssign(this.TODAY())){
-            return EXIST_TODAY;
-        }
-        this.assignCertainDay(this.TODAY());
-        return ASSIGN_SUCCESS_TOMORROW;
+    public boolean assignToday() {
+        boolean result = false;
+        return checkIsExistAssign(this.TODAY()) ? result : assignCertainDay(this.TODAY());
     }
-
 
 
     /**
@@ -174,12 +130,12 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      * @return 面试安排表
      */
     @Override
-    public String assignTomorrow() {
+    public boolean assignTomorrow() {
         if (checkIsExistAssign(this.TOMORROW())){
-            return EXIST_TOMORROW;
+            return false;
         }
         this.assignCertainDay(this.TOMORROW());
-        return ASSIGN_SUCCESS_TOMORROW;
+        return true;
     }
 
     /**
@@ -192,13 +148,11 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
         validateExist(interviewPositionVo);
         InterviewPosition convert = converter.convert(interviewPositionVo, InterviewPosition.class);
         //直接分配面试官
-        int group_id = interviewerInfoMapper.minCount();
-        int t = interviewerInfoMapper.incrCount(group_id);
-        this.logInteger(t);
-        convert.setGroupId(group_id);
+        int groupId = interviewerInfoMapper.minCount();
+        interviewerInfoMapper.incrCount(groupId);
+        convert.setGroupId(groupId);
         //开放面试地点
         int i = interviewPositionMapper.insert(convert);
-        this.logInteger(i);
         return i>0;
     }
 
@@ -217,13 +171,10 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
         }
         for (InterviewPositionVo e : interviewPositionVos
              ) {
-            int i = interviewerInfoMapper.decrCount(e.getGroupId());
-            this.logInteger(i);
+            interviewerInfoMapper.decrCount(e.getGroupId());
         }
-        int i = interviewPositionMapper.updateNull(TOMORROW());
-        this.logInteger(i);
-        int t = workingScheduleMapper.deleteCertainDayWorkingSchedule(TOMORROW());
-        this.logInteger(t);
+        interviewPositionMapper.updateNull(TOMORROW());
+        workingScheduleMapper.deleteCertainDayWorkingSchedule(TOMORROW());
         return "删除成功";
     }
 
@@ -233,77 +184,59 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      * @return
      */
     @Override
-    public String deleteTodaySchedule() {
+    public boolean deleteTodaySchedule() {
         List<InterviewPositionVo> list = interviewPositionMapper.certainDayPositions(TODAY());
         List<WorkingScheduleVo> workingScheduleVos = workingScheduleMapper.selectCertainTimeAssign(NOW());
         if (list == null){
-            return "请先开放今日面试地点";
+            return false;
         }
         if (workingScheduleVos == null){
-            return "暂无今日排班信息";
+            return false;
         }
         for (WorkingScheduleVo e : workingScheduleVos
              ) {
-            int i = interviewerInfoMapper.decrCount(e.getGroupId());
-            this.logInteger(i);
+             interviewerInfoMapper.decrCount(e.getGroupId());
         }
-        int i = workingScheduleMapper.deleteCertainTimeWorkingSchedule(NOW());
-        this.logInteger(i);
-        return "删除成功";
+        workingScheduleMapper.deleteCertainTimeWorkingSchedule(NOW());
+        return true;
     }
 
-    /**
-     * 交换排班
-     *
-     * @param interviewPositionVos
-     */
+
     @Override
-    public String changeSchedule(List<InterviewPositionVo> interviewPositionVos) {
-        validateCount(interviewPositionVos);
-        validateOutTime(interviewPositionVos);
-        validateSameDay(interviewPositionVos);
-        //交换position表中的group_id
-        Integer groupId1 = interviewPositionVos.get(0).getGroupId();    //3
-        interviewPositionVos.get(0).setGroupId(interviewPositionVos.get(1).getGroupId());
-        interviewPositionVos.get(1).setGroupId(groupId1);
-        interviewPositionMapper.updateGroupId(interviewPositionVos.get(0));
-        interviewPositionMapper.updateGroupId(interviewPositionVos.get(1));
-        //交换workingSchedule表中的group_id
-        Integer result1 = workingScheduleMapper.updateWorkScheduleGroupId(interviewPositionVos.get(0));
-        logInteger(result1);
-        Integer result2 = workingScheduleMapper.updateWorkScheduleGroupId(interviewPositionVos.get(1));
-        logInteger(result2);
-        interviewPositionVos.get(0).setStartTime(interviewPositionVos.get(0).getStartTime().plusHours(1));
-        Integer result3 = workingScheduleMapper.updateWorkScheduleGroupId(interviewPositionVos.get(0));
-        logInteger(result3);
-        interviewPositionVos.get(1).setStartTime(interviewPositionVos.get(1).getStartTime().plusHours(1));
-        Integer result4 = workingScheduleMapper.updateWorkScheduleGroupId(interviewPositionVos.get(1));
-        logInteger(result4);
-        return "交换成功，请刷新相关页面查看结果";
+    public boolean changeSchedule(List<WorkingSchedule> workingSchedules) {
+        validateCount(workingSchedules);
+        validateOutTime(workingSchedules);
+        validateSameDay(workingSchedules);
+
+        Integer groupId1 = workingSchedules.get(0).getGroupId();
+        workingSchedules.get(0).setGroupId(workingSchedules.get(1).getGroupId());
+        workingSchedules.get(1).setGroupId(groupId1);
+        Integer  option1 = workingScheduleMapper.updateWorkScheduleGroupId(workingSchedules.get(0));
+        Integer option2 = workingScheduleMapper.updateWorkScheduleGroupId(workingSchedules.get(1));
+        return option1 > 0 && option2 > 0;
     }
 
-    public void validateExist(InterviewPositionVo interviewPositionVo){
+    public void validateExist(InterviewPositionVo interviewPositionVo) throws InvalidParameterException{
         if (interviewPositionMapper.SelectIsExist(interviewPositionVo) > 0){
             throw new InvalidParameterException("该地点在该时段已经开放过了，请检查您的请求参数");
         }
     }
 
-    public void validateCount(List<InterviewPositionVo> interviewPositionVos){
-        if (interviewPositionVos.size() != 2){
+    public void validateCount(List<WorkingSchedule> w){
+        if (w.size() != 2){
             throw new InvalidParameterException("系统只能实现两条数据互相交换，请传入两条数据");
         }
     }
 
-    public void validateSameDay(List<InterviewPositionVo> interviewPositionVos){
-        boolean equals = interviewPositionVos.get(0).getStartTime().toLocalDate().equals(interviewPositionVos.get(1).getStartTime().toLocalDate());
+    public void validateSameDay(List<WorkingSchedule> workingSchedules){
+        boolean equals = workingSchedules.get(0).getStartTime().toLocalDate().equals(workingSchedules.get(1).getStartTime().toLocalDate());
         if (!equals){
             throw new InvalidParameterException("请选择日期相同的两条记录进行交换");
         }
     }
-    public void validateOutTime(List<InterviewPositionVo> interviewPositionVos){
+    public void validateOutTime(List<WorkingSchedule> workingSchedules){
 
-        for (InterviewPositionVo e : interviewPositionVos
-             ) {
+        for (WorkingSchedule e : workingSchedules) {
             if (e.getStartTime().isBefore(NOW()) || e.getEndTime().isBefore(NOW())){
                 throw new InvalidParameterException("面试时间已经超过当前服务器时间，无法调换班次");
             }

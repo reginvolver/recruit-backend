@@ -39,7 +39,7 @@
     <update id="updateWorkScheduleGroupId" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo">
         UPDATE working_schedule
         SET group_id = #{groupId}
-        WHERE interview_position = #{location}
+        WHERE interview_position = #{interviewPosition}
           AND start_time = #{startTime}
     </update>
 

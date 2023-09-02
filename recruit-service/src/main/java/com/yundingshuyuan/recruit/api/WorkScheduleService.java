@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.api;
 
+import com.yundingshuyuan.recruit.domain.WorkingSchedule;
 import com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo;
 import com.yundingshuyuan.recruit.domain.vo.WorkingScheduleVo;
 
@@ -39,32 +40,14 @@ public interface WorkScheduleService {
     public List<WorkingScheduleVo> showCertainDayAssign(LocalDate date);
 
 
-    /**
-     * 判断指定日期有无面试安排
-     * @param date
-     * @return
-     */
-    public Boolean checkIsExistAssign(LocalDate date);
 
     /**
      * 给指定日期排班
      * @param date
      */
-    public void assignCertainDay(LocalDate date);
+    public boolean assignCertainDay(LocalDate date);
 
 
-    /**
-     * Boolean类型日志输出
-     * @param b
-     */
-    public void logBoolean(boolean b);
-
-
-    /**
-     * Integer类型日志输出
-     * @param i
-     */
-    public void logInteger(int i);
 
 
 
@@ -72,14 +55,14 @@ public interface WorkScheduleService {
      * 今日排班
      * @return
      */
-    public String assignToday();
+    public boolean assignToday();
 
 
     /**
      * 第二天面试安排
      * @return 面试安排表
      */
-    public String assignTomorrow();
+    public boolean assignTomorrow();
 
 
     /**
@@ -98,11 +81,14 @@ public interface WorkScheduleService {
      * 删除今日排班信息
      * @return
      */
-    public String deleteTodaySchedule();
+    public boolean deleteTodaySchedule();
 
 
     /**
      * 交换排班
+     *
+     * @param workingSchedules
+     * @return 是否交换成功
      */
-    public String changeSchedule(List<InterviewPositionVo> interviewPositionVos);
+    public boolean changeSchedule(List<WorkingSchedule> workingSchedules);
 }

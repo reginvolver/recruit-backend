@@ -1,5 +1,7 @@
 package com.yundingshuyuan.recruit.api;
 
+
+
 import com.yundingshuyuan.recruit.domain.vo.InterviewRecordVo;
 
 import java.util.List;
@@ -15,4 +17,12 @@ public interface InterviewResultService {
      * @return
      */
     public List<InterviewRecordVo> showAllRecord();
+
+    /**
+     * 传入groupId，查找到它的该面试官对应的记录
+     *
+     * @param groupId
+     * @return
+     */
+    public List<InterviewRecordVo> showAdminRecord(Integer groupId);
 }

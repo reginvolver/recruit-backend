@@ -55,12 +55,8 @@ public class InterviewController {
 
     @Operation(summary = "提交面评")
     @PostMapping("/submitFaceback")
-    public String submitFaceback(@RequestBody InterviewRecordVo interviewRecordVo){
-        boolean b = interviewService.submitFaceback(interviewRecordVo);
-        if (b){
-            return "提交成功";
-        }
-        return "提交失败";
+    public boolean submitFaceback(@RequestBody InterviewRecordVo interviewRecordVo){
+        return interviewService.submitFaceback(interviewRecordVo);
     }
 
 

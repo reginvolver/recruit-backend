@@ -1,16 +1,17 @@
 package com.yundingshuyuan.recruit.web.controller;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.yundingshuyuan.recruit.api.TicketGrabService;
-import com.yundingshuyuan.recruit.domain.vo.LectureTicketVo;
+import com.yundingshuyuan.recruit.domain.vo.GrabRequestVo;
 import com.yundingshuyuan.recruit.domain.vo.LectureVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
+import com.yundingshuyuan.recruit.web.exception.CommonException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 抢票系统
@@ -21,7 +22,7 @@ import javax.annotation.Resource;
 
 @Slf4j
 @RecruitResult
-@Tag(name = "面试官排班")
+@Tag(name = "抢票系统")
 @RestController
 @RequestMapping("/ticket")
 public class TicketsGrabController {
@@ -29,41 +30,36 @@ public class TicketsGrabController {
     @Resource
     TicketGrabService ticketGrabService;
 
+    //返回所有场次的宣讲会信息
+    @Operation(summary = "返回所有场次的宣讲会信息")
+    @GetMapping("/allLecture")
+    public List<LectureVo> allLecture(){
+        return ticketGrabService.allLecture();
+    }
 
+    //查看某一场宣讲会的详细信息/个人抢到的票中的宣讲会详细信息
+    @Operation(summary = "宣讲会详细信息")
+    @PostMapping("/detailLecture")
+    public LectureVo detailLecture(@RequestParam("lecture_id") Integer lectureId){
+        return ticketGrabService.detailLecture(lectureId);
+    }
+
+    //用户查看自己已经抢到的票
+    @Operation(summary = "用户已经抢到的票")
+    @GetMapping("/snatchedTicketByUser")
+    public List<LectureVo> snatchedTicket(@RequestParam("user_id") Integer userId){
+        return ticketGrabService.allTicketByUser(userId);
+    }
+
+
+    //抢票
     @Operation(summary = "抢票")
     @PostMapping("/grab")
-    public String grab(@RequestHeader("Request-Time")String requestTime,@RequestParam Integer userId,@RequestParam Integer ticketId)  {
+    public boolean grab(@RequestHeader("Request-Time")String requestTime,@RequestBody GrabRequestVo grabRequestVo)  {
         if((Long.parseLong(requestTime) - System.currentTimeMillis()) > 5000){
-            return "请求超时，请重试";
+            throw new CommonException("500","请求超时，请重试");
         }
-        LectureTicketVo lectureTicketVo = ticketGrabService.ticketGrab(ticketId, userId);
-        if (ObjectUtil.isEmpty(lectureTicketVo)){
-            return "抢票失败，还有下次机会";
-        }
-        return lectureTicketVo.getCode();
+        return ticketGrabService.ticketGrab(grabRequestVo.getTicketId(), grabRequestVo.getUserId());
     }
-
-    //当前状态
-    @Operation(summary = "用户是否抢到最新宣讲会的票")
-    @PostMapping("/status")
-    public Boolean status(@RequestBody Integer userId){
-        return ticketGrabService.checkRecordExists(userId);
-    }
-
-
-    //没有抢到最新的宣讲会票，展示最新宣讲会页面，定时开放抢票功能
-    @Operation(summary = "展示最新宣讲会信息")
-    @GetMapping("/showLeastLecture")
-    public LectureVo leastLecture(){
-        return ticketGrabService.showLeastLecture();
-    }
-    //已经抢到票了，展示个人二维码
-    @Operation(summary = "展示用户个人的宣讲会二维码")
-    @PostMapping("/userQRCode")
-    public String ticketCode(@RequestBody Integer userId){
-        return ticketGrabService.userQRCode(userId);
-    }
-
-
 
 }

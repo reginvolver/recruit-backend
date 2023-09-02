@@ -2,7 +2,6 @@ package com.yundingshuyuan.recruit.dao;
 
 
 import com.yundingshuyuan.recruit.domain.WorkingSchedule;
-import com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo;
 import com.yundingshuyuan.recruit.domain.vo.WorkingScheduleVo;
 
 import java.time.LocalDate;
@@ -54,7 +53,7 @@ public interface WorkingScheduleMapper extends BaseMapperPlus<WorkingSchedule, W
      */
     Integer countCertainDayAssign(LocalDate startTime);
 
-    Integer updateWorkScheduleGroupId(InterviewPositionVo interviewPositionVo);
+    Integer updateWorkScheduleGroupId(WorkingSchedule interviewPositionVo);
 
 
 }

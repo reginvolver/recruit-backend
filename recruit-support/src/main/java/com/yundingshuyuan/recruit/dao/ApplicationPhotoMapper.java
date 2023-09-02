@@ -1,13 +1,17 @@
 package com.yundingshuyuan.recruit.dao;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yundingshuyuan.recruit.domain.ApplicationPhoto;
 import com.yundingshuyuan.recruit.domain.vo.ApplicationPhotoVo;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 
-@Mapper
+/**
+ * <p>
+ * 申请书表 Mapper 接口
+ * </p>
+ *
+ * @author cr
+ * @since 2023-07-27
+ */
 public interface ApplicationPhotoMapper extends BaseMapperPlus<ApplicationPhoto, ApplicationPhotoVo> {
-    @Select("SELECT COUNT(*) FROM application_photo")
-    int countApplicationPhoto();
+
+
 }

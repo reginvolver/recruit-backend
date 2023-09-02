@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.web.controller;
 
 import com.yundingshuyuan.recruit.api.WorkScheduleService;
+import com.yundingshuyuan.recruit.domain.WorkingSchedule;
 import com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo;
 import com.yundingshuyuan.recruit.domain.vo.WorkingScheduleVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
@@ -38,31 +39,34 @@ public class WorkScheduleController {
 
     @Operation(summary = "第二天面试排班")
     @GetMapping("/workingScheduleAssignTomorrow")
-    public String workAssign(){
+    public boolean workAssign(){
         return workScheduleService.assignTomorrow();
     }
 
+
     @Operation(summary = "当日临时加面试组")
     @PostMapping("/tempAddInterview")
-    public String tempAddInterview(@RequestBody InterviewPositionVo interviewPositionVo){
-        Boolean aBoolean = workScheduleService.tempAddInterview(interviewPositionVo);
-        if (aBoolean){
-            return "临时面试点开放成功";
-        }
-        return "临时面试点开放失败";
+    public boolean tempAddInterview(@RequestBody InterviewPositionVo interviewPositionVo){
+        boolean aBoolean = false;
 
+            aBoolean = workScheduleService.tempAddInterview(interviewPositionVo);
+        if (aBoolean){
+            return true;
+        }
+        return false;
     }
 
     @Operation(summary = "清空今日排班信息")
     @GetMapping("/deleteAssign")
-    public String deleteAssign(){
-        String s = workScheduleService.deleteTodaySchedule();
-        return s;
+    public boolean deleteAssign(){
+        return workScheduleService.deleteTodaySchedule();
     }
-    @Operation(summary = "面试官换班，超管来换")
+
+
+    @Operation(summary = "面试官换班")
     @PostMapping("/changeAssign")
-    public String changeAssign(@RequestBody List<InterviewPositionVo> interviewPositionVos){
-        return workScheduleService.changeSchedule(interviewPositionVos);
+    public boolean changeAssign(@RequestBody List<WorkingSchedule> workingSchedules){
+        return workScheduleService.changeSchedule(workingSchedules);
     }
 
 }
