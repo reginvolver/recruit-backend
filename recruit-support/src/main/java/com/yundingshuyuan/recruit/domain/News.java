@@ -26,6 +26,12 @@ public class News {
      */
     @TableId("id")
     private Integer id;
+
+    /**
+     * 书院id
+     */
+    private Integer academyId;
+
     /**
      * 新闻标题
      */
