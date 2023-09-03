@@ -52,6 +52,7 @@ public class QrCodeCheckInController {
     @PostMapping("/parse")
     @Operation(summary = "解析扫描二维码后的内容")
     public boolean checkUserIn(@RequestParam("scanInfo") @Parameter(description = "将扫描二维码后的内容原封不动传回") String scanInfo) {
+        log.info(scanInfo);
         qrCodeCheckInService.parseQrCodeInfo(scanInfo);
         return true;
     }
