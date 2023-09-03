@@ -11,7 +11,7 @@ public interface UserInfoService {
      * @author 李朋逊
      * @date 2023/08/01
      */
-    public UserInfoVo showUserInfo(Integer id);
+    public UserInfoVo showUserInfo(String cloudId);
 
 
     /**

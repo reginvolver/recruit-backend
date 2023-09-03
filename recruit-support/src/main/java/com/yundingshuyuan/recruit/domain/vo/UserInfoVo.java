@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class UserInfoVo {
 
     private Integer id;
-    private Integer cloudId;
+    private String cloudId;
     private String name;
     private String gender;
 
@@ -26,11 +26,11 @@ public class UserInfoVo {
     private String email;
     private String studentNumber;
     private String qq;
-
+    private String direction;
     private String major;
 
-    private String qrCode;
 
     private String academy;
     private String school;
 }
+

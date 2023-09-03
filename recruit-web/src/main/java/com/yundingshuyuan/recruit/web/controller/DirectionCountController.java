@@ -1,10 +1,10 @@
 package com.yundingshuyuan.recruit.web.controller;
 
 
-import cn.dev33.satoken.annotation.SaCheckRole;
 import com.yundingshuyuan.recruit.api.DirectionCountService;
 import com.yundingshuyuan.recruit.domain.vo.DirectionCountVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,37 +18,26 @@ import java.util.Map;
 
 @RecruitResult
 @RestController
-@SaCheckRole("admin")
-@Tag(name = "报名情况统计接口")
+@Tag(name = "报名统计")
 @RequestMapping("/direction")
 public class DirectionCountController {
 
     @Autowired
     private DirectionCountService directionCountService;
-    /**
-     * 统计各方向报名人数，当日报名人数，男女比例
-     * @return
-     */
+
+    @Operation(summary = "方向统计")
     @GetMapping("/count")
     public List<DirectionCountVo> getDirectionCounts() {
         return directionCountService.getDirectionCounts();
     }
-
-    /**
-     *统计总的每一天的报名人数
-     * @return
-     */
+    @Operation(summary = "报名时间统计")
     @GetMapping("/date")
     public List<Map<LocalDate, Integer>> getDateCounts() {
         return directionCountService.getDateCounts();
     }
-    /**
-     *统计总的报名人数,提交申请书的人数
-     * @return
-     */
+    @Operation(summary = "报名人数统计")
     @GetMapping("/total")
     public Map<String, Object> getTotalCounts() {
         return directionCountService.getTotalCounts();
     }
 }
-

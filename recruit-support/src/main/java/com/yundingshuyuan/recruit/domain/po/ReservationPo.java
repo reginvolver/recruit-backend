@@ -1,57 +1,71 @@
 package com.yundingshuyuan.recruit.domain.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
+import com.baomidou.mybatisplus.annotation.*;
 import java.time.LocalDateTime;
-
+import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
- * 用户预约面试表
+ * <p>
+ * 预约面试表
+ * </p>
+ *
+ * @author cr
+ * @since 2023-07-26
  */
-
 @Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
 @TableName("reservation")
-public class ReservationPo {
-    /**
-     * 预约ID
-     */
-    private int id;
+public class ReservationPo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 面试时间
+     * 预约记录id
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 预约面试时间
      */
     private LocalDateTime interviewTime;
 
     /**
-     * 用户ID
+     * 预约面试的用户id
      */
-    private int userId;
+    private Integer userId;
 
     /**
-     * 版乐观锁
+     * 自动分配面试点id
      */
-    private int version;
+    private Integer interviewId;
 
     /**
-     * 是否已删除
+     * 乐观锁
      */
-    private boolean deleted;
+    private Integer version;
+
+    /**
+     * 逻辑删除
+     */
+    @TableLogic
+    private Boolean deleted;
 
     /**
      * 创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     /**
-     * 更新时间
+     * 修改时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
-    /**
-     * 面试ID
-     */
-    private Integer interviewId;
 
-    // Getter and Setter methods
 }

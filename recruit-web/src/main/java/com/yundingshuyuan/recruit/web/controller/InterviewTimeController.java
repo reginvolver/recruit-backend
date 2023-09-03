@@ -1,24 +1,23 @@
 package com.yundingshuyuan.recruit.web.controller;
 
-import cn.dev33.satoken.annotation.SaCheckRole;
-import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.recruit.api.InterviewTimeService;
+import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
+import com.yundingshuyuan.recruit.domain.vo.ReservationVo;
+import com.yundingshuyuan.recruit.domain.vo.ReserveInterviewTimeVo;
+import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
+import com.yundingshuyuan.vo.BasicResultVO;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RecruitResult
 @RestController
-@SaCheckRole("user")
 @Tag(name = "预约面试时间接口")
-@RequestMapping("/interview-time")
+@RequestMapping("/miniapp/interviewTime")
 public class InterviewTimeController {
 
     @Autowired
@@ -26,18 +25,27 @@ public class InterviewTimeController {
 
     /**
      * 预约面试时间
-     * @param cloudId 用户微信的cloud_id
-     * @param startTime 选择的面试时间段的开始时间
+     *
      * @return
      */
+    @Operation(summary = "预约面试时间")
     @PostMapping("/reserve-interview")
-    public ResponseEntity<String> reserveInterview(@RequestParam("cloud_id") String cloudId,
-                                                   @RequestParam("start_time") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startTime) {
-        boolean success = interviewTimeService.reserveInterview(cloudId, startTime);
-        if (success) {
-            return ResponseEntity.ok("预约成功");
-        } else {
-            return ResponseEntity.badRequest().body("预约失败");
-        }
+    public Integer reserveInterview(@RequestBody ReserveInterviewTimeVo reservationVo) {
+        Integer userId = reservationVo.getUserId();
+        LocalDateTime startTime = reservationVo.getInterviewTime();
+        return interviewTimeService.reserveInterview(userId, startTime);
+
     }
+
+    /**
+     * 查询所有面试时间段
+     *
+     * @return
+     */
+    @Operation(summary = "展示所有面试时间段")
+    @GetMapping("/allInterviewTimes")
+    public List<OpenTimeInfoPo> getAllInterviewTimes() {
+        return interviewTimeService.getAllInterviewTimes();
+    }
+
 }

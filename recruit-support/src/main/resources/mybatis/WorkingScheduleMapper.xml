@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.WorkingScheduleMapper">
+
+<!--√-->
+    <update id="deleteCertainTimeWorkingSchedule" parameterType="java.time.LocalDateTime">
+        UPDATE working_schedule
+        SET deleted = 1
+        WHERE start_time > #{startTime}
+          AND DATE(start_time) = DATE(#{startTime})
+    </update>
+
+    <update id="deleteCertainDayWorkingSchedule" parameterType="java.time.LocalDate">
+        UPDATE working_schedule
+        SET deleted = 1
+        WHERE DATE(start_time) = DATE( #{startTime})
+    </update>
+
+<!--√-->
+    <select id="selectCertainDayAssign" resultType="com.yundingshuyuan.recruit.domain.vo.WorkingScheduleVo">
+        SELECT *
+        FROM working_schedule
+        WHERE DATE(start_time) = DATE( #{startTime})
+    </select>
+
+    <select id="selectCertainTimeAssign" resultType="com.yundingshuyuan.recruit.domain.vo.WorkingScheduleVo">
+        SELECT *
+        FROM working_schedule
+        WHERE start_time > #{startTime}
+          AND DATE(start_time) = DATE( #{startTime})
+    </select>
+
+    <select id="countCertainDayAssign" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM working_schedule
+        WHERE DATE(start_time) = DATE( #{startTime})
+    </select>
+
+    <update id="updateWorkScheduleGroupId" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo">
+        UPDATE working_schedule
+        SET group_id = #{groupId}
+        WHERE interview_position = #{interviewPosition}
+          AND start_time = #{startTime}
+    </update>
+
+</mapper>

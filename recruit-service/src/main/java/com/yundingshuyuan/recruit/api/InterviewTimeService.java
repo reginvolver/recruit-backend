@@ -1,8 +1,9 @@
 package com.yundingshuyuan.recruit.api;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  预约面试时间
@@ -11,10 +12,14 @@ public interface InterviewTimeService {
 
     /**
      * 预约面试时间
-     * @param cloudId 用户微信的cloud_id
      * @param startTime 选择的面试时间段的开始时间
      * @return
      */
-    @SaCheckPermission("user:reserveInterview")
-    boolean reserveInterview(String cloudId, LocalDateTime startTime);
+    Integer reserveInterview(Integer userId, LocalDateTime startTime);
+    /**
+     * 查询所有面试时间段
+     *
+     * @return
+     */
+    List<OpenTimeInfoPo>  getAllInterviewTimes();
 }

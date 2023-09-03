@@ -15,12 +15,29 @@ import lombok.NoArgsConstructor;
 @Builder
 @AutoMapper(target = InterviewerInfo.class)
 public class InterviewerInfoVo {
-
+    /**
+     * 组号
+     */
     private Integer groupId;
 
-    private String username;
+    /**
+     * 该组登录时所用的用户名
+     */
+    private String groupUsername;
 
-    private String password;
+    /**
+     * 该组登录时所用的密码
+     */
+    private String groupPassword;
 
+    /**
+     * 组中第一位面试官姓名
+     */
+    private String interviewerFirstName;
+
+    /**
+     * 组中第二位面试官姓名
+     */
+    private String interviewerSecondName;
 
 }

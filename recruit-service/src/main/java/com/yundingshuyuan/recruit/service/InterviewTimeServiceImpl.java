@@ -1,21 +1,25 @@
 package com.yundingshuyuan.recruit.service;
 
-import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
-import com.yundingshuyuan.recruit.domain.po.ReservationPo;
+import com.yundingshuyuan.recruit.api.InterviewTimeService;
 import com.yundingshuyuan.recruit.dao.InterviewTimeMapper;
 import com.yundingshuyuan.recruit.dao.ReservationMapper;
-import com.yundingshuyuan.recruit.api.InterviewTimeService;
+import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  预约面试时间
  */
 @Service
+@Slf4j
 public class InterviewTimeServiceImpl implements InterviewTimeService {
     private final InterviewTimeMapper interviewTimeMapper;
     private final ReservationMapper reservationMapper;
@@ -31,9 +35,14 @@ public class InterviewTimeServiceImpl implements InterviewTimeService {
     }
 
     @Override
-    public boolean reserveInterview(String cloudId, LocalDateTime startTime) {
-        // 根据 cloudId 获取对应的 userId
-        Integer userId = reservationMapper.getUserIdByCloudId(cloudId);
+    public List<OpenTimeInfoPo> getAllInterviewTimes() {
+
+        return interviewTimeMapper.getAllInterviewTimes();
+    }
+
+    @Override
+    public Integer reserveInterview(Integer userId, LocalDateTime startTime) {
+
         if (userId == null) {
             throw new RuntimeException("预约失败，用户信息不存在");
         }
@@ -41,7 +50,7 @@ public class InterviewTimeServiceImpl implements InterviewTimeService {
         // 检查是否已存在预约记录
         boolean hasReservation = reservationMapper.hasReservation(userId);
         if (hasReservation) {
-            throw new RuntimeException("您已经预约过面试时间");
+            return 2;
         }
 
         // 查询面试时间段的信息
@@ -57,20 +66,24 @@ public class InterviewTimeServiceImpl implements InterviewTimeService {
             try {
                 // 检查面试时间段是否已满
                 if (interviewTime.getReserved() >= interviewTime.getCapacity()) {
-                    throw new RuntimeException("预约失败，该时间段已经预约满了，请选择其他时间");
+                    return 1;
                 }
 
                 // 向 reservation 表插入一条预约记录，并更新面试时间段的信息中的已预约人数
                 ReservationPo reservation = new ReservationPo();
                 reservation.setUserId(userId);
                 reservation.setInterviewTime(interviewTime.getStartTime());
-                reservationMapper.insert(reservation);
+                int insert = reservationMapper.insert(reservation);
+
 
                 // 使用Redis的原子操作增加已预约人数
                 String key = "interview:time:" + interviewTime.getId();
                 redisTemplate.opsForValue().increment(key, 1);
 
-                return true;
+                // 更新面试时间段的已预约人数
+                /*interviewTimeMapper.updateReservedCount((int) interviewTime.getId(), interviewTime.getReserved() + 1);*/
+
+                return 0;
             } finally {
                 // 释放锁
                 redisTemplate.delete(lockKey);

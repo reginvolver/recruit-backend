@@ -1,54 +1,43 @@
 package com.yundingshuyuan.recruit.domain.vo;
 
+
+
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
+import io.github.linpeilie.annotations.AutoMapper;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+
 
 import java.time.LocalDateTime;
 
 /**
- * 用户预约面试表
+ * @Author cr
+ * @Date 2023/7/26 23:11
  */
 @Data
+@AllArgsConstructor
+@Builder
+@AutoMapper(target = ReservationPo.class)
 public class ReservationVo {
     /**
-     * 预约ID
+     * 预约记录id
      */
-    private int id;
+    private Integer id;
 
     /**
-     * 面试时间
+     * 预约面试时间
      */
     private LocalDateTime interviewTime;
 
     /**
-     * 用户ID
+     * 预约面试的用户id
      */
-    private int userId;
+    private Integer userId;
 
     /**
-     * 版乐观锁
-     */
-    private int version;
-
-    /**
-     * 是否已删除
-     */
-    private boolean deleted;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
-    /**
-     * 面试ID
+     * 自动分配面试点id
      */
     private Integer interviewId;
 
-
-    // Getter and Setter methods
 }

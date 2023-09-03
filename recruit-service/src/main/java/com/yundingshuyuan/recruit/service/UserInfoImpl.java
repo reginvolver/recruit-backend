@@ -3,11 +3,13 @@ package com.yundingshuyuan.recruit.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.yundingshuyuan.recruit.api.AcademyService;
+import com.yundingshuyuan.recruit.api.RegisterInfoService;
 import com.yundingshuyuan.recruit.api.UserInfoService;
 import com.yundingshuyuan.recruit.dao.UserInfoMapper;
 import com.yundingshuyuan.recruit.domain.Academy;
 import com.yundingshuyuan.recruit.domain.UserInfo;
 import com.yundingshuyuan.recruit.domain.vo.UserInfoVo;
+import com.yundingshuyuan.recruit.service.exception.AdminException;
 import com.yundingshuyuan.recruit.service.verify.AbstractUserInfoValidation;
 import com.yundingshuyuan.recruit.service.verify.EmailValidation;
 import com.yundingshuyuan.recruit.service.verify.PhoneValidation;
@@ -37,7 +39,7 @@ public class UserInfoImpl implements UserInfoService {
 
     @Override
     @Transactional
-    public UserInfoVo showUserInfo(Integer cloudId) {
+    public UserInfoVo showUserInfo(String cloudId) {
         LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(UserInfo::getCloudId, cloudId);
         //根据id查询用户信息，但此时用户信息不包含学校和书院，只有书院id
@@ -60,7 +62,7 @@ public class UserInfoImpl implements UserInfoService {
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
         LambdaUpdateChainWrapper<UserInfo> updateWrapper = new LambdaUpdateChainWrapper<>(userMapper);
-        boolean update = updateWrapper.eq(UserInfo::getId, userInfo.getId())
+        boolean update = updateWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId())
                 .set(userInfo.getAcademyId() != null, UserInfo::getAcademyId, userInfo.getAcademyId())
                 .set(!userInfo.getEmail().isEmpty(), UserInfo::getEmail, userInfo.getEmail())
                 .set(!userInfo.getGender().isEmpty(), UserInfo::getGender, userInfo.getGender())
@@ -76,12 +78,20 @@ public class UserInfoImpl implements UserInfoService {
     @Override
     public boolean saveUserInfo(UserInfoVo userInfoVO) {
         UserInfo userInfo = converter.convert(userInfoVO, UserInfo.class);
-        commonValidation(userInfo);
+        userInfo.setIsAdmin(0);
+        try {
+            commonValidation(userInfo);
+        }catch (AdminException e){
+            log.info("管理员");
+            userInfo.setIsAdmin(1);
+        }
+        if(!check(userInfo)){
+            updateUserInfo(userInfoVO);
+            return true;
+        }
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
         if (check(userInfo)) {
-            String qrCodeBase64 = qrCodeUtils.getQrCodeBase64(userInfo.getCloudId().toString());
-            userInfo.setQrCode(qrCodeBase64);
             userMapper.insert(userInfo);
             return true;
         }
@@ -89,7 +99,8 @@ public class UserInfoImpl implements UserInfoService {
     }
 
     public boolean check(UserInfo userInfo) {
-        UserInfo userInfo1 = userMapper.selectById(userInfo.getId());
+        LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
+        UserInfo userInfo1 = userMapper.selectOne(queryWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId()));
         if (userInfo1 == null) {
             return true;
         }
@@ -117,3 +128,4 @@ public class UserInfoImpl implements UserInfoService {
                 .add(new StudentNumberValidation(info.getStudentNumber())).build().validate();
     }
 }
+

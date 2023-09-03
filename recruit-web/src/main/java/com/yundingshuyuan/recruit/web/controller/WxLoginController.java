@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @Tag(name = "小程序登录接口")
 @Slf4j
-@RequestMapping("/wxlogin")
+@RequestMapping("/miniapp/wxlogin")
 public class WxLoginController {
 
     @Autowired
@@ -34,5 +34,4 @@ public class WxLoginController {
 
         return BasicResultVO.success(loginMes);
     }
-
 }

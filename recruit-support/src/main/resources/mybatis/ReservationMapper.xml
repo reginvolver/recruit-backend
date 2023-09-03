@@ -3,13 +3,6 @@
 
 <mapper namespace="com.yundingshuyuan.recruit.dao.ReservationMapper">
 
-    <!-- 根据云ID查询用户ID -->
-    <select id="getUserIdByCloudId" resultType="java.lang.Integer">
-        SELECT user_id
-        FROM cloud_id
-        WHERE cloud_id = #{cloudId}
-    </select>
-
     <!-- 插入预约记录 -->
     <insert id="insert" parameterType="com.yundingshuyuan.recruit.domain.po.ReservationPo">
         INSERT INTO reservation (user_id, interview_time)

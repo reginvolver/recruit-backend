@@ -10,7 +10,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ReservationMapper extends BaseMapperPlus<ReservationPo, ReservationVo> {
 
-    Integer getUserIdByCloudId(String cloudId);
-
     boolean hasReservation(Integer userId);
 }
