@@ -2,11 +2,13 @@ package com.yundingshuyuan.recruit.web.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
+import com.alibaba.fastjson.JSONObject;
 import com.yundingshuyuan.enums.RespStatusEnum;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.vo.BasicResultVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +43,7 @@ public class QrCodeCheckInController {
     @SaCheckRole("user")
     @SaCheckPermission("user:getQrCode")
     @Operation(summary = "获取二维码")
-    public BasicResultVO<String> getQrCode(@RequestParam String openId, @RequestParam String eventName, @RequestParam int expireTime) {
+    public BasicResultVO<String> getQrCode(@RequestParam String openId, @Parameter(description = "宣讲会 | 面试") @RequestParam String eventName, @RequestParam int expireTime) {
         return new BasicResultVO<>(RespStatusEnum.SUCCESS, qrCodeCheckInService.createQrCode(openId, eventName, expireTime));
     }
 
@@ -55,8 +57,9 @@ public class QrCodeCheckInController {
     @PostMapping("/parse")
     @SaCheckPermission(value = "admin:checkUserIn", orRole = "super-admin")
     @Operation(summary = "解析扫描二维码后的内容")
-    public boolean checkUserIn(@RequestBody String scanInfo) {
-        qrCodeCheckInService.parseQrCodeInfo(scanInfo);
+    public boolean checkUserIn(@RequestBody @Parameter(description = "将扫描二维码后的内容原封不动传回") JSONObject scanInfo) {
+        String info = scanInfo.getString("scanInfo");
+        qrCodeCheckInService.parseQrCodeInfo(info);
         return true;
     }
 

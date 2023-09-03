@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yundingshuyuan.recruit.domain.po.InterviewCheckInPo;
 import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
 
 /**
@@ -9,7 +10,7 @@ import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
  * @author wys
  */
 public interface QrCodeCheckInMapper extends BaseMapper {
-
+    /* 宣讲会 */
     LectureCheckInPo selectTicketByOpenId(String openId);
 
     int updateIsLectureByUserId(long userId);
@@ -20,5 +21,9 @@ public interface QrCodeCheckInMapper extends BaseMapper {
 
     boolean selectIfLecturedByUserId(long userId);
 
+    /* 面试 */
+    InterviewCheckInPo selectInterviewInfoByOpenId(String openId);
+
+    int updateStatusByUserId(long userId);
 
 }
