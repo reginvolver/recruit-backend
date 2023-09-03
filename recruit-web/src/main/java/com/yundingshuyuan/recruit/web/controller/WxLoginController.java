@@ -34,5 +34,4 @@ public class WxLoginController {
 
         return BasicResultVO.success(loginMes);
     }
-
 }

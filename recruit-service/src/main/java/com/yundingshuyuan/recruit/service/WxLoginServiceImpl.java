@@ -56,20 +56,26 @@ public class WxLoginServiceImpl implements IWxLoginService {
      * @param openid
      * @return
      */
-    public Map<String,Integer> getLoginMes(String openid){
+    public Map<String,Integer> getLoginMes(String openid) {
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
 
-        JSONObject dataObject = JSONUtil.parseObj(openid);
-        String cloudId = dataObject.get("openid", String.class);
+        queryWrapper.eq("cloud_id", openid);
 
-        queryWrapper.eq("cloud_id",cloudId);
-        UserInfo userInfo = userInfoMapper.selectOne(queryWrapper);
-        Integer id = userInfo.getId();
-        Integer isAdmin = userInfo.getIsAdmin();
+        Integer id = null;
+        Integer isAdmin = null;
 
-        Map<String,Integer> map = new HashMap<>();
-        map.put("id",id);
-        map.put("isAdmin",isAdmin);
-        return map;
+        try {
+            UserInfo userInfo = userInfoMapper.selectOne(queryWrapper);
+            id = userInfo.getId();
+            isAdmin = userInfo.getIsAdmin();
+        } catch (Exception e) {
+            id = null;
+            isAdmin = null;
+        } finally {
+            Map<java.lang.String, java.lang.Integer> map = new HashMap<>();
+            map.put("id", id);
+            map.put("isAdmin", isAdmin);
+            return map;
+        }
     }
 }
