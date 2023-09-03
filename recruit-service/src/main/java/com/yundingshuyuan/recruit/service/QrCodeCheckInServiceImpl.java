@@ -49,7 +49,8 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
         // 加密
         try {
             String content = checkinHandler.encipher(data, createTimestamp, expireTimestamp);
-            return qrCodeUtils.getQrCodeBase64(content);
+            /*return qrCodeUtils.getQrCodeBase64(content);*/
+            return content;
         } catch (Exception e) {
             throw new RuntimeException("解密失败");
         }
@@ -57,11 +58,21 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
 
     @Override
     public void parseQrCodeInfo(String scanInfo) {
-        CheckInEventVo wrapper = JSON.parseObject(scanInfo, CheckInEventVo.class);
+        log.info(scanInfo);
+        CheckInEventVo wrapper;
         // 根据事件名调用
-        CheckInHandler<?> checkinHandler = ciHandlerManager.getCheckInHandler(wrapper.getEventName());
+        CheckInHandler<?> checkinHandler;
         // 解密被加密事件信息
-        CheckInEvent<?> event = checkinHandler.decipher(wrapper.getEncryptedData());
+        CheckInEvent<?> event;
+        try {
+            wrapper = JSON.parseObject(scanInfo, CheckInEventVo.class);
+            // 根据事件名调用
+            checkinHandler = ciHandlerManager.getCheckInHandler(wrapper.getEventName());
+            // 解密被加密事件信息
+            event = checkinHandler.decipher(wrapper.getEncryptedData());
+        } catch (NullPointerException e) {
+            throw new RuntimeException("二维码解析失败");
+        }
         // 判断二维码是否过期
         long expireTimestamp = event.getExpireTimestamp();
         long serviceTime = System.currentTimeMillis();

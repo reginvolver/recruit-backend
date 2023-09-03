@@ -1,8 +1,5 @@
 package com.yundingshuyuan.recruit.web.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaCheckRole;
-import com.alibaba.fastjson.JSONObject;
 import com.yundingshuyuan.enums.RespStatusEnum;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
@@ -54,9 +51,8 @@ public class QrCodeCheckInController {
      */
     @PostMapping("/parse")
     @Operation(summary = "解析扫描二维码后的内容")
-    public boolean checkUserIn(@RequestBody @Parameter(description = "将扫描二维码后的内容原封不动传回") JSONObject scanInfo) {
-        String info = scanInfo.getString("scanInfo");
-        qrCodeCheckInService.parseQrCodeInfo(info);
+    public boolean checkUserIn(@RequestParam("scanInfo") @Parameter(description = "将扫描二维码后的内容原封不动传回") String scanInfo) {
+        qrCodeCheckInService.parseQrCodeInfo(scanInfo);
         return true;
     }
 
