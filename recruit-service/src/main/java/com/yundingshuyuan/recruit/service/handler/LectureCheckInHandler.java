@@ -30,7 +30,7 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
 
     @Override
     public void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
-        LectureCheckInPo data = (LectureCheckInPo) event.getData();
+        LectureCheckInPo data = JSON.parseObject(event.getData().toString(), LectureCheckInPo.class);
         Long userId = data.getUserId();
         // TODO: 具体逻辑还得根据情况改
         /*两种检查方案，根据-宣讲会放票检验具体实现-调整选择方案，待删其中一个*/
