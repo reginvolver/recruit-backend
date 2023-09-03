@@ -155,7 +155,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * 将redis中的数据持久化到mysql中,并删除已经持久化过的数据
      */
     @Override
-    @Scheduled(fixedDelay = 60000)    //1分钟
+    @Scheduled(fixedDelay = 10000)    //1分钟
     public void redisToMysql() {
         //System.currentTimeMillis() - Long.parseLong(requestTime)
         long start = System.currentTimeMillis();
@@ -172,6 +172,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
             lectureTicketVo.setUserId(Integer.valueOf(userId));
             lectureTicketMapper.insert(lectureTicketVo);
             stringRedisTemplate.delete("grab:" + userId + ":" + lectureId);
+
         }
 
         long end = System.currentTimeMillis();

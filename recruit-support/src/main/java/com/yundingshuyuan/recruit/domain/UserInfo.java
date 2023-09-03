@@ -88,10 +88,6 @@ public class UserInfo implements Serializable {
      */
     private String qq;
 
-    /**
-     * 二维码
-     */
-    private String qrCode;
 
     /**
      * 是否到达面试地点

@@ -62,7 +62,7 @@ public class UserInfoImpl implements UserInfoService {
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
         LambdaUpdateChainWrapper<UserInfo> updateWrapper = new LambdaUpdateChainWrapper<>(userMapper);
-        boolean update = updateWrapper.eq(UserInfo::getId, userInfo.getId())
+        boolean update = updateWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId())
                 .set(userInfo.getAcademyId() != null, UserInfo::getAcademyId, userInfo.getAcademyId())
                 .set(!userInfo.getEmail().isEmpty(), UserInfo::getEmail, userInfo.getEmail())
                 .set(!userInfo.getGender().isEmpty(), UserInfo::getGender, userInfo.getGender())
@@ -92,8 +92,6 @@ public class UserInfoImpl implements UserInfoService {
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
         if (check(userInfo)) {
-            String qrCodeBase64 = qrCodeUtils.getQrCodeBase64(userInfo.getCloudId().toString());
-            userInfo.setQrCode(qrCodeBase64);
             userMapper.insert(userInfo);
             return true;
         }

@@ -17,6 +17,7 @@ public class GrabRequestVo {
     /**
      * 抢票用户的id
      */
+
     private Integer userId;
 
     /**
