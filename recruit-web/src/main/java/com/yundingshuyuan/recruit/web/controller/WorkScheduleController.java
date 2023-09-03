@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yundingshuyuan.recruit.api.WorkScheduleService;
 import com.yundingshuyuan.recruit.domain.WorkingSchedule;
 import com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo;
@@ -30,6 +31,7 @@ public class WorkScheduleController {
     WorkScheduleService workScheduleService;
 
     @Operation(summary = "展示今日排班")
+    @SaCheckPermission("admin")
     @GetMapping("/showTodayAssign")
     public List<WorkingScheduleVo> showTodayAssign(){
         LocalDate today = LocalDate.now();
@@ -38,6 +40,7 @@ public class WorkScheduleController {
 
 
     @Operation(summary = "第二天面试排班")
+    @SaCheckPermission("admin")
     @GetMapping("/workingScheduleAssignTomorrow")
     public boolean workAssign(){
         return workScheduleService.assignTomorrow();
@@ -45,6 +48,7 @@ public class WorkScheduleController {
 
 
     @Operation(summary = "当日临时加面试组")
+    @SaCheckPermission("super-admin")
     @PostMapping("/tempAddInterview")
     public boolean tempAddInterview(@RequestBody InterviewPositionVo interviewPositionVo){
         boolean aBoolean = false;
@@ -57,6 +61,7 @@ public class WorkScheduleController {
     }
 
     @Operation(summary = "清空今日排班信息")
+    @SaCheckPermission("super-admin")
     @GetMapping("/deleteAssign")
     public boolean deleteAssign(){
         return workScheduleService.deleteTodaySchedule();
@@ -64,6 +69,7 @@ public class WorkScheduleController {
 
 
     @Operation(summary = "面试官换班")
+    @SaCheckPermission("super-admin")
     @PostMapping("/changeAssign")
     public boolean changeAssign(@RequestBody List<WorkingSchedule> workingSchedules){
         return workScheduleService.changeSchedule(workingSchedules);

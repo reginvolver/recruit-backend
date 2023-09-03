@@ -16,9 +16,8 @@ import java.time.LocalDateTime;
 
 @RecruitResult
 @RestController
-@SaCheckRole("user")
 @Tag(name = "预约面试时间接口")
-@RequestMapping("/interview-time")
+@RequestMapping("/miniapp/interviewTime")
 public class InterviewTimeController {
 
     @Autowired
@@ -30,7 +29,7 @@ public class InterviewTimeController {
      * @param startTime 选择的面试时间段的开始时间
      * @return
      */
-    @PostMapping("/reserve-interview")
+    @PostMapping("/reserveInterview")
     public ResponseEntity<String> reserveInterview(@RequestParam("cloud_id") String cloudId,
                                                    @RequestParam("start_time") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startTime) {
         boolean success = interviewTimeService.reserveInterview(cloudId, startTime);

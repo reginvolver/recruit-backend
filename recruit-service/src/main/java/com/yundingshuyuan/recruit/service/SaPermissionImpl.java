@@ -25,14 +25,17 @@ public class SaPermissionImpl implements StpInterface {
         List<String> list = new ArrayList<>();
         //管理员有全部权限
         if (id == superId) {
-            list.add("user.*");
+            list.add("super-admin");
+            list.add("super-admin:*");
+            list.add("admin");
         }
         //定义用户权限
         LambdaQueryWrapper<InterviewerInfo> queryWrapper = new LambdaQueryWrapper();
         queryWrapper.eq(InterviewerInfo::getGroupId, id);
         InterviewerInfo interviewer = interMapper.selectOne(queryWrapper);
         if (interviewer != null) {
-            list.add("user:add");
+            list.add("admin");
+            list.add("admin:*");
         }
         return list;
     }
@@ -53,7 +56,7 @@ public class SaPermissionImpl implements StpInterface {
         queryWrapper.eq(InterviewerInfo::getGroupId, id);
         InterviewerInfo interviewer = interMapper.selectOne(queryWrapper);
         if (interviewer != null) {
-            list.add("user:admin");
+            list.add("admin");
         }
         return list;
     }

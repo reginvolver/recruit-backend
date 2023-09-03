@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 /* @SaCheckLogin 写上可能有 bug*/
 @RequiredArgsConstructor
 @Tag(name = "二维码签到接口")
-@RequestMapping("/checkin")
+@RequestMapping("/miniapp/checkin")
 public class QrCodeCheckInController {
 
     private final QrCodeCheckInService qrCodeCheckInService;

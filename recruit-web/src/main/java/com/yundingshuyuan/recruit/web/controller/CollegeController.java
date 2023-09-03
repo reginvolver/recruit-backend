@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yundingshuyuan.recruit.api.ICollegeService;
 import com.yundingshuyuan.recruit.domain.Academy;
 import com.yundingshuyuan.vo.BasicResultVO;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "书院相关接口")
 @Slf4j
-@RequestMapping("/college")
+@RequestMapping("/miniapp/college")
 public class CollegeController {
 
     @Autowired

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SaCheckRole("user")
 @Tag(name = "面试结果查询接口")
-@RequestMapping("/interview")
+@RequestMapping("/miniapp/interview")
 public class InterviewRecordController {
 
     private final InterviewRecordService interviewRecordService;

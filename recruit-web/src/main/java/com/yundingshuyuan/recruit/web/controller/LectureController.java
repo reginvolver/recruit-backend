@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yundingshuyuan.recruit.api.ILectureService;
 import com.yundingshuyuan.recruit.domain.Lecture;
 import com.yundingshuyuan.vo.BasicResultVO;
@@ -24,6 +25,7 @@ public class LectureController {
      * @return
      */
     @PostMapping("/release")
+    @SaCheckPermission("super-admin")
     public BasicResultVO release(@RequestBody Lecture lecture) {
 
         return lectureService.release(lecture);
@@ -35,6 +37,7 @@ public class LectureController {
      * @return
      */
     @GetMapping("/showAll")
+    @SaCheckPermission("admin")
     public BasicResultVO showAll() {
         return lectureService.showAll();
     }
