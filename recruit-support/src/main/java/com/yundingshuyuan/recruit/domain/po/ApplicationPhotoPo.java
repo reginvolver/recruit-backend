@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.domain.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -19,11 +20,12 @@ public class ApplicationPhotoPo {
     /**
      * 与应用照片关联的用户ID。
      */
-    private Integer userId;
+    private String cloudId;
 
     /**
      * 申请书照片的URL。
      */
+    @TableField("url")
     private String photoUrl;
 
     /**
@@ -45,8 +47,8 @@ public class ApplicationPhotoPo {
      * 申请书照片最后更新的日期和时间。
      */
     private LocalDateTime updateTime;
-    public ApplicationPhotoPo (Integer uierId,String url){
-        this.userId = id;
+    public ApplicationPhotoPo (String id,String url){
+        this.cloudId = id;
         this.photoUrl = url;
     }
 }

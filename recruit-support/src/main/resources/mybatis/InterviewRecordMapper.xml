@@ -20,4 +20,26 @@
     <select id="getUserIdByCloudId" resultType="java.lang.Integer">
         SELECT user_id FROM cloud_id WHERE cloud_id = #{cloudId}
     </select>
+
+    <select id="isExistByUserId" resultType="com.yundingshuyuan.recruit.domain.vo.InterviewRecordVo">
+        SELECT *
+        FROM interview_record
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="updateRecord" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewRecordVo">
+        UPDATE interview_record
+        SET user_id = #{userId},
+            faceback = #{faceback},
+            user_name = #{userName},
+            score = #{score},
+            group_id = #{group_id}
+        WHERE user_id = #{userId}
+    </update>
+
+    <select id="adminRecord" parameterType="java.lang.Integer" resultType="com.yundingshuyuan.recruit.domain.vo.InterviewRecordVo">
+        SELECT *
+        FROM interview_record
+        WHERE group_id = #{group_id}
+    </select>
 </mapper>

@@ -23,24 +23,26 @@ public class InterviewRecordController {
     public InterviewRecordController(InterviewRecordService interviewRecordService) {
         this.interviewRecordService = interviewRecordService;
     }
-    /**
-     * 查询面试结果
-     * @param cloudId 用户微信的cloud_id
-     * @return
-     */
-    @GetMapping("/{cloudId}/result")
-    public ResponseEntity<String> getInterviewResultByCloudId(@PathVariable("cloudId") String cloudId) {
 
 
-        Boolean isPassed = interviewRecordService.isInterviewPassed(cloudId);
-        if (isPassed == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (isPassed) {
-            return ResponseEntity.ok("面试通过");
-        } else {
-            return ResponseEntity.ok("面试未通过");
-        }
-    }
+//    /**
+//     * 查询面试结果
+//     * @param cloudId 用户微信的cloud_id
+//     * @return
+//     */
+//    @GetMapping("/{cloudId}/result")
+//    public ResponseEntity<String> getInterviewResultByCloudId(@PathVariable("cloudId") String cloudId) {
+//
+//
+//        Boolean isPassed = interviewRecordService.isInterviewPassed(cloudId);
+//        if (isPassed == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//
+//        if (isPassed) {
+//            return ResponseEntity.ok("面试通过");
+//        } else {
+//            return ResponseEntity.ok("面试未通过");
+//        }
+//    }
 }

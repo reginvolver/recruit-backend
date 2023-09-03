@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.LectureTicketMapper">
+
+    <select id="checkCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM lecture_ticket
+        WHERE user_id = #{param1}
+            AND lecture_id = #{param2}
+    </select>
+
+    <select id="selectByUserId" resultType="com.yundingshuyuan.recruit.domain.vo.LectureTicketVo">
+        SELECT *
+        FROM lecture_ticket
+        WHERE user_id = #{param1}
+          AND lecture_id = #{param2}
+    </select>
+
+    <select id="allTicketsByUserId" resultType="java.lang.Integer">
+        SELECT lecture_id
+        FROM lecture_ticket
+        WHERE user_id = #{userId}
+    </select>
+
+</mapper>

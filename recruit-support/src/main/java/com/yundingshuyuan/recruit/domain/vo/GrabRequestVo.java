@@ -1,19 +1,27 @@
 package com.yundingshuyuan.recruit.domain.vo;
 
-
-import com.yundingshuyuan.recruit.domain.po.RegisterInfoPo;
-import io.github.linpeilie.annotations.AutoMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @Author cr
+ * @Date 2023/8/8 11:24
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@AutoMapper(target = RegisterInfoPo.class)
-public class RegisterInfoVo {
+public class GrabRequestVo {
+    /**
+     * 抢票用户的id
+     */
     private Integer userId;
-    private String direction;
+
+    /**
+     * 宣讲会的id
+     */
+    private Integer TicketId;
+
 }

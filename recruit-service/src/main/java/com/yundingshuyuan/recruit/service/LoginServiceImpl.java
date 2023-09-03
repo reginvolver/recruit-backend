@@ -44,7 +44,7 @@ public class LoginServiceImpl implements LoginService {
         } else {
             List<InterviewerInfo> interviewerInfos = interMapper.selectList();
             for (InterviewerInfo interviewerInfo : interviewerInfos) {
-                if (username.equals(interviewerInfo.getUsername()) && password.equals(interviewerInfo.getPassword())) {
+                if (username.equals(interviewerInfo.getGroupUsername()) && password.equals(interviewerInfo.getGroupPassword())) {
                     stpUtil.login(interviewerInfo.getGroupId());
                     log.info(stpUtil.getTokenValue());
                     List<String> permissionList = StpUtil.getPermissionList();
