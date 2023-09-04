@@ -23,16 +23,16 @@ public class InterviewerInfo {
 
     @TableField("interviewer_first_name")
     @ExcelProperty("第一面试官姓名")
-    private String firstInterName;
+    private String interviewerFirstName;
     @TableField("interviewer_second_name")
     @ExcelProperty("第二面试官姓名")
-    private String secondInterName;
+    private String interviewerSecondName;
     @TableField("group_username")
     @ExcelProperty("面试系统账号")
-    private String username;
+    private String groupUsername;
     @TableField("group_password")
     @ExcelProperty("面试系统密码")
-    private String password;
+    private String groupPassword;
 
     @ExcelIgnore
     @Version
@@ -44,7 +44,7 @@ public class InterviewerInfo {
 
     public InterviewerInfo(Integer groupId, String firstInterName, String secondInterName) {
         this.groupId = groupId;
-        this.firstInterName = firstInterName;
-        this.secondInterName = secondInterName;
+        this.interviewerFirstName = firstInterName;
+        this.interviewerSecondName = secondInterName;
     }
 }

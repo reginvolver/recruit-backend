@@ -1,6 +1,6 @@
 package com.yundingshuyuan.recruit.service.verify;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.yundingshuyuan.recruit.api.OpenTimeService;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ public class NoTimeConflictValidation extends AbstractOpenTimeValidation {
         }).collect(Collectors.toList());
         // 结果抛出
         if (!conflict.isEmpty()) {
-            throw new InvalidParameterException("冲突时间:" + JSONUtil.toJsonStr(conflict));
+            throw new InvalidParameterException("冲突时间:" + JSON.toJSONString(conflict));
         }
         // 继续
         if (nextTask != null) {

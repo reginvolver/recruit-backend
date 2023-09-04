@@ -5,6 +5,7 @@ import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.vo.BasicResultVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RecruitResult
 @RestController
-@RequestMapping("/checkin")
-@Tag(name = "二维码签到接口")
+/* @SaCheckLogin 写上可能有 bug*/
 @RequiredArgsConstructor
+@Tag(name = "二维码签到接口")
+@RequestMapping("/miniapp/checkin")
 public class QrCodeCheckInController {
 
     private final QrCodeCheckInService qrCodeCheckInService;
@@ -36,7 +38,7 @@ public class QrCodeCheckInController {
      */
     @GetMapping("/qrcode")
     @Operation(summary = "获取二维码")
-    public BasicResultVO<String> getQrCode(@RequestParam String openId, @RequestParam String eventName, @RequestParam int expireTime) {
+    public BasicResultVO<String> getQrCode(@RequestParam String openId, @Parameter(description = "宣讲会 | 面试") @RequestParam String eventName, @RequestParam int expireTime) {
         return new BasicResultVO<>(RespStatusEnum.SUCCESS, qrCodeCheckInService.createQrCode(openId, eventName, expireTime));
     }
 
@@ -49,7 +51,7 @@ public class QrCodeCheckInController {
      */
     @PostMapping("/parse")
     @Operation(summary = "解析扫描二维码后的内容")
-    public boolean signUserIn(@RequestBody String scanInfo) {
+    public boolean checkUserIn(@RequestParam("scanInfo") @Parameter(description = "将扫描二维码后的内容原封不动传回") String scanInfo) {
         qrCodeCheckInService.parseQrCodeInfo(scanInfo);
         return true;
     }

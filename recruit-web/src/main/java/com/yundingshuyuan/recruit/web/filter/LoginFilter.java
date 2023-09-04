@@ -26,7 +26,12 @@ public class LoginFilter implements Filter {
         String URI = request.getRequestURI();
         //定义不再需要处理的请求路径
         String[] urls = new String[]{
-                "/v3/**", "/doc.html", "/login", "/actuator/**"
+                "/v3/**",
+                "/doc.html",
+                "/login",
+                "/actuator/**",
+                "/miniapp/**",
+                "/interview/**"
         };
         if (check(urls, URI)) {
             filterChain.doFilter(request, response);

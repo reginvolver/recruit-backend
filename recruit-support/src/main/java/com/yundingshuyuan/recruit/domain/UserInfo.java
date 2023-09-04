@@ -1,60 +1,130 @@
 package com.yundingshuyuan.recruit.domain;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.yundingshuyuan.recruit.domain.vo.UserInfoVO;
-import io.github.linpeilie.annotations.AutoMapper;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
-
-@TableName("user_info")
+/**
+ * <p>
+ * 用户信息表
+ * </p>
+ *
+ * @author cr
+ * @since 2023-09-03
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@AutoMapper(target = UserInfoVO.class)
-public class UserInfo {
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@TableName("user_info")
+public class UserInfo implements Serializable {
 
-    @TableId
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 用户id
+     */
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @TableField("cloud_id")
-    private Integer cloudId;
+    /**
+     * cloudId
+     */
+    private String cloudId;
 
+    /**
+     * 用户权限
+     */
+    private Integer isAdmin;
+
+    /**
+     * 报名方向
+     */
+    private String direction;
+
+    /**
+     * 是否参加过宣讲会
+     */
+    private Boolean isLectured;
+
+    /**
+     * 姓名
+     */
     private String name;
-    private String gender;
 
-    private String phone;
-    private String email;
-    @TableField("student_number")
+    /**
+     * 专业
+     */
+    private String major;
+
+    /**
+     * 书院id
+     */
+    private Integer academyId;
+
+    /**
+     * 学号
+     */
     private String studentNumber;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * QQ号
+     */
     private String qq;
 
-    private String major;
-    @TableField("academy_id")
-    private Integer academyId;
-    @TableField("is_lectured")
-    private Boolean isLectured;
-    @TableField("is_passed")
 
-    private Boolean isPassed;
-    @TableField("qr_code")
+    /**
+     * 是否到达面试地点
+     */
+    private Integer status;
 
-    private String qrCode;
-
-    @Version
+    /**
+     * 乐观锁
+     */
     private Integer version;
 
-    @TableLogic
+    /**
+     * 逻辑删除
+     */
     private Boolean deleted;
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+
+    /**
+     * 创建时间
+     */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    /**
+     * 修改时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    /**
+     * 是否通过面试 0 未通过 1 通过
+     */
+    private Integer isPassed;
+
+    /**
+     * 用户性别
+     */
+    private String gender;
+
 
 }

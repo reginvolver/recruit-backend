@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.InterviewerInfoMapper">
+    <select id="minCount" resultType="java.lang.Integer">
+        SELECT group_id
+        FROM interviewer_info
+        WHERE assigned_count = (SELECT MIN(assigned_count) FROM interviewer_info) LIMIT 1
+    </select>
+
+    <update id="incrCount">
+        UPDATE interviewer_info
+        SET assigned_count = assigned_count + 1
+        WHERE group_id = #{group_id}
+    </update>
+
+    <update id="decrCount">
+        UPDATE interviewer_info
+        SET assigned_count = assigned_count - 1
+        WHERE group_id = #{group_id}
+    </update>
+</mapper>

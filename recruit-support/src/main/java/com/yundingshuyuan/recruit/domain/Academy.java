@@ -15,7 +15,6 @@ public class Academy {
     private Integer id;
     private String school;
     private String academy;
-
     private String detail;
 
 }

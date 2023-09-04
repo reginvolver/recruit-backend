@@ -4,6 +4,7 @@ import com.yundingshuyuan.recruit.api.InterviewerService;
 import com.yundingshuyuan.recruit.dao.InterviewerMapper;
 import com.yundingshuyuan.recruit.domain.InterviewerInfo;
 import com.yundingshuyuan.recruit.utils.ExcelUtils;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,10 @@ public class InterviewerServiceImpl implements InterviewerService {
         System.out.println(interviewerlist);
         //流处理填充interviewerInfo对象的username,password
         List<InterviewerInfo> infos = interviewerlist.stream().map((item) -> {
-            Integer username = generateCode(item.getGroupId(), item.getFirstInterName());
-            Integer password = generateCode(item.getGroupId(), item.getSecondInterName());
-            item.setUsername(username.toString());
-            item.setPassword(password.toString());
+            Integer username = generateCode(item.getGroupId(), item.getInterviewerFirstName());
+            Integer password = generateCode(item.getGroupId(), item.getInterviewerSecondName());
+            item.setGroupUsername(username.toString());
+            item.setGroupPassword(password.toString());
             return item;
         }).collect(Collectors.toList());
         log.info("{}", infos);

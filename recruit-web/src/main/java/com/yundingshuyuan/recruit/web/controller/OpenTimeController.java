@@ -1,5 +1,8 @@
 package com.yundingshuyuan.recruit.web.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yundingshuyuan.recruit.api.OpenTimeService;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
@@ -19,6 +22,9 @@ import java.util.List;
 @RestController
 @RecruitResult
 @RequiredArgsConstructor
+@SaCheckLogin
+@SaCheckRole("super-admin")
+@SaCheckPermission("super-admin:opentime")
 @Tag(name = "管理开放预约面试时间接口")
 @RequestMapping("/opentime")
 public class OpenTimeController {

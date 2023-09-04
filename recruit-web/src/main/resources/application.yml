@@ -1,9 +1,16 @@
 server:
   port: 9091
+# MyBatis-Plus 配置
 mybatis-plus:
   mapper-locations: classpath*:mybatis/**/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+  global-config:
+    db-config:
+      id-type: auto
+
 # spring
 spring:
   banner:
@@ -55,7 +62,7 @@ spring:
       strict: false
       datasource:
         master:
-          url: jdbc:mysql://localhost:3307/test?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+          url: jdbc:mysql://localhost:3307/test2?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
           username: root
           password: recruit+-
           driver-class-name: com.mysql.cj.jdbc.Driver

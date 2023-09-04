@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-
 <mapper namespace="com.yundingshuyuan.recruit.dao.ReservationMapper">
 
-    <resultMap id="resulyMap" type="com.yundingshuyuan.recruit.domain.po.Reservation">
-        <result column="user_id" property="userId"/>
-        <result column="interview_time" property="interviewTime"/>
-        <result column="interview_id" property="interviewId"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
-    </resultMap>
+    <!-- 插入预约记录 -->
+    <insert id="insert" parameterType="com.yundingshuyuan.recruit.domain.po.ReservationPo">
+        INSERT INTO reservation (user_id, interview_time)
+        VALUES (#{userId}, #{interviewTime})
+    </insert>
 
-    <select id="selectUnassignedByInterviewTime" parameterType="java.time.LocalDateTime" resultMap="resulyMap">
-        select *
-        from reservation
-        where interview_time = #{interviewTime} and interview_id is null;
+    <select id="hasReservation" resultType="boolean" parameterType="java.lang.Integer">
+        SELECT COUNT(*) > 0
+        FROM reservation
+        WHERE user_id = #{userId}
     </select>
+
+    <!-- 其他查询、更新、删除等SQL语句定义 -->
+    <!-- ... -->
+
 </mapper>

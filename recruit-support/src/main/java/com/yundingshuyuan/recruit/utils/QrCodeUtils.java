@@ -7,6 +7,9 @@ import cn.hutool.extra.qrcode.QrConfig;
 import cn.hutool.http.HttpUtil;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.OutputStream;
@@ -19,6 +22,8 @@ import java.io.OutputStream;
  * @author wys
  */
 @Slf4j
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class QrCodeUtils {
     /**
      * 云顶书院logo base64
@@ -41,17 +46,13 @@ public class QrCodeUtils {
         LOGO_BASE64 = HttpUtil.get(LOGO_BASE64_URL);
     }
 
-    private QrCodeUtils() {
-        throw new IllegalStateException("Utility class");
-    }
-
     /**
      * 生成默认的带书院 LOGO 的二维码
      *
      * @param content 二维码中内容
      * @return 二维码转 base64 编码
      */
-    public static String getQrCodeBase64(String content) {
+    public String getQrCodeBase64(String content) {
         QrConfig config = new QrConfig(648, 648);
         config.setErrorCorrection(ErrorCorrectionLevel.H)
                 .setMargin(1)
@@ -72,7 +73,7 @@ public class QrCodeUtils {
      * @param backColor 背景色
      * @return 二维码转 base64 编码
      */
-    public static String getQrCodeBase64(String content, int width, int height, Color foreColor, Color backColor) {
+    public String getQrCodeBase64(String content, int width, int height, Color foreColor, Color backColor) {
         QrConfig config = new QrConfig(width, height);
         config.setErrorCorrection(ErrorCorrectionLevel.H)
                 .setMargin(1)
@@ -94,8 +95,8 @@ public class QrCodeUtils {
      * @param backColor 背景色
      * @return 二维码
      */
-    public static void getQrCode(String content, int width, int height, Color foreColor,
-                                 Color backColor, OutputStream outputStream) {
+    public void getQrCode(String content, int width, int height, Color foreColor,
+                          Color backColor, OutputStream outputStream) {
         QrConfig config = new QrConfig(width, height);
         config.setErrorCorrection(ErrorCorrectionLevel.H)
                 .setMargin(1)
@@ -115,11 +116,11 @@ public class QrCodeUtils {
      * @param config  自定义配置
      * @return
      */
-    public static String getQrCodeBase64(String content, QrConfig config) {
+    public String getQrCodeBase64(String content, QrConfig config) {
         return QrCodeUtil.generateAsBase64(content, config, ImgUtil.IMAGE_TYPE_PNG, LOGO_BASE64);
     }
 
-    private static int calculateBestVersion(QrConfig config, String content) {
+    private int calculateBestVersion(QrConfig config, String content) {
         // 计算最佳二维码版本
         int version = 1;
         while (version <= MAX_VERSION) {

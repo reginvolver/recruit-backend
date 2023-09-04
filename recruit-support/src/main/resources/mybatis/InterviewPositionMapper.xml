@@ -1,33 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yundingshuyuan.recruit.dao.InterviewPositionMapper">
+    <select id="certainDayPositions" resultType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo">
+        SELECT *
+        FROM interview_position
+        WHERE DATE(start_time) = #{startDate}
+    </select>
 
-    <resultMap id="ResultMap" type="com.yundingshuyuan.recruit.domain.po.InterviewPosition">
-        <result column="group_id" property="groupId"/>
-        <result column="start_time" property="startTime"/>
-        <result column="end_time" property="endTime"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
+    <update id="assign">
+        UPDATE interview_position
+        SET group_id = #{group_id}
+        WHERE group_id IS NULL
+          AND id IN (
+            SELECT id FROM (
+                               SELECT id
+                               FROM interview_position
+                               WHERE group_id IS NULL
+                               ORDER BY location, start_time
+                                   LIMIT 2
+                           ) t
+        )
+    </update>
+
+    <resultMap id="ScheduleVoResultMap" type="com.yundingshuyuan.recruit.domain.vo.ScheduleVo">
+        <id property="id" column="id"></id>
+        <result property="groupId" column="group_id"></result>
+        <result property="location" column="location"></result>
+        <result property="startTime" column="start_time"></result>
+        <result property="endTime" column="end_time"></result>
     </resultMap>
 
-    <select id="isExisted" parameterType="com.yundingshuyuan.recruit.domain.po.InterviewPosition" resultType="integer">
+    <select id="selectAssign" resultMap="ScheduleVoResultMap">
+        SELECT t1.id , t1.group_id, t1.location, t1.start_time , t2.end_time
+        FROM interview_position t1
+                 JOIN interview_position t2
+                      ON t1.group_id = t2.group_id
+                          AND t1.location = t2.location
+                          AND ABS(TIMESTAMPDIFF(HOUR, t1.start_time, t2.start_time)) = 1
+        WHERE (t1.start_time &lt; t2.start_time )
+        ORDER BY group_id
+    </select>
+
+    <update id="updateNull">
+        UPDATE interview_position
+        SET group_id = NULL
+        WHERE DATE (start_time) = #{startDate}
+    </update>
+
+    <select id="SelectIsExist" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM interview_position
         WHERE location = #{location}
-          AND start_Time = #{startTime}
-          AND end_time = #{endTime}
+         AND start_time = #{startTime}
     </select>
 
-    <select id="selectOpenedTimeListNotFull" resultType="java.time.LocalDateTime">
-        select start_time
-        from interview_position
-        where contained &lt; capacity
-        group by start_time;
-    </select>
+    <update id="updateGroupId" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo">
+        UPDATE interview_position
+            SET group_id = #{groupId}
+        WHERE location = #{location}
+          AND start_time = #{startTime}
+    </update>
 
-    <select id="searchListNotFullByStartTime" resultMap="ResultMap" parameterType = "java.time.LocalDateTime">
-        select *
-        from interview_position
-        where start_time = #{startTime} and contained &lt; capacity;
-    </select>
 </mapper>
+

@@ -1,35 +1,29 @@
 package com.yundingshuyuan.recruit.domain.vo;
 
+
+
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import java.time.LocalDateTime;
 
 /**
- * <p>
- * 预约面试表
- * </p>
- *
- * @author NSC
- * @since 2023-08-01
+ * @Author cr
+ * @Date 2023/7/26 23:11
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@AutoMapper(target = ReservationPo.class)
 public class ReservationVo {
-
     /**
      * 预约记录id
      */
     private Integer id;
-
-    /**
-     * 预约面试的用户id
-     */
-    private Integer userId;
 
     /**
      * 预约面试时间
@@ -37,7 +31,13 @@ public class ReservationVo {
     private LocalDateTime interviewTime;
 
     /**
-     * 自动分配面试地点的id
+     * 预约面试的用户id
+     */
+    private Integer userId;
+
+    /**
+     * 自动分配面试点id
      */
     private Integer interviewId;
+
 }

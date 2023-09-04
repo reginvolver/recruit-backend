@@ -1,25 +1,14 @@
 package com.yundingshuyuan.recruit.dao;
 
-
-import com.yundingshuyuan.recruit.domain.po.Reservation;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
+import com.yundingshuyuan.recruit.domain.vo.ReservationVo;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
- * <p>
- * 预约面试表 Mapper 接口
- * </p>
- *
- * @author NSC
- * @since 2023-08-01
+ 添加面试预约信息
  */
-public interface ReservationMapper extends BaseMapperPlus<Reservation,Reservation> {
+@Mapper
+public interface ReservationMapper extends BaseMapperPlus<ReservationPo, ReservationVo> {
 
-    /**
-     * 根据报名时间查询尚未分配的预约记录
-     * @param interviewTime 报名时间
-     * @return 查询结果
-     */
-    List<Reservation> selectUnassignedByInterviewTime(LocalDateTime interviewTime);
+    boolean hasReservation(Integer userId);
 }
