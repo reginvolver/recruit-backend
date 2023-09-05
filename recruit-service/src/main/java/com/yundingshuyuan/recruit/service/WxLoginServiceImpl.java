@@ -24,7 +24,7 @@ public class WxLoginServiceImpl implements IWxLoginService {
     @Value("wx0df8511230c13054")
     private String appid;
 
-    @Value("64e882d75203e6c45678c02a37a84ada")
+
     private String secret;
 
     @Autowired
