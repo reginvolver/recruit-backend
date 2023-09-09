@@ -21,10 +21,10 @@ import java.util.Map;
 @Slf4j
 public class WxLoginServiceImpl implements IWxLoginService {
 
-    @Value("wx0df8511230c13054")
+    @Value("wxf910237ed6466ca7")
     private String appid;
 
-    @Value("64e882d75203e6c45678c02a37a84ada")
+    @Value("9c37e0c18643739b08b32d72a3dc332a")
     private String secret;
 
     @Autowired

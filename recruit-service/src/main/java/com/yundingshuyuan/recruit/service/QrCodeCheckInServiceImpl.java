@@ -38,9 +38,11 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
     public String createQrCode(String openId, String eventName, int expireTime) {
         // 创建 事件所需信息
         CheckInHandler checkinHandler = ciHandlerManager.getCheckInHandler(eventName);
+        log.info("签到事件处理者{}",checkinHandler.getBindingName());
         Object data = checkinHandler.handleByOpenId(openId, qrCheckMapper);
+        log.info("获取数据data{}",data);
         // data 校验
-        if (ObjectUtil.isEmpty(data)) {
+        if (data == null) {
             throw new RuntimeException("无结果，错误的openId");
         }
         // 创建时间

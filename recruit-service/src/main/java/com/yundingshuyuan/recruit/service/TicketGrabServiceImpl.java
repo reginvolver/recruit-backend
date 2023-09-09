@@ -155,7 +155,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * 将redis中的数据持久化到mysql中,并删除已经持久化过的数据
      */
     @Override
-    @Scheduled(fixedDelay = 10000)    //1分钟
+    @Scheduled(fixedDelay = 60000)    //1分钟
     public void redisToMysql() {
         //System.currentTimeMillis() - Long.parseLong(requestTime)
         long start = System.currentTimeMillis();
@@ -199,9 +199,9 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     }
 
     public void validateExist(Integer ticketId,Integer userId){
-        Integer isExist = lectureTicketMapper.checkCount(userId, ticketId);
-        if (isExist > 0){
-            stringRedisTemplate.opsForValue().increment("ticket:count" + ticketId,1);
+        // redis exist || mysql exist
+        if ((stringRedisTemplate.opsForValue().get("grab:"+userId+":"+ticketId) != null)
+                || lectureTicketMapper.checkCount(userId, ticketId) > 0){
             throw new InvalidParameterException("一位用户不可重复抢票");
         }
     }

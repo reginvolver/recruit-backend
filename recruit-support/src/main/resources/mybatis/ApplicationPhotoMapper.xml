@@ -6,4 +6,8 @@
     <select id="countApplicationPhoto" resultType="int">
         SELECT COUNT(*) FROM application_photo
     </select>
+
+    <select id="hasApplicationPhoto" resultType="boolean">
+        SELECT COUNT(*) FROM application_photo WHERE user_id = #{userId}
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.service;
 
 import com.yundingshuyuan.recruit.api.InterviewTimeService;
+import com.yundingshuyuan.recruit.dao.ApplicationPhotoMapper;
 import com.yundingshuyuan.recruit.dao.InterviewTimeMapper;
 import com.yundingshuyuan.recruit.dao.ReservationMapper;
 import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
@@ -23,15 +24,16 @@ import java.util.concurrent.TimeUnit;
 public class InterviewTimeServiceImpl implements InterviewTimeService {
     private final InterviewTimeMapper interviewTimeMapper;
     private final ReservationMapper reservationMapper;
-
+    private final ApplicationPhotoMapper applicationPhotoMapper;
     // 添加RedisTemplate依赖
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
-    public InterviewTimeServiceImpl(InterviewTimeMapper interviewTimeMapper, ReservationMapper reservationMapper) {
+    public InterviewTimeServiceImpl(InterviewTimeMapper interviewTimeMapper, ReservationMapper reservationMapper, ApplicationPhotoMapper applicationPhotoMapper) {
         this.interviewTimeMapper = interviewTimeMapper;
         this.reservationMapper = reservationMapper;
+        this.applicationPhotoMapper = applicationPhotoMapper;
     }
 
     @Override
@@ -46,11 +48,15 @@ public class InterviewTimeServiceImpl implements InterviewTimeService {
         if (userId == null) {
             throw new RuntimeException("预约失败，用户信息不存在");
         }
-
+        // 检查是否在application_photo表中存在对应的user_id
+        boolean hasApplicationPhoto = applicationPhotoMapper.hasApplicationPhoto(userId);
+        if (!hasApplicationPhoto) {
+            return 3; // 返回3，表示预约失败，不存在对应的user_id
+        }
         // 检查是否已存在预约记录
         boolean hasReservation = reservationMapper.hasReservation(userId);
         if (hasReservation) {
-            return 2;
+            return 2; //返回2，表示已经存在过预约记录
         }
 
         // 查询面试时间段的信息
