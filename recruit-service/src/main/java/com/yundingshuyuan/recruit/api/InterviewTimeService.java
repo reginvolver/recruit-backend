@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.api;
 
 import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,4 +23,9 @@ public interface InterviewTimeService {
      * @return
      */
     List<OpenTimeInfoPo>  getAllInterviewTimes();
+    /**
+     *查询已预约面试的时间
+     */
+    List<ReservationPo> getReservationsByUserId(int userId);
+
 }

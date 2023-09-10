@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yundingshuyuan.recruit.domain.po.InterviewCheckInPo;
 import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
 
+import java.time.LocalDateTime;
+
 /**
  * 二维码签到 mapper
  *
@@ -25,5 +27,7 @@ public interface QrCodeCheckInMapper extends BaseMapper {
     InterviewCheckInPo selectInterviewInfoByOpenId(String openId);
 
     int updateStatusByUserId(long userId);
+
+    LocalDateTime getLectureGarbTime(long lectureId);
 
 }

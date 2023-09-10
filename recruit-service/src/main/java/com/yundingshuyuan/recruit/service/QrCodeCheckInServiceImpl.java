@@ -12,10 +12,12 @@ import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
 import com.yundingshuyuan.recruit.service.handler.CheckInHandler;
 import com.yundingshuyuan.recruit.service.handler.CheckInHandlerManager;
 import com.yundingshuyuan.recruit.utils.QrCodeUtils;
+import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -32,15 +34,13 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
 
     private final CheckInHandlerManager ciHandlerManager;
 
-    private final QrCodeUtils qrCodeUtils;
+    /*private final QrCodeUtils qrCodeUtils;*/
 
     @Override
     public String createQrCode(String openId, String eventName, int expireTime) {
         // 创建 事件所需信息
         CheckInHandler checkinHandler = ciHandlerManager.getCheckInHandler(eventName);
-        log.info("签到事件处理者{}",checkinHandler.getBindingName());
         Object data = checkinHandler.handleByOpenId(openId, qrCheckMapper);
-        log.info("获取数据data{}",data);
         // data 校验
         if (data == null) {
             throw new RuntimeException("无结果，错误的openId");
@@ -60,7 +60,6 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
 
     @Override
     public void parseQrCodeInfo(String scanInfo) {
-        log.info(scanInfo);
         CheckInEventVo wrapper;
         // 根据事件名调用
         CheckInHandler<?> checkinHandler;
@@ -75,16 +74,18 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
         } catch (NullPointerException e) {
             throw new RuntimeException("二维码解析失败");
         }
-        // 判断二维码是否过期
+       /* // 判断二维码是否过期
         long expireTimestamp = event.getExpireTimestamp();
         long serviceTime = System.currentTimeMillis();
         if (serviceTime > expireTimestamp) {
             throw new RuntimeException(StrUtil.format("\n錯誤[error]:\n二维码失效:at {} \n 当前服务器时间:currentTime {}",
                     DateUtil.format(new Date(expireTimestamp), CommonConstant.DATE_TIME_FORMAT_YMDHMSS),
                     DateUtil.format(new Date(serviceTime), CommonConstant.DATE_TIME_FORMAT_YMDHMSS)));
-        }
+        }*/
         // 根据事件信息操作
         checkinHandler.doCheckIn(event, qrCheckMapper);
+        // 日志
+        log.info("签到事件成功:{}", LocalDateTime.now());
     }
 
 

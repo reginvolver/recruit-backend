@@ -72,4 +72,13 @@
     </select>
     <!-- Interview - END  -->
 
+    <select id="getLectureGarbTime" resultType="java.time.LocalDateTime">
+        SELECT lecture_time
+        FROM lecture
+        WHERE lecture_id = #{lectureId}
+        AND deleted = 0;
+    </select>
+
+
+
 </mapper>

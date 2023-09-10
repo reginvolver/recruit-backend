@@ -43,6 +43,11 @@ public class InterviewTimeServiceImpl implements InterviewTimeService {
     }
 
     @Override
+    public List<ReservationPo> getReservationsByUserId(int userId) {
+        return interviewTimeMapper.getReservationsByUserId(userId);
+    }
+
+    @Override
     public Integer reserveInterview(Integer userId, LocalDateTime startTime) {
 
         if (userId == null) {
