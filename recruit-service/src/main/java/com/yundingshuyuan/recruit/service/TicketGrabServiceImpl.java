@@ -117,10 +117,11 @@ public class TicketGrabServiceImpl implements TicketGrabService {
         Integer remainCount = Integer.valueOf(stringRedisTemplate.opsForValue().get(key));
         // 时间
         String grabTimeStr =  stringRedisTemplate.opsForValue().get(garbTimeKey);
+        log.info("宣讲会{} 抢票时{}", ticketId, grabTimeStr);
         long grabTimeMills = LocalDateTime.parse(grabTimeStr,
                 DateTimeFormatter.ofPattern(CommonConstant.DATE_TIME_FORMAT_YMDHMS))
-                .toEpochSecond(ZoneOffset.UTC);
-
+                    .toInstant(ZoneOffset.UTC).toEpochMilli();
+        //
         if(System.currentTimeMillis() <  grabTimeMills - 5000){
             log.info(" 用户id{} : 未到开启抢票时间宣讲会 {} ", userId, ticketId);
             throw new RuntimeException("还未开启抢票");
