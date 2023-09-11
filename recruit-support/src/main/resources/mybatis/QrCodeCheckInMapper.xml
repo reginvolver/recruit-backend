@@ -17,7 +17,7 @@
         FROM user_info ui
                  JOIN lecture_ticket lt ON ui.id = lt.user_id
         WHERE ui.cloud_id = #{openId}
-          AND ui.deleted = 0;
+          AND ui.deleted = 0 AND lt.deleted = 0;
     </select>
 
     <select id="selectTicketByUserAndLectureId" resultType="long">

@@ -1,6 +1,6 @@
 package com.yundingshuyuan.recruit.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yundingshuyuan.constant.CommonConstant;
 import com.yundingshuyuan.recruit.api.TicketGrabService;
 import com.yundingshuyuan.recruit.dao.LectureMapper;
 import com.yundingshuyuan.recruit.dao.LectureTicketMapper;
@@ -17,9 +17,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.security.InvalidParameterException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -111,7 +113,19 @@ public class TicketGrabServiceImpl implements TicketGrabService {
         LectureTicketVo  lectureTicketVo = new LectureTicketVo();
         validateExist(ticketId,userId);
         String key = "ticket:count" + ticketId;
+        String garbTimeKey = "grabtime:count" + ticketId;
         Integer remainCount = Integer.valueOf(stringRedisTemplate.opsForValue().get(key));
+        // 时间
+        String grabTimeStr =  stringRedisTemplate.opsForValue().get(garbTimeKey);
+        long grabTimeMills = LocalDateTime.parse(grabTimeStr,
+                DateTimeFormatter.ofPattern(CommonConstant.DATE_TIME_FORMAT_YMDHMS))
+                .toEpochSecond(ZoneOffset.UTC);
+
+        if(System.currentTimeMillis() <  grabTimeMills - 5000){
+            log.info(" 用户id{} : 未到开启抢票时间宣讲会 {} ", userId, ticketId);
+            throw new RuntimeException("还未开启抢票");
+        }
+
         if (remainCount == null){
             throw new RuntimeException();
         }
@@ -128,7 +142,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
 
         lectureTicketVo.setLectureId(ticketId);
         lectureTicketVo.setUserId(userId);
-        stringRedisTemplate.opsForValue().set("grab:"+userId+":"+ticketId,"ok",120, TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().setIfAbsent("grab:"+userId+":"+ticketId,"ok",120, TimeUnit.SECONDS);
         log.info("userId为     ：" + userId + "的用户抢到了第     "+ ticketId + "场宣讲会的票，剩余票数"+ (remainCount-1));
         return true;
     }
@@ -172,7 +186,6 @@ public class TicketGrabServiceImpl implements TicketGrabService {
             lectureTicketVo.setUserId(Integer.valueOf(userId));
             lectureTicketMapper.insert(lectureTicketVo);
             stringRedisTemplate.delete("grab:" + userId + ":" + lectureId);
-
         }
 
         long end = System.currentTimeMillis();
