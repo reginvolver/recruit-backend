@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.security.InvalidParameterException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -70,13 +72,44 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      */
     @Override
     public List<LectureVo> allTicketByUser(Integer userId) {
-        List<Integer> lectureIds = lectureTicketMapper.allTicketsByUserId(userId);
         List<LectureVo> lectureVos = new ArrayList<>();
-        for (Integer e : lectureIds) {
-
-            lectureVos.add(lectureMapper.lectureById(e));
+        // 快速查看开启
+        Set<String> keys = quickLectureTicketView(userId);
+        if (keys != null) {
+            // 未持久化前返回一个只有lectureId的票demo
+            for (String key : keys) {
+                LectureVo lectureVo = new LectureVo();
+                String[] split = key.split(":");
+                Integer lectureId = Integer.valueOf(split[2]);
+                lectureVo.setLectureId(lectureId);
+                lectureVo.setLectureTheme("已抢到票！请稍等(查看详细)");
+                lectureVo.setSpeaker("等待加载...");
+                lectureVo.setContentIntroduction("恭喜你已经抢到宣讲会门票(^-^)!，数据录入可能有延迟" +
+                        "，过一段时间后刷新，请耐心等待全部数据加载，门票已生效");
+                lectureVos.add(lectureVo);
+            }
+        }  else {
+            // 持久化后mysql获取
+            List<Integer> lectureIds = lectureTicketMapper.allTicketsByUserId(userId);
+            for (Integer e : lectureIds) {
+                lectureVos.add(lectureMapper.lectureById(e));
+            }
         }
         return lectureVos;
+    }
+
+    /**
+     * 快速查看用户所有已经抢到的票
+     *
+     * @param userId
+     * @return
+     */
+    private Set<String> quickLectureTicketView(Integer userId) {
+        Set<String> keys = stringRedisTemplate.keys("grab:" + userId + ":*");
+        if (keys != null && !keys.isEmpty()) {
+            return keys;
+        }
+        return null;
     }
 
 
@@ -117,13 +150,14 @@ public class TicketGrabServiceImpl implements TicketGrabService {
         Integer remainCount = Integer.valueOf(stringRedisTemplate.opsForValue().get(key));
         // 时间
         String grabTimeStr =  stringRedisTemplate.opsForValue().get(garbTimeKey);
-        log.info("宣讲会{} 抢票时{}", ticketId, grabTimeStr);
-        long grabTimeMills = LocalDateTime.parse(grabTimeStr,
-                DateTimeFormatter.ofPattern(CommonConstant.DATE_TIME_FORMAT_YMDHMS))
-                    .toInstant(ZoneOffset.UTC).toEpochMilli();
-        //
-        if(System.currentTimeMillis() <  grabTimeMills - 5000){
-            log.info(" 用户id{} : 未到开启抢票时间宣讲会 {} ", userId, ticketId);
+        LocalDateTime grabTime = LocalDateTime.parse(grabTimeStr, DateTimeFormatter.ofPattern(CommonConstant.DATE_TIME_FORMAT_YMDHMS));
+        LocalDateTime nowTime = LocalDateTime.now();
+        log.info("宣讲会{} 抢票时{} 当前时间{}", ticketId, grabTime, nowTime);
+        // 获取两个 LocalDateTime 对象的毫秒表示
+        long grabT = grabTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long nowT = nowTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+        // 计算时间差
+        if(nowT < grabT - 2000) {
             throw new RuntimeException("还未开启抢票");
         }
 
