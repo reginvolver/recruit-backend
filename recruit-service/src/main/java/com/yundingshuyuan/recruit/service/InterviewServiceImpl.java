@@ -109,7 +109,7 @@ public class InterviewServiceImpl implements InterviewService {
         List<String> urls = new ArrayList<>();
         for (ApplicationPhotoVo e : applicationPhotoVos
         ) {
-            String url = e.getUrl();
+            String url = e.getPhotoUrl();
             urls.add(url);
         }
         return urls;

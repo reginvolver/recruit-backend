@@ -1,5 +1,6 @@
 package com.yundingshuyuan.recruit.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,11 @@ public class LectureVo {
     //@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8", locale = "zh")
     private Date lectureTime;
+    /**
+     * 宣讲内容
+     */
+    @TableField("content_introduction")
+    private String contentIntroduction;
     /**
      * 参会人数
      */

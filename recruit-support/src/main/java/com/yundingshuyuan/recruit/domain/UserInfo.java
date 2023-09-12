@@ -41,6 +41,7 @@ public class UserInfo implements Serializable {
     /**
      * 用户权限
      */
+    @TableField("is_admin")
     private Integer isAdmin;
 
     /**

@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 public class WxLoginServiceImpl implements IWxLoginService {
 
-    @Value("wx0df8511230c13054")
+    @Value("wxf910237ed6466ca7")
     private String appid;
 
     private String secret;
