@@ -86,23 +86,26 @@ public class UserInfoImpl implements UserInfoService {
         UserInfo userInfo = converter.convert(userInfoVO, UserInfo.class);
         // 这啥？
         userInfo.setAcademyId(academyConvert(userInfoVO.getAcademy()));
-        // 校验
+        // 校验抛异常提前
         commonValidation(userInfo);
+        // 分发权限
         String studentNumber = userInfo.getStudentNumber();
         /* 学号分类注册逻辑 */
         if (studentNumber.matches(RegexConstant.ADMIN_SID)) {
-            // 管理赋予
-            log.info("user{}注册为管理员",userInfo.getName());
             userInfo.setIsAdmin(1);
         } else if (studentNumber.matches(RegexConstant.USER_SID)) {
-            // 取消管理权限
-            log.info("user{}注册为用 户",userInfo.getName());
             userInfo.setIsAdmin(0);
         }
         /* 信息更新逻辑 */
         if(isUserExist(userInfo)){
+            log.info("User{} StdId {} 修改信息为{}}",userInfo.getName(),
+                    userInfo.getStudentNumber(), userInfo.getIsAdmin() == 1 ? "管理员" : "用 户");
+            // 修改
             updateUserInfo(userInfoVO, userInfo.getIsAdmin());
         } else {
+            log.info("User{} StdId {} 注册信息为{}}",userInfo.getName(),
+                    userInfo.getStudentNumber(), userInfo.getIsAdmin() == 1 ? "管理员" : "用 户");
+            // 注册
             userMapper.insert(userInfo);
         }
         return true;
