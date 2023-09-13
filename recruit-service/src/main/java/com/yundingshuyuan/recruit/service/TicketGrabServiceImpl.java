@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -110,7 +109,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * @return
      */
     private Set<String> quickLectureTicketView(Integer userId) {
-        Set<String> keys = stringRedisTemplate.keys("grab:" + userId + ":*");
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.GRAB_USER_RECORD + userId + ":*");
         if (keys != null && !keys.isEmpty()) {
             return keys;
         }
@@ -145,28 +144,28 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     public boolean ticketGrab(Integer ticketId, Integer userId) {
         // 限制单个用户
         String garbTicketLock = RedisConstant.GRAB_TICKET_LOCK + userId;
-        // 获取锁 + 加锁
+        // 获取锁 + 加锁 (锁住校验抢票和添加到redis的逻辑)
         RLock lock = redissonClient.getLock(garbTicketLock);
-        if (lock.isLocked()) {
+        if (lock.tryLock()) {
             // 业务实现
             try {
                 // 1. 资格检验
                 validateQualification(ticketId, userId);
                 // 2. 抢票
                 // 获取 Key-> value 修改
-                String lectureTicketkey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
-                RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketkey);
-                // 校验remain
+                String lectureTicketKey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
+                RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketKey);
+                // 乐观,允许抢票->校验remain
                 long remainAfterOperate = atomicLong.decrementAndGet();
                 // 超卖恢复 限制多个用户
                 if (remainAfterOperate < 0) {
-                    // 恢复
-                    long result = atomicLong.incrementAndGet();
+                    // 恢复库存
+                    atomicLong.set(0);
                     // 打印
-                    log.info("呜呜~票已经抢完了！剩余票数 {}",result);
+                    log.info("非常遗憾！user {} 同学没有抢到票！( º﹃º )", userId);
                     throw new IndexOutOfBoundsException("售无");
                 }
-                log.info("userId为：{} 的用户抢到了第{}场宣讲会的票，剩余票数{}", userId, ticketId, remainAfterOperate);
+                log.info("恭喜！user {} 同学抢到了 第{}场宣讲会 的门票(*´▽`*)，还剩票数{}张..", userId, ticketId, remainAfterOperate);
                 // 插入key
                 stringRedisTemplate.opsForValue().setIfAbsent(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId,
                         "ok", 120, TimeUnit.SECONDS);
@@ -238,13 +237,11 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * 校验是否抢过票
      *
      * @param ticketId
-     * @param userId
      */
     public void validateExist(Integer ticketId, Integer userId) {
         // redis exist || mysql exist
-        if ((stringRedisTemplate.opsForValue().get("grab:" + userId + ":" + ticketId) != null)
+        if ((stringRedisTemplate.opsForValue().get(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId) != null)
                 || lectureTicketMapper.checkCount(userId, ticketId) > 0) {
-            log.info("userId为     ：" + userId + "的用户不可重复抢票");
             throw new InvalidParameterException("一位用户不可重复抢票");
         }
     }
@@ -263,7 +260,6 @@ public class TicketGrabServiceImpl implements TicketGrabService {
         // 获取两个 LocalDateTime 对象的毫秒表示
         long grabT = grabTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
         long nowT = nowTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
-        log.info("-----\n宣讲会{} 抢票时{} 当前时间{}\n-----", ticketId, grabTime, nowTime);
         // 计算时间差
         if (nowT < grabT - 5000) {
             throw new RuntimeException("还未开启抢票");
@@ -271,15 +267,28 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     }
 
     /**
+     * 校验是否有余票？
+     * @param ticketId
+     */
+    private void validateResidue(Integer ticketId) {
+        RAtomicLong atomicLong = redissonClient.getAtomicLong(RedisConstant.LECTURE_TICKET_PREFIX + ticketId);
+        long l = atomicLong.get();
+        if (l < 0) {
+            throw new IndexOutOfBoundsException("售无");
+        }
+    }
+
+    /**
      * 校验抢票资格
      *
      * @param ticketId
-     * @param userId
      */
     public void validateQualification(Integer ticketId, Integer userId) {
+        // 票售空检验
+        validateResidue(ticketId);
         // 是否到达抢票时间
         validateOpenTime(ticketId);
-        // 不可重复抢票
+        // 不可重复抢票校验
         validateExist(ticketId, userId);
     }
 
