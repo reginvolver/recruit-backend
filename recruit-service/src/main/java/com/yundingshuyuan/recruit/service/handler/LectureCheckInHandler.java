@@ -44,13 +44,13 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
             log.info("userId {} 已经签到过 lectureId {}", userId, lectureId);
             throw new RuntimeException("已经看过宣讲会或者记录异常");
         }
-        // 宣讲会有效期判断
+        /*// 宣讲会有效期判断
         LocalDateTime lectureGarbTime = mapper.getLectureGarbTime(lectureId);
         LocalDateTime expiredTime = lectureGarbTime.plusDays(1).plusHours(2);
         if (LocalDateTime.now().isAfter(expiredTime)) {
             log.info("lectureId {} 允许签到时间已过", userId, lectureId);
             throw new RuntimeException("允许签到时间已过");
-        }
+        }*/
         // 通过 userId 修改 is_lectured
         mapper.updateIsLectureByUserId(userId);
         // 逻辑删除该票记录 搭配方案一，如果方案一删除，该段删除

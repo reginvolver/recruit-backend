@@ -21,7 +21,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.annotation.Resource;
 import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
@@ -144,25 +143,39 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, InvalidParameterException.class})
     public boolean ticketGrab(Integer ticketId, Integer userId) {
+        // 限制单个用户
         String garbTicketLock = RedisConstant.GRAB_TICKET_LOCK + userId;
         // 获取锁 + 加锁
         RLock lock = redissonClient.getLock(garbTicketLock);
-        boolean isNoLocked = lock.tryLock();
-        if (isNoLocked) {
-            log.info("进程{},{}",userId, ticketId);
+        if (lock.isLocked()) {
             // 业务实现
             try {
                 // 1. 资格检验
                 validateQualification(ticketId, userId);
                 // 2. 抢票
-                grabTicket(ticketId, userId);
+                // 获取 Key-> value 修改
+                String lectureTicketkey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
+                RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketkey);
+                // 校验remain
+                long remainAfterOperate = atomicLong.decrementAndGet();
+                // 超卖恢复 限制多个用户
+                if (remainAfterOperate < 0) {
+                    // 恢复
+                    long result = atomicLong.incrementAndGet();
+                    // 打印
+                    log.info("呜呜~票已经抢完了！剩余票数 {}",result);
+                    throw new IndexOutOfBoundsException("售无");
+                }
+                log.info("userId为：{} 的用户抢到了第{}场宣讲会的票，剩余票数{}", userId, ticketId, remainAfterOperate);
+                // 插入key
+                stringRedisTemplate.opsForValue().setIfAbsent(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId,
+                        "ok", 120, TimeUnit.SECONDS);
                 return true;
             } finally {
                 lock.unlock();
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -228,10 +241,10 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * @param userId
      */
     public void validateExist(Integer ticketId, Integer userId) {
-        log.info("Exist");
         // redis exist || mysql exist
         if ((stringRedisTemplate.opsForValue().get("grab:" + userId + ":" + ticketId) != null)
                 || lectureTicketMapper.checkCount(userId, ticketId) > 0) {
+            log.info("userId为     ：" + userId + "的用户不可重复抢票");
             throw new InvalidParameterException("一位用户不可重复抢票");
         }
     }
@@ -250,33 +263,10 @@ public class TicketGrabServiceImpl implements TicketGrabService {
         // 获取两个 LocalDateTime 对象的毫秒表示
         long grabT = grabTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
         long nowT = nowTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
-        log.info("宣讲会{} 抢票时{} 当前时间{}", ticketId, grabTime, nowTime);
+        log.info("-----\n宣讲会{} 抢票时{} 当前时间{}\n-----", ticketId, grabTime, nowTime);
         // 计算时间差
         if (nowT < grabT - 5000) {
             throw new RuntimeException("还未开启抢票");
-        }
-    }
-
-    /**
-     * 校验是否有剩余票
-     *
-     * @param ticketId
-     * @param userId
-     */
-    public void validateResidue(Integer ticketId, Integer userId) {
-        log.info("Residue");
-        // 设置key
-        String lectureTicketKey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
-        int remainNum = Integer.parseInt(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(lectureTicketKey)));
-        RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketKey);
-        if (remainNum < 1) {
-            // 恢复库存并释放锁
-            log.info("userId为：" + userId + " 的用户没抢到     " + ticketId + "场宣讲会的票，剩余票数" + remainNum);
-            log.info("呜呜~票已经抢完了！");
-            throw new IndexOutOfBoundsException("票剩余0");
-        }
-        if (remainNum == -1) {
-            atomicLong.incrementAndGet();
         }
     }
 
@@ -289,27 +279,8 @@ public class TicketGrabServiceImpl implements TicketGrabService {
     public void validateQualification(Integer ticketId, Integer userId) {
         // 是否到达抢票时间
         validateOpenTime(ticketId);
-        // 是否有余票
-        validateResidue(ticketId, userId);
         // 不可重复抢票
         validateExist(ticketId, userId);
-    }
-
-    /**
-     * 抢票操作
-     *
-     * @param ticketId
-     * @param userId
-     */
-    public void grabTicket(Integer ticketId, Integer userId) {
-        // 设置key
-        String lectureTicketkey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
-        RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketkey);
-        long remain = atomicLong.decrementAndGet();
-        // 插入key
-        stringRedisTemplate.opsForValue().setIfAbsent(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId,
-                "ok", 120, TimeUnit.SECONDS);
-        log.info("userId为     ：" + userId + "的用户抢到了第     " + ticketId + "场宣讲会的票，剩余票数" + remain);
     }
 
 
