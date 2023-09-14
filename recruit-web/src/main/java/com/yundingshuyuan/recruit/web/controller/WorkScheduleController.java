@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -38,9 +39,24 @@ public class WorkScheduleController {
         return workScheduleService.showCertainDayAssign(today);
     }
 
+    @Operation(summary = "展示明日排班")
+    @SaCheckPermission("admin")
+    @GetMapping("/showTomorrowAssign")
+    public List<WorkingScheduleVo> showTomorrowAssign(){
+        LocalDate today = LocalDate.now();
+        LocalDate Tomorrow = today.plusDays(1);
+        return workScheduleService.showCertainDayAssign(Tomorrow);
+    }
+
+    @Operation(summary = "今日面试排班")
+    @SaCheckPermission("super-admin")
+    @GetMapping("/workingScheduleAssignToday")
+    public boolean workAssignToday(){
+        return workScheduleService.assignToday();
+    }
 
     @Operation(summary = "第二天面试排班")
-    @SaCheckPermission("admin")
+    @SaCheckPermission("super-admin")
     @GetMapping("/workingScheduleAssignTomorrow")
     public boolean workAssign(){
         return workScheduleService.assignTomorrow();
@@ -53,7 +69,7 @@ public class WorkScheduleController {
     public boolean tempAddInterview(@RequestBody InterviewPositionVo interviewPositionVo){
         boolean aBoolean = false;
 
-            aBoolean = workScheduleService.tempAddInterview(interviewPositionVo);
+        aBoolean = workScheduleService.tempAddInterview(interviewPositionVo);
         if (aBoolean){
             return true;
         }
@@ -67,9 +83,17 @@ public class WorkScheduleController {
         return workScheduleService.deleteTodaySchedule();
     }
 
+    @Operation(summary = "清空明日排班信息")
+    @SaCheckPermission("super-admin")
+    @GetMapping("/deleteAssignTomorrow")
+    public boolean deleteAssignTomorrow(){
+        return workScheduleService.deleteTodaySchedule();
+    }
+
 
     @Operation(summary = "面试官换班")
     @SaCheckPermission("super-admin")
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/changeAssign")
     public boolean changeAssign(@RequestBody List<WorkingSchedule> workingSchedules){
         return workScheduleService.changeSchedule(workingSchedules);
