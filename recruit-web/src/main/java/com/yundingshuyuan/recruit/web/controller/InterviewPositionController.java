@@ -35,9 +35,8 @@ public class InterviewPositionController {
     @PostMapping("/add")
     @Operation(summary = "添加一个面试地点")
     BasicResultVO addInterviewPosition(@RequestBody InterviewPositionVo interviewPositionVo) {
-        return interviewPositionService.addInterviewPosition(interviewPositionVo)
-                ? BasicResultVO.success("添加成功")
-                : BasicResultVO.fail("添加失败");
+        interviewPositionService.addInterviewPosition(interviewPositionVo);
+        return BasicResultVO.success("添加成功");
     }
 
     @GetMapping("/getAll")
@@ -49,25 +48,39 @@ public class InterviewPositionController {
     @GetMapping("/deleteById")
     @Operation(summary = "根据id删除一个面试地点")
     BasicResultVO deleteInterviewPositionById(int id) {
-        return interviewPositionService.deleteById(id)
-                ? BasicResultVO.success("删除成功")
-                : BasicResultVO.fail("删除失败");
+        interviewPositionService.deleteById(id);
+        return BasicResultVO.success("删除成功");
     }
 
     @GetMapping("assignAll")
     @Operation(summary = "为所有时段的报名新生分配面试地点")
     BasicResultVO assignAllInterviewPosition() {
-        return interviewPositionService.assignAllInterviewPosition()
-                ? BasicResultVO.success("分配成功")
-                : BasicResultVO.fail("分配失败");
+        interviewPositionService.assignAllInterviewPosition();
+        return BasicResultVO.success("分配成功");
     }
 
     @GetMapping("assign")
     @Operation(summary = "为某一时段的报名新生分配面试地点")
     BasicResultVO assignInterviewPosition(
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime interviewTime) {
-        return interviewPositionService.assignInterviewPosition(interviewTime)
-                ? BasicResultVO.success("分配成功")
-                : BasicResultVO.fail("分配失败");
+            @DateTimeFormat(pattern = "yyyy-MM-ddTHH:mm:ss")LocalDateTime interviewTime) {
+        interviewPositionService.assignInterviewPosition(interviewTime);
+        return BasicResultVO.success("分配成功");
     }
+
+    @GetMapping("updatePosition")
+    @Operation(summary = "根据用户id和面试地点id修改面试地点")
+    BasicResultVO updateInterviewPosition(
+            Integer userId,Integer positionId) {
+        interviewPositionService.updateInterviewPosition(userId,positionId);
+        return BasicResultVO.success("修改面试地点成功");
+    }
+    @GetMapping("exchangePosition")
+    @Operation(summary = "根据用户id交换面试地点")
+    BasicResultVO exchangeInterviewPosition(
+            Integer userId1,
+            Integer userId2) {
+        interviewPositionService.exchangeInterviewPosition(userId1,userId2);
+        return BasicResultVO.success("交换面试地点成功");
+    }
+
 }

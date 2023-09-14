@@ -20,5 +20,23 @@ public interface ReservationMapper extends BaseMapperPlus<ReservationPo, Reserva
      */
     List<ReservationPo> selectUnassignedByInterviewTime(LocalDateTime interviewTime);
 
+    /**
+     * 使用了乐观锁的update
+     * @param reservation
+     * @return
+     */
+    Integer updateByIdAndVersion(ReservationPo reservation);
+
+    /**
+     * 根据用户id查询预约记录
+     * @param userId
+     * @return
+     */
+    ReservationPo selectByUserId(Integer userId);
+
+    Integer clearInterviewPositionUser(Integer interviewId);
+
     boolean hasReservation(Integer userId);
+
+
 }

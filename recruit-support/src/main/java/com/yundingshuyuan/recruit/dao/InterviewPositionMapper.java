@@ -76,4 +76,11 @@ public interface InterviewPositionMapper extends BaseMapperPlus<InterviewPositio
     Integer SelectIsExist(InterviewPositionVo interviewPositionVo);
 
     Integer updateGroupId(InterviewPositionVo interviewPositionVo);
+
+    /**
+     * 使用了乐观锁的更新
+     * @param interviewPosition
+     * @return
+     */
+    Integer updateByIdAndVersion(InterviewPosition interviewPosition);
 }
