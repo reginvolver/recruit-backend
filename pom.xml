@@ -200,6 +200,15 @@
                 <artifactId>core</artifactId>
                 <version>3.3.3</version>
             </dependency>
+
+            <!--  redisson   -->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>3.17.3</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 

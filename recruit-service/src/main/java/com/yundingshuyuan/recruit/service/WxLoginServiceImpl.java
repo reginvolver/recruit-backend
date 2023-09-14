@@ -23,7 +23,7 @@ public class WxLoginServiceImpl implements IWxLoginService {
 
     @Value("wxf910237ed6466ca7")
     private String appid;
-
+    @Value("9c37e0c18643739b08b32d72a3dc332a")
     private String secret;
 
     @Autowired
@@ -34,7 +34,6 @@ public class WxLoginServiceImpl implements IWxLoginService {
         System.out.println(data);
         JSONObject dataObject = JSONUtil.parseObj(data);
         String code = dataObject.get("code", String.class);
-
         String authUrl = "https://api.weixin.qq.com/sns/jscode2session?&grant_type=authorization_code";
         authUrl = authUrl + "&appid=" + appid + "&secret=" + secret + "&js_code=" + code;
         String result = HttpUtil.get(authUrl);
