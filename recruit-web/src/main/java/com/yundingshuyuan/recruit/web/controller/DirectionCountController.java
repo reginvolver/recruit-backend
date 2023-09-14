@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.web.controller;
 
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.yundingshuyuan.recruit.api.DirectionCountService;
 import com.yundingshuyuan.recruit.domain.vo.DirectionCountVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
@@ -26,16 +27,19 @@ public class DirectionCountController {
     private DirectionCountService directionCountService;
 
     @Operation(summary = "方向统计")
+    @SaCheckPermission("super-admin")
     @GetMapping("/count")
     public List<DirectionCountVo> getDirectionCounts() {
         return directionCountService.getDirectionCounts();
     }
     @Operation(summary = "报名时间统计")
+    @SaCheckPermission("super-admin")
     @GetMapping("/date")
     public List<Map<LocalDate, Integer>> getDateCounts() {
         return directionCountService.getDateCounts();
     }
     @Operation(summary = "报名人数统计")
+    @SaCheckPermission("super-admin")
     @GetMapping("/total")
     public Map<String, Object> getTotalCounts() {
         return directionCountService.getTotalCounts();

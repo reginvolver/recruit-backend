@@ -4,6 +4,7 @@ import com.yundingshuyuan.recruit.api.DirectionCountService;
 import com.yundingshuyuan.recruit.dao.ApplicationPhotoMapper;
 import com.yundingshuyuan.recruit.dao.UserInfoMapper;
 import com.yundingshuyuan.recruit.domain.vo.DirectionCountVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class DirectionCountServiceImpl implements DirectionCountService {
     @Autowired
     private UserInfoMapper userInfoMapper;
