@@ -52,10 +52,14 @@ public class InterviewPosition implements Serializable {
     private Integer capacity;
 
     /**
+     * 已容纳的人数
+     */
+    private Integer contained;
+
+    /**
      * 分配的面试官组别
      */
     private Integer groupId;
-
 
     /**
      * 乐观锁

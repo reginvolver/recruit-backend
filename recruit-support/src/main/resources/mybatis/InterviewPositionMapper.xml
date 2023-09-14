@@ -30,6 +30,36 @@
         <result property="endTime" column="end_time"></result>
     </resultMap>
 
+    <resultMap id="ResultMap" type="com.yundingshuyuan.recruit.domain.InterviewPosition">
+        <result column="group_id" property="groupId"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="isExisted" parameterType="com.yundingshuyuan.recruit.domain.InterviewPosition" resultType="integer">
+        SELECT COUNT(*)
+        FROM interview_position
+        WHERE location = #{location}
+          AND start_Time = #{startTime}
+          AND end_time = #{endTime}
+          AND deleted = 0;
+    </select>
+
+    <select id="selectOpenedTimeListNotFull" resultType="java.time.LocalDateTime">
+        select start_time
+        from interview_position
+        where contained &lt; capacity and deleted = 0
+        group by start_time;
+    </select>
+
+    <select id="searchListNotFullByStartTime" resultMap="ResultMap" parameterType = "java.time.LocalDateTime">
+        select *
+        from interview_position
+        where start_time = #{startTime} and contained &lt; capacity AND deleted = 0;
+    </select>
+
     <select id="selectAssign" resultMap="ScheduleVoResultMap">
         SELECT t1.id , t1.group_id, t1.location, t1.start_time , t2.end_time
         FROM interview_position t1

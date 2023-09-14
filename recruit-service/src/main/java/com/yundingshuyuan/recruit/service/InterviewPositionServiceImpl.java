@@ -5,8 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.yundingshuyuan.recruit.api.IInterviewPositionService;
 import com.yundingshuyuan.recruit.dao.InterviewPositionMapper;
 import com.yundingshuyuan.recruit.dao.ReservationMapper;
-import com.yundingshuyuan.recruit.domain.po.InterviewPosition;
-import com.yundingshuyuan.recruit.domain.po.Reservation;
+import com.yundingshuyuan.recruit.domain.InterviewPosition;
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
 import com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo;
 import com.yundingshuyuan.recruit.utils.MapstructUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ public class InterviewPositionServiceImpl implements IInterviewPositionService {
             throw new IllegalArgumentException("地点格式错误");
         }
 
-        if (!startTime.plusHours(1).isEqual(endTime)){
+        if (startTime == null || endTime == null || !startTime.plusHours(1).isEqual(endTime)){
             throw new IllegalArgumentException("时间格式错误");
         }
 
@@ -114,8 +114,11 @@ public class InterviewPositionServiceImpl implements IInterviewPositionService {
      */
     @Override
     public boolean assignInterviewPosition(LocalDateTime interviewTime) {
+
+        if (interviewTime == null)  throw new IllegalArgumentException("时间格式错误");
+
         List<InterviewPosition> interviewPositions = interviewPositionMapper.searchListNotFullByStartTime(interviewTime);
-        List<Reservation> reservations = reservationMapper.selectUnassignedByInterviewTime(interviewTime);
+        List<ReservationPo> reservations = reservationMapper.selectUnassignedByInterviewTime(interviewTime);
 
         //为空代表已分配过或是无人报名,或尚未添加面试点
         if (interviewPositions.isEmpty() || reservations.isEmpty()) throw new RuntimeException("无需分配面试点");
@@ -159,7 +162,7 @@ public class InterviewPositionServiceImpl implements IInterviewPositionService {
      * @param interviewPositions 面试地点列表
      * @param reservations 预约记录列表
      */
-    public void assignInterviewPositionByAverage(List<InterviewPosition> interviewPositions, List<Reservation> reservations) {
+    public void assignInterviewPositionByAverage(List<InterviewPosition> interviewPositions, List<ReservationPo> reservations) {
         // TODO 实现优先分配靠前的面试点的分配方式
     }
 
@@ -168,15 +171,15 @@ public class InterviewPositionServiceImpl implements IInterviewPositionService {
      * @param interviewPositions 面试地点列表
      * @param reservations 预约记录列表
      */
-    public void assignInterviewPositionByFull(List<InterviewPosition> interviewPositions, List<Reservation> reservations) {
+    public void assignInterviewPositionByFull(List<InterviewPosition> interviewPositions, List<ReservationPo> reservations) {
         int interviewPositionNum = interviewPositions.size();
         int reservationNum = reservations.size();
 
         //随机排序
-        List<Reservation> sortedReservations = randomSort(reservations);
+        List<ReservationPo> sortedReservations = randomSort(reservations);
 
         //当前操作的对象
-        Reservation curReservation;
+        ReservationPo curReservation;
         InterviewPosition curInterviewPosition;
 
         //循环变量
@@ -203,10 +206,10 @@ public class InterviewPositionServiceImpl implements IInterviewPositionService {
      *
      * @param reservations 待排序的序列
      */
-    private void randomSort(Reservation[] reservations) {
+    private void randomSort(ReservationPo[] reservations) {
         int nums = reservations.length;
         int randomNumber;
-        Reservation temp;
+        ReservationPo temp;
         Random random = new Random();
 
         for (int i = 0; i < nums - 1; i++) {
@@ -223,8 +226,8 @@ public class InterviewPositionServiceImpl implements IInterviewPositionService {
      * @param reservations 待排序的序列
      * @return 随机排序的结果
      */
-    private List<Reservation> randomSort(List<Reservation> reservations) {
-        Reservation[] reservationsArray = reservations.toArray(new Reservation[0]);
+    private List<ReservationPo> randomSort(List<ReservationPo> reservations) {
+        ReservationPo[] reservationsArray = reservations.toArray(new ReservationPo[0]);
         randomSort(reservationsArray);
         return Arrays.stream(reservationsArray).collect(Collectors.toList());
     }

@@ -27,7 +27,7 @@ import java.util.List;
 @RecruitResult
 @Slf4j
 @RequestMapping("/interview")
-public class InterviewSessionController {
+public class InterviewPositionController {
 
     @Autowired
     IInterviewPositionService interviewPositionService;
@@ -56,7 +56,7 @@ public class InterviewSessionController {
 
     @GetMapping("assignAll")
     @Operation(summary = "为所有时段的报名新生分配面试地点")
-    BasicResultVO assignAllInterviewPosition(int id) {
+    BasicResultVO assignAllInterviewPosition() {
         return interviewPositionService.assignAllInterviewPosition()
                 ? BasicResultVO.success("分配成功")
                 : BasicResultVO.fail("分配失败");

@@ -35,6 +35,10 @@ public class InterviewPositionVo {
      */
     private Integer capacity;
 
+    /**
+     * 已容纳的人数
+     */
+    private Integer contained;
 
     /**
      * 开始时间
