@@ -117,4 +117,3 @@ management:
 logging:
   level:
     root: info
-
