@@ -1,5 +1,5 @@
 server:
-  port: 9091
+  port: 9093
 # MyBatis-Plus 配置
 mybatis-plus:
   mapper-locations: classpath*:mybatis/**/*.xml
@@ -10,7 +10,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-
 # spring
 spring:
   banner:
@@ -62,17 +61,21 @@ spring:
       strict: false
       datasource:
         master:
-          url: jdbc:mysql://localhost:3307/test2?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+          url: jdbc:mysql://localhost:3306/yunzhaoyunyao2023?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
           username: root
-          password: recruit+-
+          password: 123456
           driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: recruit
   profiles:
     active: dev
   redis:
-    host: ${redis.ip:127.0.0.1}
-    password: ${redis.password:recruit}
+    host: 127.0.0.1
+    port: 6379
+
+
+
+
 # apollo
 apollo:
   bootstrap:

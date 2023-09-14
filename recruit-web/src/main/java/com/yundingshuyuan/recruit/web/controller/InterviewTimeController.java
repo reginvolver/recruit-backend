@@ -2,6 +2,7 @@ package com.yundingshuyuan.recruit.web.controller;
 
 import com.yundingshuyuan.recruit.api.InterviewTimeService;
 import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
 import com.yundingshuyuan.recruit.domain.vo.ReservationVo;
 import com.yundingshuyuan.recruit.domain.vo.ReserveInterviewTimeVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
@@ -48,4 +49,12 @@ public class InterviewTimeController {
         return interviewTimeService.getAllInterviewTimes();
     }
 
+    /**
+     * 查询已预约的面试时间
+     */
+    @Operation(summary = "展示已预约的面试时间段")
+    @GetMapping("/reservations")
+    public List<ReservationPo> getReservationsByUserId(@RequestParam("userId") int userId) {
+        return interviewTimeService.getReservationsByUserId(userId);
+    }
 }

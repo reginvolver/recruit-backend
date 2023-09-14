@@ -21,6 +21,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
 #sa-token
 sa-token:
   # token 名称（同时也是 cookie 名称）
