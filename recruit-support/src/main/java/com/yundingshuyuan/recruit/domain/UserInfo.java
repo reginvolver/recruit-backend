@@ -41,6 +41,7 @@ public class UserInfo implements Serializable {
     /**
      * 用户权限
      */
+    @TableField("is_admin")
     private Integer isAdmin;
 
     /**
@@ -88,10 +89,6 @@ public class UserInfo implements Serializable {
      */
     private String qq;
 
-    /**
-     * 二维码
-     */
-    private String qrCode;
 
     /**
      * 是否到达面试地点

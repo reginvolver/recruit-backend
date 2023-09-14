@@ -29,7 +29,6 @@ public class UserInfoVo {
     private String direction;
     private String major;
 
-    private String qrCode;
 
     private String academy;
     private String school;

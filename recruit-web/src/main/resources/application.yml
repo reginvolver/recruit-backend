@@ -62,17 +62,21 @@ spring:
       strict: false
       datasource:
         master:
-          url: jdbc:mysql://localhost:3307/test2?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
+          url: jdbc:mysql://localhost:3306/yunzhaoyunyao2023?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&rewriteBatchedStatements=true
           username: root
-          password: recruit+-
+          password: 100Centa30821%mysql
           driver-class-name: com.mysql.cj.jdbc.Driver
   application:
     name: recruit
   profiles:
     active: dev
   redis:
-    host: ${redis.ip:127.0.0.1}
-    password: ${redis.password:recruit}
+    host: localhost
+    port: 6379
+  #  password: ${redis.password:recruit}
+  web:
+    resources:
+      static-locations: [classpath:/] #在类路径下的静态资源才能被访问到
 # apollo
 apollo:
   bootstrap:

@@ -2,6 +2,8 @@ package com.yundingshuyuan.recruit.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.yundingshuyuan.recruit.domain.vo.ApplicationPhotoVo;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("application_photo")
+@AutoMapper(target = ApplicationPhotoVo.class)
 public class ApplicationPhotoPo {
     /**
      * 应申请书照片的唯一标识符。
@@ -47,6 +50,7 @@ public class ApplicationPhotoPo {
      * 申请书照片最后更新的日期和时间。
      */
     private LocalDateTime updateTime;
+
     public ApplicationPhotoPo (String id,String url){
         this.cloudId = id;
         this.photoUrl = url;

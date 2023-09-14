@@ -12,10 +12,12 @@ import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
 import com.yundingshuyuan.recruit.service.handler.CheckInHandler;
 import com.yundingshuyuan.recruit.service.handler.CheckInHandlerManager;
 import com.yundingshuyuan.recruit.utils.QrCodeUtils;
+import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -32,7 +34,7 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
 
     private final CheckInHandlerManager ciHandlerManager;
 
-    private final QrCodeUtils qrCodeUtils;
+    /*private final QrCodeUtils qrCodeUtils;*/
 
     @Override
     public String createQrCode(String openId, String eventName, int expireTime) {
@@ -40,7 +42,7 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
         CheckInHandler checkinHandler = ciHandlerManager.getCheckInHandler(eventName);
         Object data = checkinHandler.handleByOpenId(openId, qrCheckMapper);
         // data 校验
-        if (ObjectUtil.isEmpty(data)) {
+        if (data == null) {
             throw new RuntimeException("无结果，错误的openId");
         }
         // 创建时间
@@ -49,7 +51,8 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
         // 加密
         try {
             String content = checkinHandler.encipher(data, createTimestamp, expireTimestamp);
-            return qrCodeUtils.getQrCodeBase64(content);
+            /*return qrCodeUtils.getQrCodeBase64(content);*/
+            return content;
         } catch (Exception e) {
             throw new RuntimeException("解密失败");
         }
@@ -57,21 +60,32 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
 
     @Override
     public void parseQrCodeInfo(String scanInfo) {
-        CheckInEventVo wrapper = JSON.parseObject(scanInfo, CheckInEventVo.class);
+        CheckInEventVo wrapper;
         // 根据事件名调用
-        CheckInHandler<?> checkinHandler = ciHandlerManager.getCheckInHandler(wrapper.getEventName());
+        CheckInHandler<?> checkinHandler;
         // 解密被加密事件信息
-        CheckInEvent<?> event = checkinHandler.decipher(wrapper.getEncryptedData());
-        // 判断二维码是否过期
+        CheckInEvent<?> event;
+        try {
+            wrapper = JSON.parseObject(scanInfo, CheckInEventVo.class);
+            // 根据事件名调用
+            checkinHandler = ciHandlerManager.getCheckInHandler(wrapper.getEventName());
+            // 解密被加密事件信息
+            event = checkinHandler.decipher(wrapper.getEncryptedData());
+        } catch (NullPointerException e) {
+            throw new RuntimeException("二维码解析失败");
+        }
+       /* // 判断二维码是否过期
         long expireTimestamp = event.getExpireTimestamp();
         long serviceTime = System.currentTimeMillis();
         if (serviceTime > expireTimestamp) {
             throw new RuntimeException(StrUtil.format("\n錯誤[error]:\n二维码失效:at {} \n 当前服务器时间:currentTime {}",
                     DateUtil.format(new Date(expireTimestamp), CommonConstant.DATE_TIME_FORMAT_YMDHMSS),
                     DateUtil.format(new Date(serviceTime), CommonConstant.DATE_TIME_FORMAT_YMDHMSS)));
-        }
+        }*/
         // 根据事件信息操作
         checkinHandler.doCheckIn(event, qrCheckMapper);
+        // 日志
+        log.info("签到事件成功:{}", LocalDateTime.now());
     }
 
 

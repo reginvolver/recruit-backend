@@ -2,8 +2,8 @@ package com.yundingshuyuan.recruit.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
+import com.yundingshuyuan.constant.RegexConstant;
 import com.yundingshuyuan.recruit.api.AcademyService;
-import com.yundingshuyuan.recruit.api.RegisterInfoService;
 import com.yundingshuyuan.recruit.api.UserInfoService;
 import com.yundingshuyuan.recruit.dao.UserInfoMapper;
 import com.yundingshuyuan.recruit.domain.Academy;
@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.InvalidParameterException;
 
 @Service
 @Slf4j
@@ -56,57 +58,66 @@ public class UserInfoImpl implements UserInfoService {
 
 
     @Override
-    public boolean updateUserInfo(UserInfoVo userInfoVO) {
+    public boolean updateUserInfo(UserInfoVo userInfoVO, Integer isAdmin) {
         UserInfo userInfo = converter.convert(userInfoVO, UserInfo.class);
-        commonValidation(userInfo);
+        /*commonValidation(userInfo);*/
         Integer integer = academyConvert(userInfoVO.getAcademy());
         userInfo.setAcademyId(integer);
+        userInfo.setIsAdmin(isAdmin);
         LambdaUpdateChainWrapper<UserInfo> updateWrapper = new LambdaUpdateChainWrapper<>(userMapper);
-        boolean update = updateWrapper.eq(UserInfo::getId, userInfo.getId())
-                .set(userInfo.getAcademyId() != null, UserInfo::getAcademyId, userInfo.getAcademyId())
-                .set(!userInfo.getEmail().isEmpty(), UserInfo::getEmail, userInfo.getEmail())
-                .set(!userInfo.getGender().isEmpty(), UserInfo::getGender, userInfo.getGender())
-                .set(!userInfo.getMajor().isEmpty(), UserInfo::getMajor, userInfo.getMajor())
-                .set(!userInfo.getName().isEmpty(), UserInfo::getName, userInfo.getName())
-                .set(!userInfo.getPhone().isEmpty(), UserInfo::getPhone, userInfo.getPhone())
-                .set(!userInfo.getQq().isEmpty(), UserInfo::getQq, userInfo.getQq())
+        boolean update = updateWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId())
                 .set(!userInfo.getStudentNumber().isEmpty(), UserInfo::getStudentNumber, userInfo.getStudentNumber())
+                .set(userInfo.getAcademyId() != null, UserInfo::getAcademyId, userInfo.getAcademyId())
+                .set(!userInfo.getDirection().isEmpty(), UserInfo::getDirection, userInfo.getDirection())
+                .set(userInfo.getIsAdmin() != null, UserInfo::getIsAdmin, userInfo.getIsAdmin())
+                .set(!userInfo.getGender().isEmpty(), UserInfo::getGender, userInfo.getGender())
+                .set(!userInfo.getEmail().isEmpty(), UserInfo::getEmail, userInfo.getEmail())
+                .set(!userInfo.getMajor().isEmpty(), UserInfo::getMajor, userInfo.getMajor())
+                .set(!userInfo.getPhone().isEmpty(), UserInfo::getPhone, userInfo.getPhone())
+                .set(!userInfo.getName().isEmpty(), UserInfo::getName, userInfo.getName())
+                .set(!userInfo.getQq().isEmpty(), UserInfo::getQq, userInfo.getQq())
                 .update();
+        log.info("学号{}",userInfo.getStudentNumber());
         return update;
     }
 
     @Override
     public boolean saveUserInfo(UserInfoVo userInfoVO) {
         UserInfo userInfo = converter.convert(userInfoVO, UserInfo.class);
-        userInfo.setIsAdmin(0);
-        try {
-            commonValidation(userInfo);
-        }catch (AdminException e){
-            log.info("管理员");
+        // 这啥？
+        userInfo.setAcademyId(academyConvert(userInfoVO.getAcademy()));
+        // 校验抛异常提前
+        commonValidation(userInfo);
+        // 分发权限
+        String studentNumber = userInfo.getStudentNumber();
+        /* 学号分类注册逻辑 */
+        if (studentNumber.matches(RegexConstant.ADMIN_SID)) {
             userInfo.setIsAdmin(1);
+        } else if (studentNumber.matches(RegexConstant.USER_SID)) {
+            userInfo.setIsAdmin(0);
         }
-        if(!check(userInfo)){
-            updateUserInfo(userInfoVO);
-            return true;
-        }
-        Integer integer = academyConvert(userInfoVO.getAcademy());
-        userInfo.setAcademyId(integer);
-        if (check(userInfo)) {
-            String qrCodeBase64 = qrCodeUtils.getQrCodeBase64(userInfo.getCloudId().toString());
-            userInfo.setQrCode(qrCodeBase64);
+        /* 信息更新逻辑 */
+        if(isUserExist(userInfo)){
+            log.info("User{} StdId {} 修改信息为{}}",userInfo.getName(),
+                    userInfo.getStudentNumber(), userInfo.getIsAdmin() == 1 ? "管理员" : "用 户");
+            // 修改
+            updateUserInfo(userInfoVO, userInfo.getIsAdmin());
+        } else {
+            log.info("User{} StdId {} 注册信息为{}}",userInfo.getName(),
+                    userInfo.getStudentNumber(), userInfo.getIsAdmin() == 1 ? "管理员" : "用 户");
+            // 注册
             userMapper.insert(userInfo);
-            return true;
         }
-        return false;
+        return true;
     }
 
-    public boolean check(UserInfo userInfo) {
+    public boolean isUserExist(UserInfo userInfo) {
         LambdaQueryWrapper<UserInfo> queryWrapper = new LambdaQueryWrapper<>();
         UserInfo userInfo1 = userMapper.selectOne(queryWrapper.eq(UserInfo::getCloudId, userInfo.getCloudId()));
         if (userInfo1 == null) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public Integer academyConvert(String academyName) {
@@ -124,7 +135,7 @@ public class UserInfoImpl implements UserInfoService {
      *
      * @param info
      */
-    private void commonValidation(UserInfo info) {
+    private void commonValidation(UserInfo info) throws AdminException, InvalidParameterException {
         new AbstractUserInfoValidation.Builder().add(new EmailValidation(info.getEmail()))
                 .add(new PhoneValidation(info.getPhone()))
                 .add(new StudentNumberValidation(info.getStudentNumber())).build().validate();

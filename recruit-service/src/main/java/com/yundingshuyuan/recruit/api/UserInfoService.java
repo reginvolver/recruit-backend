@@ -18,11 +18,12 @@ public interface UserInfoService {
      * Description 更新用户信息
      *
      * @param userInfoVO 用户信息
+     * @param isAdmin
      * @return boolean
      * @author 李朋逊
      * @date 2023/08/02
      */
-    public boolean updateUserInfo(UserInfoVo userInfoVO);
+    public boolean updateUserInfo(UserInfoVo userInfoVO, Integer isAdmin);
 
     /**
      * Description 保存用户信息

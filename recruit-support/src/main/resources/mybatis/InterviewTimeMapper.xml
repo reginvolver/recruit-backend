@@ -3,6 +3,18 @@
 
 <mapper namespace="com.yundingshuyuan.recruit.dao.InterviewTimeMapper">
 
+    <resultMap id="OpenTimeInfoPo" type="com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo">
+        <result column="id" property="id" ></result>
+        <result column="start_time" property="startTime" javaType="java.time.LocalDateTime"></result>
+        <result column="end_time" property="endTime" javaType="java.time.LocalDateTime"></result>
+        <result column="capacity" property="capacity" ></result>
+        <result column="reserved" property="reserved" ></result>
+        <result column="version" property="version"></result>
+        <result column="deleted" property="deleted" ></result>
+        <result column="crate_time" property="createTime" ></result>
+        <result column="update_time" property="updateTime" ></result>
+    </resultMap>
+
     <!-- 根据开始时间查询面试时间信息 -->
     <select id="getInterviewTimeByStartTime" resultType="com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo">
         SELECT *
@@ -24,5 +36,21 @@
             update_time = #{updateTime}
         WHERE id = #{id}
     </update>
+
+    <select id="getAllInterviewTimes" resultMap="OpenTimeInfoPo">
+        SELECT id, start_time, end_time
+        FROM interview_opentime
+    </select>
+
+    <update id="updateReservedCount" parameterType="map">
+        UPDATE interview_opentime
+        SET reserved = #{reservedCount}
+        WHERE id = #{interviewTimeId}
+    </update>
+
+    <select id="getReservationsByUserId" parameterType="int" resultType="com.yundingshuyuan.recruit.domain.po.ReservationPo">
+        SELECT * FROM reservation
+        WHERE user_id = #{userId}
+    </select>
 
 </mapper>

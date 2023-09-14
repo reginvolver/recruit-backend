@@ -7,10 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 签到事件容器
+ */
 @Component
 public class CheckInHandlerManager {
     private final Map<String, CheckInHandler<?>> handlerMap = new HashMap<>();
 
+    /**
+     * 自动注册已有
+     * @param checkInHandlers
+     */
     @Autowired
     public CheckInHandlerManager(List<CheckInHandler<?>> checkInHandlers) {
         for (CheckInHandler<?> handler : checkInHandlers) {

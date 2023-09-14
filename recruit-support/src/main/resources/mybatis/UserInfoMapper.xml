@@ -8,4 +8,34 @@
         WHERE id = #{userId}
     </update>
 
+    <resultMap id="BaseResultMap" type="com.yundingshuyuan.recruit.domain.UserInfo">
+        <id column="id" property="id" />
+        <result column="is_passed" property="isPassed" />
+        <!-- 其他字段映射省略 -->
+    </resultMap>
+
+    <select id="getByUserId" resultMap="BaseResultMap">
+        SELECT * FROM user_info WHERE id = #{userId}
+    </select>
+
+    <select id="countByDirection" resultType="com.yundingshuyuan.recruit.domain.vo.DirectionCountVo">
+        SELECT user_info.direction,
+               COUNT(*) AS total,
+               SUM(CASE WHEN DATE(user_info.create_time) = CURDATE() THEN 1 ELSE 0 END) AS today,
+               SUM(CASE WHEN user_info.gender = 1 THEN 1 ELSE 0 END) AS maleCount,
+               SUM(CASE WHEN user_info.gender = 0 THEN 1 ELSE 0 END) AS femaleCount
+        FROM user_info
+        GROUP BY user_info.direction
+    </select>
+
+    <select id="countByDate" resultType="java.util.Map">
+        SELECT DATE(create_time) AS date, COUNT(*) AS count
+        FROM user_info
+        GROUP BY date
+    </select>
+
+    <select id="countRegisterInfo" resultType="int">
+        SELECT COUNT(*) FROM user_info
+    </select>
+
 </mapper>
