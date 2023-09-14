@@ -10,5 +10,4 @@ public interface ApplicationPhotoMapper extends BaseMapperPlus<ApplicationPhotoP
     int countApplicationPhoto();
 
     boolean hasApplicationPhoto(Integer userId);
-
 }

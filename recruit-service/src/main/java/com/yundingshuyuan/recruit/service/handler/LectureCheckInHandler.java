@@ -10,9 +10,11 @@ import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
 import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 
 /**
@@ -20,6 +22,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author wys
  */
+@Slf4j
 @Component
 public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, CheckInHandlerFactory<LectureCheckInPo> {
 
@@ -32,15 +35,26 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
     public void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
         LectureCheckInPo data = JSON.parseObject(event.getData().toString(), LectureCheckInPo.class);
         Long userId = data.getUserId();
+        Long lectureId = data.getLectureId();
         // TODO: 具体逻辑还得根据情况改
         /*两种检查方案，根据-宣讲会放票检验具体实现-调整选择方案，待删其中一个*/
-
-        //2.方案二: 根据已经看过宣讲会的is_lecture = 1, 如果限票校验需要该字段 保留
-        if (mapper.selectIfLecturedByUserId(userId)) {
+        //1.方案一: 根据已经看过宣讲会的记录应该被逻辑删除(假设) 如果限票校验不需要根据deleted 保留
+        long result = mapper.selectTicketByUserAndLectureId(userId, lectureId);
+        if (result < 1) {
+            log.info("userId {} 已经签到过 lectureId {}", userId, lectureId);
             throw new RuntimeException("已经看过宣讲会或者记录异常");
         }
+        /*// 宣讲会有效期判断
+        LocalDateTime lectureGarbTime = mapper.getLectureGarbTime(lectureId);
+        LocalDateTime expiredTime = lectureGarbTime.plusDays(1).plusHours(2);
+        if (LocalDateTime.now().isAfter(expiredTime)) {
+            log.info("lectureId {} 允许签到时间已过", userId, lectureId);
+            throw new RuntimeException("允许签到时间已过");
+        }*/
         // 通过 userId 修改 is_lectured
         mapper.updateIsLectureByUserId(userId);
+        // 逻辑删除该票记录 搭配方案一，如果方案一删除，该段删除
+        mapper.deleteTicketByUserAndLectureId(userId, lectureId);
     }
 
     @Override

@@ -97,6 +97,8 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
             interviewerInfoMapper.incrCount(groupId);           //更新排班表
             interviewPositionMapper.assign(groupId);    //更新interviewPosition表的group_id字段
         }
+        //从interview_position表中检测出地点和group_id一样，并且开始时间相差一小时的数据
+        //按照group_id排序
         List<ScheduleVo> scheduleVos = interviewPositionMapper.selectAssign();
         List<WorkingSchedule> workingSchedules = new ArrayList<>();
         for (ScheduleVo e : scheduleVos
@@ -108,6 +110,7 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
             workingSchedule.setInterviewPosition(e.getLocation());
             workingSchedules.add(workingSchedule);
         }
+        //批量插入
         return workingScheduleMapper.insertBatch(workingSchedules, workingSchedules.size());
 
     }
@@ -145,14 +148,16 @@ public class WorkScheduleServiceImpl implements WorkScheduleService {
      */
     @Override
     public Boolean tempAddInterview(InterviewPositionVo interviewPositionVo) {
+        //开放的面试地点不能被占用，在interview_position中不能有新加的面试点的数据
         validateExist(interviewPositionVo);
+        //确认该面试地点没被占用后，将InterviewPositionVo转换为InterviewPosition
         InterviewPosition convert = converter.convert(interviewPositionVo, InterviewPosition.class);
         //直接分配面试官
-        int groupId = interviewerInfoMapper.minCount();
+        int groupId = interviewerInfoMapper.minCount();//寻找被分配的次数最少的面试组
         interviewerInfoMapper.incrCount(groupId);
         convert.setGroupId(groupId);
         //开放面试地点
-        int i = interviewPositionMapper.insert(convert);
+        int i = interviewPositionMapper.insert(convert);//在interview_position中插入该面试地点
         return i>0;
     }
 

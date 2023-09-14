@@ -48,8 +48,8 @@
             <artifactId>mapstruct-plus-spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -112,6 +112,7 @@
             <artifactId>easyexcel-core</artifactId>
             <version>3.2.0</version>
         </dependency>
+
     </dependencies>
 
     <build>
