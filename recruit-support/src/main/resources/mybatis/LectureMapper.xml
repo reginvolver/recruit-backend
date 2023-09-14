@@ -18,6 +18,7 @@
     <select id="allLecture" resultType="com.yundingshuyuan.recruit.domain.vo.LectureVo">
         SELECT *
         FROM lecture
+        WHERE deleted = 0;
     </select>
 
 </mapper>

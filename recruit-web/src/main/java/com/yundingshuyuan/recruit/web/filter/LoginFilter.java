@@ -27,11 +27,19 @@ public class LoginFilter implements Filter {
         //定义不再需要处理的请求路径
         String[] urls = new String[]{
                 "/v3/**",
-                "/doc.html",
                 "/login",
                 "/actuator/**",
                 "/miniapp/**",
-                "/interview/**"
+                "/interview/**",
+                "/doc.html/**",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/v2/**",
+                "/swagger-ui.html/**",
+                "/api",
+                "/api-docs",
+                "/api-docs/**",
+                "/*.*"
         };
         if (check(urls, URI)) {
             filterChain.doFilter(request, response);

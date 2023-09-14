@@ -1,6 +1,7 @@
 package com.yundingshuyuan.recruit.dao;
 
 import com.yundingshuyuan.recruit.domain.po.OpenTimeInfoPo;
+import com.yundingshuyuan.recruit.domain.po.ReservationPo;
 import com.yundingshuyuan.recruit.domain.vo.OpenTimeInfoVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -21,4 +22,6 @@ public interface InterviewTimeMapper extends BaseMapperPlus<OpenTimeInfoPo, Open
     List<OpenTimeInfoPo> getAllInterviewTimes();
 
     void updateReservedCount(@Param("interviewTimeId") int interviewTimeId, @Param("reservedCount") int reservedCount);
+
+    List<ReservationPo> getReservationsByUserId(@Param("userId") int userId);
 }

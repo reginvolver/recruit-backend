@@ -21,10 +21,9 @@ import java.util.Map;
 @Slf4j
 public class WxLoginServiceImpl implements IWxLoginService {
 
-    @Value("wx0df8511230c13054")
+    @Value("wxf910237ed6466ca7")
     private String appid;
 
-    @Value("64e882d75203e6c45678c02a37a84ada")
     private String secret;
 
     @Autowired
@@ -35,7 +34,6 @@ public class WxLoginServiceImpl implements IWxLoginService {
         System.out.println(data);
         JSONObject dataObject = JSONUtil.parseObj(data);
         String code = dataObject.get("code", String.class);
-
         String authUrl = "https://api.weixin.qq.com/sns/jscode2session?&grant_type=authorization_code";
         authUrl = authUrl + "&appid=" + appid + "&secret=" + secret + "&js_code=" + code;
         String result = HttpUtil.get(authUrl);

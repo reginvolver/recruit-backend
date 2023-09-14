@@ -48,4 +48,9 @@
         WHERE id = #{interviewTimeId}
     </update>
 
+    <select id="getReservationsByUserId" parameterType="int" resultType="com.yundingshuyuan.recruit.domain.po.ReservationPo">
+        SELECT * FROM reservation
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
