@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.domain.po.InterviewCheckInPo;
+import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
 import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
 import com.yundingshuyuan.vo.BasicResultVO;
 import io.github.linpeilie.Converter;
@@ -37,7 +38,7 @@ public class InterviewCheckInHandler implements CheckInHandler<InterviewCheckInP
 
     @Override
     public BasicResultVO<Boolean> doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
-        InterviewCheckInPo data = converter.convert(event.getData(), InterviewCheckInPo.class);
+        InterviewCheckInPo data = JSON.parseObject(event.getData().toString(), InterviewCheckInPo.class);
         Long userId = data.getUserId();
         // 面试暂时没有无重复面试限制，考虑到有AB面
         mapper.updateStatusByUserId(userId);
