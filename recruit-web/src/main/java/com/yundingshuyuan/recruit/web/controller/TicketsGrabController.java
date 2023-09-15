@@ -5,10 +5,12 @@ import com.yundingshuyuan.recruit.domain.vo.GrabRequestVo;
 import com.yundingshuyuan.recruit.domain.vo.LectureVo;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.recruit.web.exception.CommonException;
+import com.yundingshuyuan.vo.BasicResultVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import sun.jvm.hotspot.types.basic.BasicJCharField;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -51,11 +53,10 @@ public class TicketsGrabController {
         return ticketGrabService.allTicketByUser(userId);
     }
 
-
     //抢票
     @Operation(summary = "抢票")
     @PostMapping("/grab")
-    public boolean grab(@RequestHeader("Request-Time")String requestTime,@RequestBody GrabRequestVo grabRequestVo)  {
+    public BasicResultVO<Boolean> grab(@RequestHeader("Request-Time")String requestTime, @RequestBody GrabRequestVo grabRequestVo) throws InterruptedException {
         if((Long.parseLong(requestTime) - System.currentTimeMillis()) > 5000){
             throw new CommonException("500","请求超时，请重试");
         }

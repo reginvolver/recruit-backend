@@ -1,7 +1,9 @@
 package com.yundingshuyuan.recruit.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.yundingshuyuan.constant.CommonConstant;
 import com.yundingshuyuan.constant.RedisConstant;
+import com.yundingshuyuan.enums.TicketGrabRespStatusEnum;
 import com.yundingshuyuan.recruit.api.TicketGrabService;
 import com.yundingshuyuan.recruit.dao.LectureMapper;
 import com.yundingshuyuan.recruit.dao.LectureTicketMapper;
@@ -11,6 +13,7 @@ import com.yundingshuyuan.recruit.domain.vo.LectureTicketVo;
 import com.yundingshuyuan.recruit.domain.vo.LectureVo;
 import com.yundingshuyuan.recruit.utils.QrCodeUtils;
 import com.yundingshuyuan.recruit.utils.RedisUtils;
+import com.yundingshuyuan.vo.BasicResultVO;
 import io.github.linpeilie.Converter;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RAtomicLong;
@@ -26,6 +29,7 @@ import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -76,30 +80,13 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      */
     @Override
     public List<LectureVo> allTicketByUser(Integer userId) {
-        List<LectureVo> lectureVos = new ArrayList<>();
         // 快速查看开启
-        Set<String> keys = quickLectureTicketView(userId);
-        if (keys != null) {
-            // 未持久化前返回一个只有lectureId的票demo
-            for (String key : keys) {
-                LectureVo lectureVo = new LectureVo();
-                String[] split = key.split(":");
-                Integer lectureId = Integer.valueOf(split[2]);
-                lectureVo.setLectureId(lectureId);
-                lectureVo.setLectureTheme("已抢到票！请稍等(查看详细)");
-                lectureVo.setSpeaker("等待加载...");
-                lectureVo.setContentIntroduction("恭喜你已经抢到宣讲会门票(^-^)!，数据录入可能有延迟" +
-                        "，过一段时间后刷新，请耐心等待全部数据加载，门票已生效");
-                lectureVos.add(lectureVo);
-            }
-        } else {
-            // 持久化后mysql获取
-            List<Integer> lectureIds = lectureTicketMapper.allTicketsByUserId(userId);
-            for (Integer e : lectureIds) {
-                lectureVos.add(lectureMapper.lectureById(e));
-            }
-        }
-        return lectureVos;
+        List<LectureVo> quickViewTickets = quickLectureTicketView(userId);
+        List<LectureVo> lectureResultVos = new ArrayList<>(quickViewTickets);
+        // 较慢记录获取
+        List<Integer> lectureIds = lectureTicketMapper.allTicketsByUserId(userId);
+        lectureIds.forEach(o -> lectureResultVos.add(lectureMapper.lectureById(o)));
+        return lectureResultVos;
     }
 
     /**
@@ -108,12 +95,26 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * @param userId
      * @return
      */
-    private Set<String> quickLectureTicketView(Integer userId) {
+    private List<LectureVo> quickLectureTicketView(Integer userId) {
+        // 结果表
+        List<LectureVo> lectureVos = new ArrayList<>();
         Set<String> keys = stringRedisTemplate.keys(RedisConstant.GRAB_USER_RECORD + userId + ":*");
         if (keys != null && !keys.isEmpty()) {
-            return keys;
+            // 未存入库中前返回一个只有lectureId的票demo
+            for (String key : keys) {
+                String[] split = key.split(":");
+                Integer lectureId = Integer.valueOf(split[2]);
+                LectureVo.LectureVoBuilder builder = LectureVo.builder();
+                LectureVo lectureVo = builder.lectureId(lectureId)
+                        .lectureTheme("已抢到票！请稍等(加载中...)")
+                        .speaker("等待加载...")
+                        .contentIntroduction("恭喜你已经抢到宣讲会门票(^-^)!，数据录入可能有延迟" +
+                                "，过一段时间后刷新，请耐心等待全部数据加载，门票已生效").build();
+                lectureVos.add(lectureVo);
+                return lectureVos;
+            }
         }
-        return null;
+        return lectureVos;
     }
 
 
@@ -141,7 +142,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      */
     @Override
     @Transactional(rollbackFor = {RuntimeException.class, InvalidParameterException.class})
-    public boolean ticketGrab(Integer ticketId, Integer userId) {
+    public BasicResultVO<Boolean> ticketGrab(Integer ticketId, Integer userId) {
         // 限制单个用户
         String garbTicketLock = RedisConstant.GRAB_TICKET_LOCK + userId;
         // 获取锁 + 加锁 (锁住校验抢票和添加到redis的逻辑)
@@ -150,31 +151,36 @@ public class TicketGrabServiceImpl implements TicketGrabService {
             // 业务实现
             try {
                 // 1. 资格检验
-                validateQualification(ticketId, userId);
-                // 2. 抢票
-                // 获取 Key-> value 修改
-                String lectureTicketKey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
-                RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketKey);
-                // 乐观,允许抢票->校验remain
-                long remainAfterOperate = atomicLong.decrementAndGet();
-                // 超卖恢复 限制多个用户
-                if (remainAfterOperate < 0) {
-                    // 恢复库存
-                    atomicLong.set(0);
-                    // 打印
-                    log.info("非常遗憾！user {} 同学没有抢到票！( º﹃º )", userId);
-                    throw new IndexOutOfBoundsException("售无");
+                BasicResultVO<Boolean> obstacle = validateQualification(ticketId, userId);
+                if (obstacle == null) {
+                    // 2. 抢票
+                    // 获取 Key-> value 修改
+                    String lectureTicketKey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
+                    RAtomicLong atomicLong = redissonClient.getAtomicLong(lectureTicketKey);
+                    // 乐观,允许抢票->校验remain
+                    long remainAfterOperate = atomicLong.decrementAndGet();
+                    // 超卖恢复 限制多个用户
+                    if (remainAfterOperate < 0) {
+                        // 恢复库存
+                        atomicLong.set(0);
+                        // 打印
+                        log.info("非常遗憾！user {} 同学没有抢到票！( º﹃º )", userId);
+                        return new BasicResultVO<>(TicketGrabRespStatusEnum.NOT_GET_TICKET);
+                    }
+                    log.info("恭喜！user {} 同学抢到了 第{}场宣讲会 的门票(*´▽`*)，还剩票数{}张..", userId, ticketId, remainAfterOperate);
+                    // 插入key
+                    stringRedisTemplate.opsForValue().setIfAbsent(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId,
+                            "ok", 120, TimeUnit.SECONDS);
+                    return BasicResultVO.success(StrUtil.format(TicketGrabRespStatusEnum.GET_TICKET.getMsg(), ticketId));
+                } else {
+                    return obstacle;
                 }
-                log.info("恭喜！user {} 同学抢到了 第{}场宣讲会 的门票(*´▽`*)，还剩票数{}张..", userId, ticketId, remainAfterOperate);
-                // 插入key
-                stringRedisTemplate.opsForValue().setIfAbsent(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId,
-                        "ok", 120, TimeUnit.SECONDS);
-                return true;
             } finally {
                 lock.unlock();
             }
         }
-        return false;
+        log.error(TicketGrabRespStatusEnum.FREQUENT_REQUEST.getMsg());
+        return new BasicResultVO<>(TicketGrabRespStatusEnum.FREQUENT_REQUEST);
     }
 
     /**
@@ -237,13 +243,15 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      * 校验是否抢过票
      *
      * @param ticketId
+     * @return
      */
-    public void validateExist(Integer ticketId, Integer userId) {
+    public boolean isExistTicket(Integer ticketId, Integer userId) {
         // redis exist || mysql exist
         if ((stringRedisTemplate.opsForValue().get(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId) != null)
                 || lectureTicketMapper.checkCount(userId, ticketId) > 0) {
-            throw new InvalidParameterException("一位用户不可重复抢票");
+            return true;
         }
+        return false;
     }
 
     /**
@@ -251,7 +259,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      *
      * @param ticketId
      */
-    public void validateOpenTime(Integer ticketId) {
+    public boolean isReachOpenTime(Integer ticketId) {
         String garbTimeKey = RedisConstant.GRAB_TIME_PREFIX + ticketId;
         // 时间
         String grabTimeStr = stringRedisTemplate.opsForValue().get(garbTimeKey);
@@ -262,20 +270,25 @@ public class TicketGrabServiceImpl implements TicketGrabService {
         long nowT = nowTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
         // 计算时间差
         if (nowT < grabT - 5000) {
-            throw new RuntimeException("还未开启抢票");
+            return false;
         }
+        return true;
     }
 
     /**
      * 校验是否有余票？
+     *
      * @param ticketId
+     * @return
      */
-    private void validateResidue(Integer ticketId) {
+    private boolean isNoSurplus(Integer ticketId) {
         RAtomicLong atomicLong = redissonClient.getAtomicLong(RedisConstant.LECTURE_TICKET_PREFIX + ticketId);
         long l = atomicLong.get();
-        if (l < 0) {
-            throw new IndexOutOfBoundsException("售无");
+        System.out.println(l + "?");
+        if (l <= 0) {
+            return true;
         }
+        return false;
     }
 
     /**
@@ -283,13 +296,21 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      *
      * @param ticketId
      */
-    public void validateQualification(Integer ticketId, Integer userId) {
-        // 票售空检验
-        validateResidue(ticketId);
+    public BasicResultVO<Boolean> validateQualification(Integer ticketId, Integer userId) {
         // 是否到达抢票时间
-        validateOpenTime(ticketId);
+        if (!isReachOpenTime(ticketId)) {
+            return new BasicResultVO<>(TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getCode(),
+                    TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getMsg());
+        }
         // 不可重复抢票校验
-        validateExist(ticketId, userId);
+        if (isExistTicket(ticketId, userId)) {
+            return new BasicResultVO<>(TicketGrabRespStatusEnum.TICKETS_ALREADY_AVAILABLE);
+        }
+        // 票售空检验
+        if (isNoSurplus(ticketId)) {
+            return new BasicResultVO<>(TicketGrabRespStatusEnum.NO_TICKET_SURPLUS);
+        }
+        return null;
     }
 
 

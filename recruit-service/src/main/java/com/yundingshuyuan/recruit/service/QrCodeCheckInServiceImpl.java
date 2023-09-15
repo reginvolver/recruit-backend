@@ -78,7 +78,12 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
             return new BasicResultVO<>(CheckInRespStatusEnum.CHECKIN_HANDLER_NOT_EXIST);
         }
         // 解密被加密事件信息
-        event = checkinHandler.decipher(wrapper.getEncryptedData());
+        try {
+            event = checkinHandler.decipher(wrapper.getEncryptedData());
+        } catch (Exception e) {
+            log.error(RespStatusEnum.JSON_PARSE_ERROR + e.getMessage());
+            return BasicResultVO.fail(RespStatusEnum.JSON_PARSE_ERROR);
+        }
         // 判断二维码是否过期
         if (isExpired(event)) {
             return new BasicResultVO<>(CheckInRespStatusEnum.QRCODE_EXPIRED);
