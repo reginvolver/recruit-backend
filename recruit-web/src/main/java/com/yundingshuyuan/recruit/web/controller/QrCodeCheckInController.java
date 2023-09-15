@@ -2,6 +2,7 @@ package com.yundingshuyuan.recruit.web.controller;
 
 import com.yundingshuyuan.enums.RespStatusEnum;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
+import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.web.annotation.RecruitResult;
 import com.yundingshuyuan.vo.BasicResultVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +40,8 @@ public class QrCodeCheckInController {
     @GetMapping("/qrcode")
     @Operation(summary = "获取二维码")
     public BasicResultVO<String> getQrCode(@RequestParam String openId, @Parameter(description = "宣讲会 | 面试") @RequestParam String eventName, @RequestParam int expireTime) {
-        return new BasicResultVO<>(RespStatusEnum.SUCCESS, qrCodeCheckInService.createQrCode(openId, eventName, expireTime));
+        // 这里再写@RecruitResult还有必要吗?
+        return qrCodeCheckInService.createQrCode(openId, eventName, expireTime);
     }
 
     /**
@@ -51,9 +53,8 @@ public class QrCodeCheckInController {
      */
     @PostMapping("/parse")
     @Operation(summary = "解析扫描二维码后的内容")
-    public boolean checkUserIn(@RequestParam("scanInfo") @Parameter(description = "将扫描二维码后的内容原封不动传回") String scanInfo) {
-        qrCodeCheckInService.parseQrCodeInfo(scanInfo);
-        return true;
+    public BasicResultVO<CheckInEvent> checkUserIn(@RequestParam("scanInfo") @Parameter(description = "将扫描二维码后的内容原封不动传回") String scanInfo) {
+        return qrCodeCheckInService.parseQrCodeInfo(scanInfo);
     }
 
 }

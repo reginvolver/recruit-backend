@@ -1,6 +1,9 @@
 package com.yundingshuyuan.recruit.api;
 
 
+import com.yundingshuyuan.recruit.domain.CheckInEvent;
+import com.yundingshuyuan.vo.BasicResultVO;
+
 /**
  * @author wys
  */
@@ -14,7 +17,7 @@ public interface QrCodeCheckInService {
      * @param expireTime 二维码有效期
      * @return QrCode的base64编码
      */
-    String createQrCode(String openId, String eventName, int expireTime);
+    BasicResultVO<String> createQrCode(String openId, String eventName, int expireTime);
 
     /**
      * 解析二维码信息
@@ -23,6 +26,6 @@ public interface QrCodeCheckInService {
      * @param scanInfo 前端返回的二维码中的信息
      * @return 签到事件信息
      */
-    void parseQrCodeInfo(String scanInfo);
+    BasicResultVO<CheckInEvent> parseQrCodeInfo(String scanInfo);
 
 }

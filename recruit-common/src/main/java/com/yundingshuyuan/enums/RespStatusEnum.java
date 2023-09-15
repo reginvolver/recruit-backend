@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public enum RespStatusEnum {
+public enum RespStatusEnum implements RespStatus{
 
     /**
      * 错误
@@ -29,6 +29,7 @@ public enum RespStatusEnum {
      * 客户端
      */
     CLIENT_BAD_PARAMETERS("A0001", "客户端参数错误"),
+    JSON_PARSE_ERROR("A0002","json解析错误"),
 
     /**
      * 系统
@@ -49,4 +50,9 @@ public enum RespStatusEnum {
      * 响应编码
      */
     private final String msg;
+
+    @Override
+    public String getDescription() {
+        return "全局响应状态";
+    }
 }

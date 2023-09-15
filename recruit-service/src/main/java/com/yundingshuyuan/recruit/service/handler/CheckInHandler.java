@@ -2,6 +2,7 @@ package com.yundingshuyuan.recruit.service.handler;
 
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
+import com.yundingshuyuan.vo.BasicResultVO;
 
 /**
  * 签到处理类接口
@@ -22,8 +23,9 @@ public interface CheckInHandler<T> {
      *
      * @param event
      * @param mapper
+     * @return
      */
-    void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper);
+    BasicResultVO<Boolean> doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper);
 
     /**
      * 通过 openId 获取二维码中要封装的额外信息
