@@ -2,6 +2,7 @@ package com.yundingshuyuan.recruit.api;
 
 import com.yundingshuyuan.recruit.domain.vo.LectureTicketVo;
 import com.yundingshuyuan.recruit.domain.vo.LectureVo;
+import com.yundingshuyuan.vo.BasicResultVO;
 
 import java.util.List;
 
@@ -43,9 +44,8 @@ public interface TicketGrabService {
 
     /**
      * 抢票并生成二维码
-     *
      */
-    public boolean ticketGrab(Integer ticketId, Integer userId);
+    public BasicResultVO<Boolean> ticketGrab(Integer ticketId, Integer userId);
 
 //    /**
 //     * 生成二维码
