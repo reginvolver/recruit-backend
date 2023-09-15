@@ -6,15 +6,19 @@ import cn.hutool.crypto.Padding;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import com.alibaba.fastjson.JSON;
+import com.yundingshuyuan.enums.CheckInRespStatusEnum;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
+import com.yundingshuyuan.recruit.domain.po.InterviewCheckInPo;
 import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
 import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
+import com.yundingshuyuan.vo.BasicResultVO;
+import io.github.linpeilie.Converter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 
 
 /**
@@ -30,9 +34,12 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
      * 密码 32 字节
      */
     static final String PASSWORD = "+-YD_Lecture=)YunDing2023.!*%010";
+    @Autowired
+    private Converter converter;
 
     @Override
-    public void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
+    public BasicResultVO<Boolean> doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
+        // event.data是 JSONObject
         LectureCheckInPo data = JSON.parseObject(event.getData().toString(), LectureCheckInPo.class);
         Long userId = data.getUserId();
         Long lectureId = data.getLectureId();
@@ -42,7 +49,8 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
         long result = mapper.selectTicketByUserAndLectureId(userId, lectureId);
         if (result < 1) {
             log.info("userId {} 已经签到过 lectureId {}", userId, lectureId);
-            throw new RuntimeException("已经看过宣讲会或者记录异常");
+            return new BasicResultVO<>(CheckInRespStatusEnum.CHECKIN_RECORD_EXIST.getCode(),
+                    CheckInRespStatusEnum.CHECKIN_RECORD_EXIST.getMsg() + getBindingName());
         }
         /*// 宣讲会有效期判断
         LocalDateTime lectureGarbTime = mapper.getLectureGarbTime(lectureId);
@@ -55,6 +63,7 @@ public class LectureCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
         mapper.updateIsLectureByUserId(userId);
         // 逻辑删除该票记录 搭配方案一，如果方案一删除，该段删除
         mapper.deleteTicketByUserAndLectureId(userId, lectureId);
+        return BasicResultVO.success(true);
     }
 
     @Override

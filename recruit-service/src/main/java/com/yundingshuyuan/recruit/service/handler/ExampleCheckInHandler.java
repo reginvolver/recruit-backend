@@ -3,6 +3,7 @@ package com.yundingshuyuan.recruit.service.handler;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
+import com.yundingshuyuan.vo.BasicResultVO;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,8 +25,9 @@ public class ExampleCheckInHandler implements CheckInHandler<LectureCheckInPo>, 
     }
 
     @Override
-    public void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
+    public BasicResultVO<Boolean> doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
         // 签到操作 -> 改具体的信息
+        return BasicResultVO.success(true);
     }
 
     @Override

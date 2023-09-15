@@ -7,10 +7,15 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.domain.po.InterviewCheckInPo;
+import com.yundingshuyuan.recruit.domain.po.LectureCheckInPo;
 import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
+import com.yundingshuyuan.vo.BasicResultVO;
+import io.github.linpeilie.Converter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -28,12 +33,16 @@ public class InterviewCheckInHandler implements CheckInHandler<InterviewCheckInP
      * 密码 32 字节
      */
     static final String PASSWORD = "+-YD_MianShi=)YunDing2023.!*%010";
+    @Autowired
+    private Converter converter;
 
     @Override
-    public void doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
-        InterviewCheckInPo data = JSONUtil.toBean((JSONObject) event.getData(), InterviewCheckInPo.class);
+    public BasicResultVO<Boolean> doCheckIn(CheckInEvent<?> event, QrCodeCheckInMapper mapper) {
+        InterviewCheckInPo data = JSON.parseObject(event.getData().toString(), InterviewCheckInPo.class);
         Long userId = data.getUserId();
+        // 面试暂时没有无重复面试限制，考虑到有AB面
         mapper.updateStatusByUserId(userId);
+        return BasicResultVO.success(true);
     }
 
     @Override

@@ -1,12 +1,15 @@
 package com.yundingshuyuan.vo;
 
+import com.yundingshuyuan.enums.RespStatus;
 import com.yundingshuyuan.enums.RespStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @Getter
 @ToString(callSuper = true)
 @AllArgsConstructor
@@ -33,15 +36,15 @@ public final class BasicResultVO<T> {
         this.msg = msg;
     }
 
-    public BasicResultVO(RespStatusEnum status) {
+    public BasicResultVO(RespStatus status) {
         this(status, null);
     }
 
-    public BasicResultVO(RespStatusEnum status, T data) {
+    public BasicResultVO(RespStatus status, T data) {
         this(status, status.getMsg(), data);
     }
 
-    public BasicResultVO(RespStatusEnum status, String msg, T data) {
+    public BasicResultVO(RespStatus status, String msg, T data) {
         this.status = status.getCode();
         this.msg = msg;
         this.data = data;
