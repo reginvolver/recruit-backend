@@ -1,24 +1,17 @@
 package com.yundingshuyuan.recruit.service;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
-import com.yundingshuyuan.constant.CommonConstant;
 import com.yundingshuyuan.recruit.api.QrCodeCheckInService;
 import com.yundingshuyuan.recruit.dao.QrCodeCheckInMapper;
 import com.yundingshuyuan.recruit.domain.CheckInEvent;
 import com.yundingshuyuan.recruit.domain.vo.CheckInEventVo;
 import com.yundingshuyuan.recruit.service.handler.CheckInHandler;
 import com.yundingshuyuan.recruit.service.handler.CheckInHandlerManager;
-import com.yundingshuyuan.recruit.utils.QrCodeUtils;
-import jdk.vm.ci.meta.Local;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 二维码签到相关 Service

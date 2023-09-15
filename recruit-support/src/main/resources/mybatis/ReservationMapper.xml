@@ -8,11 +8,46 @@
         INSERT INTO reservation (user_id, interview_time)
         VALUES (#{userId}, #{interviewTime})
     </insert>
+    <update id="updateByIdAndVersion">
+        UPDATE reservation
+        SET
+            interview_time = #{interviewTime},
+            user_id = #{userId},
+            version = #{version} + 1,
+            update_time = CURRENT_TIMESTAMP,
+            interview_id = #{interviewId}
+        WHERE id = #{id} AND version = #{version};
+    </update>
+    <update id="clearInterviewPositionUser">
+        update reservation
+        SET
+            interview_id = null
+        WHERE interview_id = #{interviewId};
+    </update>
 
     <select id="hasReservation" resultType="boolean" parameterType="java.lang.Integer">
         SELECT COUNT(*) > 0
         FROM reservation
         WHERE user_id = #{userId}
+    </select>
+
+    <resultMap id="resulyMap" type="com.yundingshuyuan.recruit.domain.po.ReservationPo">
+        <result column="user_id" property="userId"/>
+        <result column="interview_time" property="interviewTime"/>
+        <result column="interview_id" property="interviewId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectUnassignedByInterviewTime" parameterType="java.time.LocalDateTime" resultMap="resulyMap">
+        select *
+        from reservation
+        where interview_time = #{interviewTime} and interview_id is null AND deleted = 0;
+    </select>
+    <select id="selectByUserId" resultMap="resulyMap">
+        select *
+        from reservation
+        where user_id = #{userId} AND deleted = 0;
     </select>
 
     <!-- 其他查询、更新、删除等SQL语句定义 -->
