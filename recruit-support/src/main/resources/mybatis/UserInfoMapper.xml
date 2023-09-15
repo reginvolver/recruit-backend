@@ -19,23 +19,36 @@
     </select>
 
     <select id="countByDirection" resultType="com.yundingshuyuan.recruit.domain.vo.DirectionCountVo">
-        SELECT user_info.direction,
+        /*SELECT user_info.direction,
                COUNT(*) AS total,
                SUM(CASE WHEN DATE(user_info.create_time) = CURDATE() THEN 1 ELSE 0 END) AS today,
                SUM(CASE WHEN user_info.gender = 1 THEN 1 ELSE 0 END) AS maleCount,
                SUM(CASE WHEN user_info.gender = 0 THEN 1 ELSE 0 END) AS femaleCount
         FROM user_info
+        GROUP BY user_info.direction*/
+        SELECT user_info.direction,
+               COUNT(*) AS total,
+               SUM(CASE WHEN DATE(user_info.create_time) = CURDATE() THEN 1 ELSE 0 END) AS today,
+               SUM(CASE WHEN user_info.gender = '男' THEN 1 ELSE 0 END) AS maleCount,
+               SUM(CASE WHEN user_info.gender = '女' THEN 1 ELSE 0 END) AS femaleCount
+        FROM user_info
+        WHERE user_info.is_admin = 0
         GROUP BY user_info.direction
     </select>
 
     <select id="countByDate" resultType="java.util.Map">
+        /*SELECT DATE(create_time) AS date, COUNT(*) AS count
+        FROM user_info
+        GROUP BY date*/
         SELECT DATE(create_time) AS date, COUNT(*) AS count
         FROM user_info
+        WHERE is_admin = 0
         GROUP BY date
     </select>
 
     <select id="countRegisterInfo" resultType="int">
-        SELECT COUNT(*) FROM user_info
+        /*SELECT COUNT(*) FROM user_info*/
+        SELECT COUNT(*) FROM user_info WHERE is_admin = 0
     </select>
 
 </mapper>

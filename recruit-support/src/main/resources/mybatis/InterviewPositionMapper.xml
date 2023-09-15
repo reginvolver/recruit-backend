@@ -30,6 +30,36 @@
         <result property="endTime" column="end_time"></result>
     </resultMap>
 
+    <resultMap id="ResultMap" type="com.yundingshuyuan.recruit.domain.InterviewPosition">
+        <result column="group_id" property="groupId"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="isExisted" parameterType="com.yundingshuyuan.recruit.domain.InterviewPosition" resultType="integer">
+        SELECT COUNT(*)
+        FROM interview_position
+        WHERE location = #{location}
+          AND start_Time = #{startTime}
+          AND end_time = #{endTime}
+          AND deleted = 0;
+    </select>
+
+    <select id="selectOpenedTimeListNotFull" resultType="java.time.LocalDateTime">
+        select start_time
+        from interview_position
+        where contained &lt; capacity and deleted = 0
+        group by start_time;
+    </select>
+
+    <select id="searchListNotFullByStartTime" resultMap="ResultMap" parameterType = "java.time.LocalDateTime">
+        select *
+        from interview_position
+        where start_time = #{startTime} and contained &lt; capacity AND deleted = 0;
+    </select>
+
     <select id="selectAssign" resultMap="ScheduleVoResultMap">
         SELECT t1.id , t1.group_id, t1.location, t1.start_time , t2.end_time
         FROM interview_position t1
@@ -37,28 +67,42 @@
                       ON t1.group_id = t2.group_id
                           AND t1.location = t2.location
                           AND ABS(TIMESTAMPDIFF(HOUR, t1.start_time, t2.start_time)) = 1
-        WHERE (t1.start_time &lt; t2.start_time )
+        WHERE (t1.start_time &lt; t2.start_time ) AND t1.deleted = 0 AND t2.deleted = 0
         ORDER BY group_id
     </select>
 
     <update id="updateNull">
         UPDATE interview_position
         SET group_id = NULL
-        WHERE DATE (start_time) = #{startDate}
+        WHERE DATE (start_time) = #{startDate} AND deleted = 0;
     </update>
 
     <select id="SelectIsExist" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM interview_position
         WHERE location = #{location}
-         AND start_time = #{startTime}
+         AND start_time = #{startTime} AND deleted = 0;
     </select>
 
     <update id="updateGroupId" parameterType="com.yundingshuyuan.recruit.domain.vo.InterviewPositionVo">
         UPDATE interview_position
             SET group_id = #{groupId}
         WHERE location = #{location}
-          AND start_time = #{startTime}
+          AND start_time = #{startTime} AND deleted = 0;
+    </update>
+
+    <update id="updateByIdAndVersion">
+        UPDATE interview_position
+        SET
+            location = #{location},
+            start_time = #{startTime},
+            end_time = #{endTime},
+            capacity = #{capacity},
+            group_id = #{groupId},
+            version = #{version} + 1,
+            contained = #{contained},
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id} AND version = #{version};
     </update>
 
 </mapper>

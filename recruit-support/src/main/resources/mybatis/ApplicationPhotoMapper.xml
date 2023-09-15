@@ -8,6 +8,6 @@
     </select>
 
     <select id="hasApplicationPhoto" resultType="boolean">
-        SELECT COUNT(*) FROM application_photo WHERE user_id = #{userId}
+        SELECT COUNT(*) FROM application_photo WHERE id = #{userId}
     </select>
 </mapper>
