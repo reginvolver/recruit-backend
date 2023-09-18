@@ -16,4 +16,6 @@ public interface LectureMapper extends BaseMapperPlus<Lecture, LectureVo> {
     List<LectureVo> allLecture();
 
 
+
+
 }

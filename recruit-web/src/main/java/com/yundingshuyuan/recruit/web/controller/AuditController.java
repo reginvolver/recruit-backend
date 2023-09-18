@@ -31,7 +31,7 @@ import java.util.List;
 @SaCheckRole("super-admin")
 @SaCheckPermission("super-admin:audit")
 @Tag(name = "超级管理员-审批审核接口")
-@RequestMapping("/audit")
+@RequestMapping("/superAdmin/audit")
 public class AuditController {
 
     private final AuditService auditService;
