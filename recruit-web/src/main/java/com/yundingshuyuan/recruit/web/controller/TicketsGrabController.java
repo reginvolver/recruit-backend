@@ -60,7 +60,12 @@ public class TicketsGrabController {
         if((Long.parseLong(requestTime) - System.currentTimeMillis()) > 5000){
             throw new CommonException("500","请求超时，请重试");
         }
-        return ticketGrabService.ticketGrab(grabRequestVo.getTicketId(), grabRequestVo.getUserId());
+        try {
+            return ticketGrabService.ticketGrab(grabRequestVo.getTicketId(), grabRequestVo.getUserId());
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+
     }
 
 }

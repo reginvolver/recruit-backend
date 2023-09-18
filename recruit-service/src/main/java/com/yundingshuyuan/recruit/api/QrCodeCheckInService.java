@@ -17,7 +17,7 @@ public interface QrCodeCheckInService {
      * @param expireTime 二维码有效期
      * @return QrCode的base64编码
      */
-    BasicResultVO<String> createQrCode(String openId, String eventName, int expireTime);
+    String createQrCode(String openId, String eventName, int expireTime);
 
     /**
      * 解析二维码信息

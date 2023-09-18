@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDateTime;
 
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -27,18 +27,33 @@ public class Lecture {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8", locale = "zh")
     //@JsonSerialize(using = DateSerializer.class)
     //@JsonDeserialize(using = DateDeserializer.class)
-    private Date lectureTime;
-
+    private LocalDateTime lectureTime;
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8", locale = "zh")
+    private LocalDateTime grabTime;
     private Integer ticketNumber;
     private Integer ticketRemain;
     private Integer lectureOrder;
+    /**
+     * 乐观锁
+     */
     @Version
-    private Integer version;
-    @TableLogic(value = "0", delval = "1")
-    private Integer deleted;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
+    private Integer version = 1;
+    /**
+     * 逻辑删除
+     */
+    @TableLogic("false")
+    private Boolean deleted;
+    /**
+     * 记录创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;
+    /**
+     * 记录更新时间
+     */
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;
 
 }

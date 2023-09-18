@@ -36,24 +36,26 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
     /*private final QrCodeUtils qrCodeUtils;*/
 
     @Override
-    public BasicResultVO<String> createQrCode(String openId, String eventName, int expireTime) {
+    public String createQrCode(String openId, String eventName, int expireTime) {
         // 创建 事件所需信息
         CheckInHandler checkinHandler = ciHandlerManager.getCheckInHandler(eventName);
         Object data = checkinHandler.handleByOpenId(openId, qrCheckMapper);
         // data 校验
         if (data == null) {
-            return new BasicResultVO<>(CheckInRespStatusEnum.OPENID_NOT_FOUND);
+            //TODO: 自定义异常替换
+            throw new NullPointerException(CheckInRespStatusEnum.OPENID_NOT_FOUND.getMsg());
         }
         // 创建时间
         long createTimestamp = System.currentTimeMillis();
         long expireTimestamp = createTimestamp + expireTime * 1000L;
         // 加密
         try {
-            return BasicResultVO.success(checkinHandler.encipher(data, createTimestamp, expireTimestamp));
+            return checkinHandler.encipher(data, createTimestamp, expireTimestamp);
             /*return BasicResultVO.success((qrCodeUtils.getQrCodeBase64(content));*/
         } catch (Exception e) {
             log.error(CheckInRespStatusEnum.ENCIPHER_FAIL.getMsg() + e.getMessage());
-            return new BasicResultVO<>(CheckInRespStatusEnum.ENCIPHER_FAIL);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(CheckInRespStatusEnum.ENCIPHER_FAIL.getMsg());
         }
     }
 
@@ -69,24 +71,28 @@ public class QrCodeCheckInServiceImpl implements QrCodeCheckInService {
             wrapper = JSON.parseObject(scanInfo, CheckInEventVo.class);
         } catch (Exception e) {
             log.error(RespStatusEnum.JSON_PARSE_ERROR + e.getMessage());
-            return BasicResultVO.fail(RespStatusEnum.JSON_PARSE_ERROR);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(RespStatusEnum.JSON_PARSE_ERROR.getMsg());
         }
         // 根据事件名调用 可能获取不到对应的处理器
         checkinHandler = ciHandlerManager.getCheckInHandler(wrapper.getEventName());
         if (checkinHandler == null) {
             log.error(CheckInRespStatusEnum.CHECKIN_HANDLER_NOT_EXIST.getMsg());
-            return new BasicResultVO<>(CheckInRespStatusEnum.CHECKIN_HANDLER_NOT_EXIST);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(CheckInRespStatusEnum.CHECKIN_HANDLER_NOT_EXIST.getMsg());
         }
         // 解密被加密事件信息
         try {
             event = checkinHandler.decipher(wrapper.getEncryptedData());
         } catch (Exception e) {
             log.error(RespStatusEnum.JSON_PARSE_ERROR + e.getMessage());
-            return BasicResultVO.fail(RespStatusEnum.JSON_PARSE_ERROR);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(RespStatusEnum.JSON_PARSE_ERROR.getMsg());
         }
         // 判断二维码是否过期
         if (isExpired(event)) {
-            return new BasicResultVO<>(CheckInRespStatusEnum.QRCODE_EXPIRED);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(CheckInRespStatusEnum.QRCODE_EXPIRED.getMsg());
         }
         // 根据事件信息操作
         checkinHandler.doCheckIn(event, qrCheckMapper);

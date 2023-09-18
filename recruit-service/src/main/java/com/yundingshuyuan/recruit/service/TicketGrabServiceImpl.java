@@ -29,7 +29,6 @@ import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -44,8 +43,14 @@ public class TicketGrabServiceImpl implements TicketGrabService {
 
     @Autowired
     UserInfoMapper userInfoMapper;
+    /**
+     * 宣讲会Mapper
+     */
     @Autowired
     LectureMapper lectureMapper;
+    /**
+     * 宣讲会售票Mapper
+     */
     @Autowired
     LectureTicketMapper lectureTicketMapper;
     @Autowired
@@ -151,8 +156,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
             // 业务实现
             try {
                 // 1. 资格检验
-                BasicResultVO<Boolean> obstacle = validateQualification(ticketId, userId);
-                if (obstacle == null) {
+                if (isQualify(ticketId, userId)) {
                     // 2. 抢票
                     // 获取 Key-> value 修改
                     String lectureTicketKey = RedisConstant.LECTURE_TICKET_PREFIX + ticketId;
@@ -165,22 +169,21 @@ public class TicketGrabServiceImpl implements TicketGrabService {
                         atomicLong.set(0);
                         // 打印
                         log.info("非常遗憾！user {} 同学没有抢到票！( º﹃º )", userId);
-                        return new BasicResultVO<>(TicketGrabRespStatusEnum.NOT_GET_TICKET);
+                        //TODO: 自定义异常替换
+                        throw new RuntimeException(TicketGrabRespStatusEnum.NOT_GET_TICKET.getMsg());
                     }
                     log.info("恭喜！user {} 同学抢到了 第{}场宣讲会 的门票(*´▽`*)，还剩票数{}张..", userId, ticketId, remainAfterOperate);
                     // 插入key
                     stringRedisTemplate.opsForValue().setIfAbsent(RedisConstant.GRAB_USER_RECORD + userId + ":" + ticketId,
                             "ok", 120, TimeUnit.SECONDS);
-                    return BasicResultVO.success(StrUtil.format(TicketGrabRespStatusEnum.GET_TICKET.getMsg(), ticketId));
-                } else {
-                    return obstacle;
+                    return BasicResultVO.success(StrUtil.format(TicketGrabRespStatusEnum.GET_TICKET.getMsg(), ticketId),true);
                 }
             } finally {
                 lock.unlock();
             }
         }
         log.error(TicketGrabRespStatusEnum.FREQUENT_REQUEST.getMsg());
-        return new BasicResultVO<>(TicketGrabRespStatusEnum.FREQUENT_REQUEST);
+        return new BasicResultVO<>(TicketGrabRespStatusEnum.FREQUENT_REQUEST, false);
     }
 
     /**
@@ -283,12 +286,7 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      */
     private boolean isNoSurplus(Integer ticketId) {
         RAtomicLong atomicLong = redissonClient.getAtomicLong(RedisConstant.LECTURE_TICKET_PREFIX + ticketId);
-        long l = atomicLong.get();
-        System.out.println(l + "?");
-        if (l <= 0) {
-            return true;
-        }
-        return false;
+        return atomicLong.get() <= 0;
     }
 
     /**
@@ -296,21 +294,23 @@ public class TicketGrabServiceImpl implements TicketGrabService {
      *
      * @param ticketId
      */
-    public BasicResultVO<Boolean> validateQualification(Integer ticketId, Integer userId) {
+    public boolean isQualify(Integer ticketId, Integer userId) {
         // 是否到达抢票时间
         if (!isReachOpenTime(ticketId)) {
-            return new BasicResultVO<>(TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getCode(),
-                    TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getMsg());
+            //TODO: 自定义异常替换
+            throw new RuntimeException(TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getMsg());
         }
         // 不可重复抢票校验
         if (isExistTicket(ticketId, userId)) {
-            return new BasicResultVO<>(TicketGrabRespStatusEnum.TICKETS_ALREADY_AVAILABLE);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getMsg());
         }
         // 票售空检验
         if (isNoSurplus(ticketId)) {
-            return new BasicResultVO<>(TicketGrabRespStatusEnum.NO_TICKET_SURPLUS);
+            //TODO: 自定义异常替换
+            throw new RuntimeException(TicketGrabRespStatusEnum.TIME_NOT_ALLOW.getMsg());
         }
-        return null;
+        return true;
     }
 
 

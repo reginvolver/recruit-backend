@@ -26,7 +26,7 @@ import java.util.List;
 @SaCheckRole("super-admin")
 @SaCheckPermission("super-admin:opentime")
 @Tag(name = "管理开放预约面试时间接口")
-@RequestMapping("/opentime")
+@RequestMapping("/superAdmin/openTime")
 public class OpenTimeController {
     private final OpenTimeService openTimeService;
 
