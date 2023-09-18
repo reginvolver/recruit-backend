@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yundingshuyuan.recruit.dao.CustomReservationMapper">
+
+    <resultMap id="ReservationResultMap" type="com.yundingshuyuan.recruit.domain.ReservationEntity">
+        <id property="id" column="id"/>
+        <result property="interviewTime" column="interview_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="interviewId" column="interview_id"/>
+        <result property="direction" column="direction"/>
+        <result property="name" column="name"/>
+        <result property="qq" column="qq"/>
+        <result property="gender" column="gender"/>
+        <result property="location" column="location"/>
+    </resultMap>
+
+    <select id="getReservationDataForExport" resultMap="ReservationResultMap">
+        SELECT r.id, r.interview_time, r.user_id, r.interview_id,
+               u.direction, u.name, u.qq, u.gender,
+               p.location
+        FROM reservation r
+                 JOIN user_info u ON r.user_id = u.id
+                 JOIN interview_position p ON r.interview_id = p.id
+    </select>
+</mapper>
